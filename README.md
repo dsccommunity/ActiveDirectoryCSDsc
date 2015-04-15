@@ -1,3 +1,5 @@
+{{AppVeyor build status badge for master branch}}
+
 #{{ModuleName}}
 
 {{Description}}
