@@ -2,7 +2,7 @@
 
 # xAdcsDeployment
 
-The xAdcsDeployment has been specifically tested as a method to populate a Certificate Services server role on Windows Server 2012 R2 after the Certificate Services role and the Web Enrollment feature have been enabled.
+The **xAdcsDeployment** DSC resources have been specifically tested as a method to populate a Certificate Services server role on Windows Server 2012 R2 after the Certificate Services role and the Web Enrollment feature have been enabled.
 Active Directory Certificate Services (AD CS) is used to create certification authorities and related role services that allow you to issue and manage certificates used in a variety of applications. 
 
 ## Scenario
@@ -13,6 +13,9 @@ This DSC resource can be used to address some of the most common scenarios inclu
 In a specific example, when building out a web server workload such as an internal website that provides confidential information to be accessed from computers that are members of an Active Directory domain, AD CS can provide a source for the SSL certificats that will automatically be trusted. 
 
 ## Resources
+
+* **xAdcsCertificationAuthority**
+* **xAdcsWebEnrollment**
 
 ### xAdcsCertificationAuthority
 
