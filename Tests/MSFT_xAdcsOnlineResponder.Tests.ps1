@@ -24,6 +24,7 @@ InModuleScope MSFT_xAdcsOnlineResponder {
         Context 'comparing Ensure' {
             $Splat = @{
                 Ensure = 'Present'
+                Credential = New-Object System.Management.Automation.PSCredential ('testing', (ConvertTo-SecureString 'notreal' -AsPlainText -Force))
                 Name = 'Test'
             }
             $Result = Get-TargetResource @Splat
@@ -49,6 +50,7 @@ InModuleScope MSFT_xAdcsOnlineResponder {
         Context 'testing Ensure Present' {
             $Splat = @{
                 Ensure = 'Present'
+                Credential = New-Object System.Management.Automation.PSCredential ('testing', (ConvertTo-SecureString 'notreal' -AsPlainText -Force))
                 Name = 'Test'
             }
             Set-TargetResource @Splat
@@ -62,6 +64,7 @@ InModuleScope MSFT_xAdcsOnlineResponder {
         Context 'testing Ensure Absent' {
             $Splat = @{
                 Ensure = 'Absent'
+                Credential = New-Object System.Management.Automation.PSCredential ('testing', (ConvertTo-SecureString 'notreal' -AsPlainText -Force))
                 Name = 'Test'
             }
             Set-TargetResource @Splat
