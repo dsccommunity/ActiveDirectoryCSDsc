@@ -15,7 +15,7 @@ Function Get-TargetResource
 
     return @{Ensure = $Ensure
         Credential = $Credential
-        IsCAWeb = Test-TargetResource @ADCSParams
+        IsResponder = Test-TargetResource @ADCSParams
     }
 }
 # Get-TargetResource -Name 'Test' -Credential (Get-Credential)
