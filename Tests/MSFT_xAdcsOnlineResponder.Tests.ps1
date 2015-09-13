@@ -24,12 +24,10 @@ InModuleScope MSFT_xAdcsOnlineResponder {
 
         Context 'comparing Ensure' {
             $Splat = @{
-                Name = 'Pester'
                 Ensure = 'Present'
                 Credential = New-Object System.Management.Automation.PSCredential ('testing', (ConvertTo-SecureString 'notreal' -AsPlainText -Force))
             }
-            Write-Verbose $Splat
-            $Result = Get-TargetResource @Splat
+            $Result = Get-TargetResource -Name 'Pester' @Splat
 
             It 'should return false' {
                 $Result.Ensure | Should Be $Splat.Ensure
