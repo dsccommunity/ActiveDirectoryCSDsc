@@ -24,9 +24,9 @@ InModuleScope MSFT_xAdcsOnlineResponder {
 
         Context 'comparing Ensure' {
             $Splat = @{
+                Name = 'Test'
                 Ensure = 'Present'
                 Credential = New-Object System.Management.Automation.PSCredential ('testing', (ConvertTo-SecureString 'notreal' -AsPlainText -Force))
-                Name = 'Test'
             }
             $Result = Get-TargetResource @Splat
 
@@ -50,9 +50,9 @@ InModuleScope MSFT_xAdcsOnlineResponder {
 
         Context 'testing Ensure Present' {
             $Splat = @{
+                Name = 'Test'
                 Ensure = 'Present'
                 Credential = New-Object System.Management.Automation.PSCredential ('testing', (ConvertTo-SecureString 'notreal' -AsPlainText -Force))
-                Name = 'Test'
             }
             Set-TargetResource @Splat
 
@@ -64,9 +64,9 @@ InModuleScope MSFT_xAdcsOnlineResponder {
 
         Context 'testing Ensure Absent' {
             $Splat = @{
+                Name = 'Test'
                 Ensure = 'Absent'
                 Credential = New-Object System.Management.Automation.PSCredential ('testing', (ConvertTo-SecureString 'notreal' -AsPlainText -Force))
-                Name = 'Test'
             }
             Set-TargetResource @Splat
 
@@ -84,20 +84,37 @@ InModuleScope MSFT_xAdcsOnlineResponder {
         Mock Uninstall-AdcsOnlineResponder
         #endregion
 
-        Context 'testing result' {
+        Context 'testing ensure present' {
             $Splat = @{
+                Name = 'Test'
                 Ensure = 'Present'
                 Credential = New-Object System.Management.Automation.PSCredential ('testing', (ConvertTo-SecureString 'notreal' -AsPlainText -Force))
-                Name = 'Test'
             }
             $Result = Test-TargetResource @Splat
 
-            It 'should return Ensure Absent' {
-                $Result.Ensure | Should be 'Absent'
+            It 'should return false' {
+                $Result | Should be $False
             }
             It 'should call install mock only' {
                 Assert-MockCalled -ModuleName MSFT_xAdcsOnlineResponder -commandName Install-AdcsOnlineResponder -Exactly 1
             }
         }
+
+        Context 'testing ensure absent' {
+            $Splat = @{
+                Name = 'Test'
+                Ensure = 'Absent'
+                Credential = New-Object System.Management.Automation.PSCredential ('testing', (ConvertTo-SecureString 'notreal' -AsPlainText -Force))
+            }
+            $Result = Test-TargetResource @Splat
+
+            It 'should return true' {
+                $Result | Should be $True
+            }
+            It 'should call install mock only' {
+                Assert-MockCalled -ModuleName MSFT_xAdcsOnlineResponder -commandName Install-AdcsOnlineResponder -Exactly 1
+            }
+        }
+
     }
 }
