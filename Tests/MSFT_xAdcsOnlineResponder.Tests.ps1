@@ -23,7 +23,7 @@ InModuleScope MSFT_xAdcsOnlineResponder {
         #endregion
 
         Context 'comparing Ensure' {
-            $Splat = @{
+            $Splats = @{
                 Name = 'Pester'
                 Ensure = 'Present'
                 Credential = New-Object System.Management.Automation.PSCredential ('testing', (ConvertTo-SecureString 'notreal' -AsPlainText -Force))
