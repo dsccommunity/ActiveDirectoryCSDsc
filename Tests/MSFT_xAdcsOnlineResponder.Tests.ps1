@@ -10,7 +10,7 @@ Import-Module -Name $PSScriptRoot\..\DSCResources\MSFT_xAdcsOnlineResponder  -Fo
 # should check for the server OS
 if($env:APPVEYOR_BUILD_VERSION)
 {
-  Add-WindowsFeature RSAT-AD-PowerShell -verbose
+  Add-WindowsFeature Adcs-Cert-Authority -verbose
 }
 
 InModuleScope MSFT_xAdcsOnlineResponder {
