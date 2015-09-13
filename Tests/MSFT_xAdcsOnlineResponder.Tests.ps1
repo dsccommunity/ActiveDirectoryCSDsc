@@ -18,7 +18,8 @@ InModuleScope MSFT_xAdcsOnlineResponder {
     Describe 'Get-TargetResource' {
 
         #region Mocks
-        Mock Install-AdcsOnlineResponder {}
+        Mock Install-AdcsOnlineResponder
+        Mock Uninstall-AdcsOnlineResponder
         #endregion
 
         Context 'comparing Ensure' {
@@ -43,8 +44,8 @@ InModuleScope MSFT_xAdcsOnlineResponder {
     Describe 'Set-TargetResource' {
 
         #region Mocks
-        Mock Install-AdcsOnlineResponder {}
-        Mock Uninstall-AdcsOnlineResponder {}
+        Mock Install-AdcsOnlineResponder
+        Mock Uninstall-AdcsOnlineResponder
         #endregion
 
         Context 'testing Ensure Present' {
@@ -72,6 +73,30 @@ InModuleScope MSFT_xAdcsOnlineResponder {
             It 'should call uninstall mock only' {
                 Assert-MockCalled -ModuleName MSFT_xAdcsOnlineResponder -commandName Install-AdcsOnlineResponder -Exactly 0
                 Assert-MockCalled -ModuleName MSFT_xAdcsOnlineResponder -commandName Uninstall-AdcsOnlineResponder -Exactly 1
+            }
+        }
+    }
+
+    Describe 'Test-TargetResource' {
+
+        #region Mocks
+        Mock Install-AdcsOnlineResponder
+        Mock Uninstall-AdcsOnlineResponder
+        #endregion
+
+        Context 'testing result' {
+            $Splat = @{
+                Ensure = 'Present'
+                Credential = New-Object System.Management.Automation.PSCredential ('testing', (ConvertTo-SecureString 'notreal' -AsPlainText -Force))
+                Name = 'Test'
+            }
+            $Result = Test-TargetResource @Splat
+
+            It 'should return Ensure Absent' {
+                $Result.Ensure | Should be 'Absent'
+            }
+            It 'should call install mock only' {
+                Assert-MockCalled -ModuleName MSFT_xAdcsOnlineResponder -commandName Install-AdcsOnlineResponder -Exactly 1
             }
         }
     }
