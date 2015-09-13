@@ -16,6 +16,7 @@ In a specific example, when building out a web server workload such as an intern
 
 * **xAdcsCertificationAuthority**
 * **xAdcsWebEnrollment**
+* **xAdcsOnlineResponder**
 
 ### xAdcsCertificationAuthority
 
@@ -210,7 +211,36 @@ In a specific example, when building out a web server workload such as an intern
 | -------- | ----- | ------------- |
 | True     | True  | none          |
 
+### xAdcsOnlineResponder
+
+`Credential = <PSCredential>`
+  If the Online Responder service is configured to use Standalone certification authority, then an account that is a member of the local Administrators on the CA is required.
+  If the Online Responder service is configured to use an Enterprise CA, then an account that is a member of Domain Admins is required.
+
+| Required | Key?  | Default value |
+| -------- | ----- | ------------- |
+| True     | False | none          |
+  
+`Ensure = <String> { Present | Absent }`
+  Specifies whether the Online Responder feature should be installed or uninstalled. 
+  
+| Required | Key?  | Default value |
+| -------- | ----- | ------------- |
+| False    | False | Present       |
+  
+`Name = <String>`
+  A name that provides a unique identifier for the resource instance.
+  
+| Required | Key?  | Default value |
+| -------- | ----- | ------------- |
+| True     | True  | none          |
+
+
 ## Versions
+
+Unreleased
+
+*  Added support for Installing the Online Responder Service in xADCSOnlineResponder.
 
 0.1.0.0
 
