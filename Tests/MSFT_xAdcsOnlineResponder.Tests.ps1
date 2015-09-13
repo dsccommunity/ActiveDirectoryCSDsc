@@ -27,7 +27,7 @@ InModuleScope MSFT_xAdcsOnlineResponder {
                 Ensure = 'Present'
                 Credential = New-Object System.Management.Automation.PSCredential ('testing', (ConvertTo-SecureString 'notreal' -AsPlainText -Force))
             }
-            $Result = Get-TargetResource -Name 'Pester' @Splat
+            $Result = Get-TargetResource @Splat -Name 'WorkPlease'
 
             It 'should return false' {
                 $Result.Ensure | Should Be $Splat.Ensure
