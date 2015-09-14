@@ -29,9 +29,9 @@ InModuleScope MSFT_xAdcsOnlineResponder {
             }
             $Result = Get-TargetResource @Splat
 
-            It 'should return false' {
+            It 'should return StateOK false' {
                 $Result.Ensure | Should Be $Splat.Ensure
-                $Result.StateOK | Should Be $True
+                $Result.StateOK | Should Be $False
             }
 
             It 'should call all mocks' {
