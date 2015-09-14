@@ -19,7 +19,7 @@ Function Get-TargetResource
     } Else {
         $ADCSParams = @{ Ensure = $Ensure; Name = $Name }
     }
-    $ADCSParams += { StateOK = Test-TargetResource @ADCSParams }
+    $ADCSParams += @{ StateOK = Test-TargetResource @ADCSParams }
     
     return $ADCSParams
 }
@@ -50,7 +50,7 @@ Function Set-TargetResource
 
     switch ($Ensure) {
         'Present' {(Install-AdcsOnlineResponder @ADCSParams -Force).ErrorString}
-        'Absent' {(Uninstall-AdcsOnlineResponder @ADCSParams -Force).ErrorString}
+        'Absent' {(Uninstall-AdcsOnlineResponder -Force).ErrorString}
         }
 }
 # Set-TargetResource -Name 'Test' -Credential (Get-Credential)
