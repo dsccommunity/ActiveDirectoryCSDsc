@@ -18,7 +18,7 @@ InModuleScope MSFT_xAdcsOnlineResponder {
     Describe 'Get-TargetResource' {
 
         #region Mocks
-        Mock Install-AdcsOnlineResponder
+        Mock Install-AdcsOnlineResponder 
         Mock Uninstall-AdcsOnlineResponder
         #endregion
 
@@ -32,7 +32,7 @@ InModuleScope MSFT_xAdcsOnlineResponder {
 
             It 'should return false' {
                 $Result.Ensure | Should Be $Splat.Ensure
-                $Result.IsResponder | Should Be $False
+                $Result.IsResponder | Should Be $True
             }
 
             It 'should call all mocks' {
@@ -57,8 +57,8 @@ InModuleScope MSFT_xAdcsOnlineResponder {
             Set-TargetResource @Splat
 
             It 'should call install mock only' {
-                Assert-MockCalled -ModuleName MSFT_xAdcsOnlineResponder -commandName Install-AdcsOnlineResponder -Exactly 1
-                Assert-MockCalled -ModuleName MSFT_xAdcsOnlineResponder -commandName Uninstall-AdcsOnlineResponder -Exactly 0
+                Assert-MockCalled -commandName Install-AdcsOnlineResponder -Exactly 1
+                Assert-MockCalled -commandName Uninstall-AdcsOnlineResponder -Exactly 0
             }
         }
 
@@ -71,8 +71,8 @@ InModuleScope MSFT_xAdcsOnlineResponder {
             Set-TargetResource @Splat
 
             It 'should call uninstall mock only' {
-                Assert-MockCalled -ModuleName MSFT_xAdcsOnlineResponder -commandName Install-AdcsOnlineResponder -Exactly 0
-                Assert-MockCalled -ModuleName MSFT_xAdcsOnlineResponder -commandName Uninstall-AdcsOnlineResponder -Exactly 1
+                Assert-MockCalled -commandName Install-AdcsOnlineResponder -Exactly 0
+                Assert-MockCalled -commandName Uninstall-AdcsOnlineResponder -Exactly 1
             }
         }
     }
@@ -96,7 +96,7 @@ InModuleScope MSFT_xAdcsOnlineResponder {
                 $Result | Should be $False
             }
             It 'should call install mock only' {
-                Assert-MockCalled -ModuleName MSFT_xAdcsOnlineResponder -commandName Install-AdcsOnlineResponder -Exactly 1
+                Assert-MockCalled -commandName Install-AdcsOnlineResponder -Exactly 1
             }
         }
 
@@ -112,7 +112,7 @@ InModuleScope MSFT_xAdcsOnlineResponder {
                 $Result | Should be $True
             }
             It 'should call install mock only' {
-                Assert-MockCalled -ModuleName MSFT_xAdcsOnlineResponder -commandName Install-AdcsOnlineResponder -Exactly 1
+                Assert-MockCalled -commandName Install-AdcsOnlineResponder -Exactly 1
             }
         }
 

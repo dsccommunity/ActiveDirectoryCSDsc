@@ -18,7 +18,7 @@ Function Get-TargetResource
         Name = $Nam
         Ensure = $Ensure
         Credential = $Credential
-        IsResponder = Test-TargetResource @ADCSParams
+        StateOK = Test-TargetResource @ADCSParams
     }
 }
 # Get-TargetResource -Name 'Test' -Credential (Get-Credential)
@@ -63,7 +63,7 @@ Function Test-TargetResource
     [string]$Name
     )
 
-    $ADCSParams = @{ Ensure = $Ensure; Credential = $Credential; Name = $Name; }
+    $ADCSParams = @{ Credential = $Credential; Name = $Name; }
 
     try{
         $test = Install-AdcsOnlineResponder @ADCSParams -WhatIf
