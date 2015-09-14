@@ -26,6 +26,7 @@ InModuleScope MSFT_xAdcsOnlineResponder {
             $Splat = @{
                 Name = 'Test'
                 Ensure = 'Present'
+                Credential = New-Object System.Management.Automation.PSCredential ("Administrator", (ConvertTo-SecureString 'NotReal' -AsPlainText -Force))
             }
             $Result = Get-TargetResource @Splat
 
@@ -51,6 +52,7 @@ InModuleScope MSFT_xAdcsOnlineResponder {
             $Splat = @{
                 Name = 'Test'
                 Ensure = 'Present'
+                Credential = New-Object System.Management.Automation.PSCredential ("Administrator", (ConvertTo-SecureString 'NotReal' -AsPlainText -Force))
             }
             Set-TargetResource @Splat
 
@@ -64,6 +66,7 @@ InModuleScope MSFT_xAdcsOnlineResponder {
             $Splat = @{
                 Name = 'Test'
                 Ensure = 'Absent'
+                Credential = New-Object System.Management.Automation.PSCredential ("Administrator", (ConvertTo-SecureString 'NotReal' -AsPlainText -Force))
             }
             Set-TargetResource @Splat
 
@@ -85,6 +88,7 @@ InModuleScope MSFT_xAdcsOnlineResponder {
             $Splat = @{
                 Name = 'Test'
                 Ensure = 'Present'
+                Credential = New-Object System.Management.Automation.PSCredential ("Administrator", (ConvertTo-SecureString 'NotReal' -AsPlainText -Force))
             }
             $Result = Test-TargetResource @Splat
 
@@ -100,6 +104,7 @@ InModuleScope MSFT_xAdcsOnlineResponder {
             $Splat = @{
                 Name = 'Test'
                 Ensure = 'Absent'
+                Credential = New-Object System.Management.Automation.PSCredential ("Administrator", (ConvertTo-SecureString 'NotReal' -AsPlainText -Force))
             }
             $Result = Test-TargetResource @Splat
 

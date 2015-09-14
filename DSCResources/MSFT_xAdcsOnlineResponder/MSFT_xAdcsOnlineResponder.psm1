@@ -19,13 +19,9 @@ Function Get-TargetResource
     } Else {
         $ADCSParams = @{ Ensure = $Ensure; Name = $Name }
     }
-
-    return @{
-        Name = $Name
-        Ensure = $Ensure
-        Credential = $Credential
-        StateOK = Test-TargetResource @ADCSParams
-    }
+    $ADCSParams += { StateOK = Test-TargetResource @ADCSParams }
+    
+    return $ADCSParams
 }
 # Get-TargetResource -Name 'Test' -Credential (Get-Credential)
 # Expected Outcome: Return a table of appropriate values.
