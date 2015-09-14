@@ -15,11 +15,12 @@ Function Get-TargetResource
         [string]$Name
     )
 
-    Return @{
+    $ADCSParams = @{
         Credential = $Credential
         Ensure = $Ensure
-        Name = $Name
-        StateOK = Test-TargetResource @ADCSParams }
+        Name = $Name }
+
+    $ADCSParams += @{ StateOK = Test-TargetResource @ADCSParams }
 }
 # Get-TargetResource -Name 'Test' -Credential (Get-Credential)
 # Expected Outcome: Return a table of appropriate values.
