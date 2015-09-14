@@ -31,7 +31,7 @@ InModuleScope MSFT_xAdcsOnlineResponder {
 
             It 'should return false' {
                 $Result.Ensure | Should Be $Splat.Ensure
-                $Result.IsResponder | Should Be $True
+                $Result.StateOK | Should Be $True
             }
 
             It 'should call all mocks' {
@@ -51,7 +51,6 @@ InModuleScope MSFT_xAdcsOnlineResponder {
             $Splat = @{
                 Name = 'Test'
                 Ensure = 'Present'
-                Credential = New-Object System.Management.Automation.PSCredential ('testing', (ConvertTo-SecureString 'notreal' -AsPlainText -Force))
             }
             Set-TargetResource @Splat
 
@@ -65,7 +64,6 @@ InModuleScope MSFT_xAdcsOnlineResponder {
             $Splat = @{
                 Name = 'Test'
                 Ensure = 'Absent'
-                Credential = New-Object System.Management.Automation.PSCredential ('testing', (ConvertTo-SecureString 'notreal' -AsPlainText -Force))
             }
             Set-TargetResource @Splat
 

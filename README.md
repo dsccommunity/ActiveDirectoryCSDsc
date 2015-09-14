@@ -219,14 +219,14 @@ In a specific example, when building out a web server workload such as an intern
 
 | Required | Key?  | Default value |
 | -------- | ----- | ------------- |
-| True     | False | none          |
+| False    | False | none          |
   
 `Ensure = <String> { Present | Absent }`
   Specifies whether the Online Responder feature should be installed or uninstalled. 
   
 | Required | Key?  | Default value |
 | -------- | ----- | ------------- |
-| False    | False | Present       |
+| True     | False | Present       |
   
 `Name = <String>`
   A name that provides a unique identifier for the resource instance.

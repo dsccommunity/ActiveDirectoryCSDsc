@@ -4,11 +4,14 @@ Function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     [CmdletBinding()]
     param(
-    [ValidateSet('Present','Absent')]
-    [string]$Ensure = 'Present',
-    [pscredential]$Credential,
-    [Parameter(Mandatory)]
-    [string]$Name
+        [Parameter(Mandatory)]
+        [ValidateSet('Present','Absent')]
+        [string]$Ensure = 'Present',
+
+        [pscredential]$Credential,
+
+        [Parameter(Mandatory)]
+        [string]$Name
     )
 
     If ($Credential) {
@@ -33,11 +36,14 @@ Function Set-TargetResource
 {
     [CmdletBinding()]
     param(
-    [ValidateSet('Present','Absent')]
-    [string]$Ensure = 'Present',
-    [pscredential]$Credential,
-    [Parameter(Mandatory)]
-    [string]$Name
+        [Parameter(Mandatory)]
+        [ValidateSet('Present','Absent')]
+        [string]$Ensure = 'Present',
+
+        [pscredential]$Credential,
+
+        [Parameter(Mandatory)]
+        [string]$Name
     )
 
     If ($Credential) {
@@ -61,11 +67,14 @@ Function Test-TargetResource
     [OutputType([System.Boolean])]
     [CmdletBinding()]
     param(
-    [ValidateSet('Present','Absent')]
-    [string]$Ensure = 'Present',
-    [pscredential]$Credential,
-    [Parameter(Mandatory)]
-    [string]$Name
+        [Parameter(Mandatory)]
+        [ValidateSet('Present','Absent')]
+        [string]$Ensure = 'Present',
+
+        [pscredential]$Credential,
+        
+        [Parameter(Mandatory)]
+        [string]$Name
     )
 
     If ($Credential) {
