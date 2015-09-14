@@ -6,16 +6,19 @@ Function Get-TargetResource
     param(
     [ValidateSet('Present','Absent')]
     [string]$Ensure = 'Present',
-    [Parameter(Mandatory)]
     [pscredential]$Credential,
     [Parameter(Mandatory)]
     [string]$Name
     )
 
-    $ADCSParams = @{ Ensure = $Ensure; Credential = $Credential; Name = $Name }
+    If ($Credential) {
+        $ADCSParams = @{ Credential = $Credential; Ensure = $Ensure; Name = $Name }
+    } Else {
+        $ADCSParams = @{ Ensure = $Ensure; Name = $Name }
+    }
 
     return @{
-        Name = $Nam
+        Name = $Name
         Ensure = $Ensure
         Credential = $Credential
         StateOK = Test-TargetResource @ADCSParams
@@ -32,17 +35,20 @@ Function Set-TargetResource
     param(
     [ValidateSet('Present','Absent')]
     [string]$Ensure = 'Present',
-    [Parameter(Mandatory)]
     [pscredential]$Credential,
     [Parameter(Mandatory)]
     [string]$Name
     )
 
-    $ADCSParams = @{ Credential = $Credential }
+    If ($Credential) {
+        $ADCSParams = @{ Credential = $Credential }
+    } Else {
+        $ADCSParams = @{ }
+    }
 
     switch ($Ensure) {
         'Present' {(Install-AdcsOnlineResponder @ADCSParams -Force).ErrorString}
-        'Absent' {(Uninstall-AdcsOnlineResponder -Force).ErrorString}
+        'Absent' {(Uninstall-AdcsOnlineResponder @ADCSParams -Force).ErrorString}
         }
 }
 # Set-TargetResource -Name 'Test' -Credential (Get-Credential)
@@ -57,13 +63,16 @@ Function Test-TargetResource
     param(
     [ValidateSet('Present','Absent')]
     [string]$Ensure = 'Present',
-    [Parameter(Mandatory)]
     [pscredential]$Credential,
     [Parameter(Mandatory)]
     [string]$Name
     )
 
-    $ADCSParams = @{ Credential = $Credential; Name = $Name }
+    If ($Credential) {
+        $ADCSParams = @{ Credential = $Credential }
+    } Else {
+        $ADCSParams = @{ }
+    }
 
     try{
         $test = Install-AdcsOnlineResponder @ADCSParams -WhatIf

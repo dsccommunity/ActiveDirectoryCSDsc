@@ -26,7 +26,6 @@ InModuleScope MSFT_xAdcsOnlineResponder {
             $Splat = @{
                 Name = 'Test'
                 Ensure = 'Present'
-                Credential = New-Object System.Management.Automation.PSCredential ('testing', (ConvertTo-SecureString 'notreal' -AsPlainText -Force))
             }
             $Result = Get-TargetResource @Splat
 
@@ -57,8 +56,8 @@ InModuleScope MSFT_xAdcsOnlineResponder {
             Set-TargetResource @Splat
 
             It 'should call install mock only' {
-                Assert-MockCalled -commandName Install-AdcsOnlineResponder -Exactly 1
-                Assert-MockCalled -commandName Uninstall-AdcsOnlineResponder -Exactly 0
+                Assert-MockCalled -ModuleName MSFT_xAdcsOnlineResponder -commandName Install-AdcsOnlineResponder -Exactly 1
+                Assert-MockCalled -ModuleName MSFT_xAdcsOnlineResponder -commandName Uninstall-AdcsOnlineResponder -Exactly 0
             }
         }
 
@@ -71,8 +70,8 @@ InModuleScope MSFT_xAdcsOnlineResponder {
             Set-TargetResource @Splat
 
             It 'should call uninstall mock only' {
-                Assert-MockCalled -commandName Install-AdcsOnlineResponder -Exactly 0
-                Assert-MockCalled -commandName Uninstall-AdcsOnlineResponder -Exactly 1
+                Assert-MockCalled -ModuleName MSFT_xAdcsOnlineResponder -commandName Install-AdcsOnlineResponder -Exactly 0
+                Assert-MockCalled -ModuleName MSFT_xAdcsOnlineResponder -commandName Uninstall-AdcsOnlineResponder -Exactly 1
             }
         }
     }
@@ -88,7 +87,6 @@ InModuleScope MSFT_xAdcsOnlineResponder {
             $Splat = @{
                 Name = 'Test'
                 Ensure = 'Present'
-                Credential = New-Object System.Management.Automation.PSCredential ('testing', (ConvertTo-SecureString 'notreal' -AsPlainText -Force))
             }
             $Result = Test-TargetResource @Splat
 
@@ -96,7 +94,7 @@ InModuleScope MSFT_xAdcsOnlineResponder {
                 $Result | Should be $False
             }
             It 'should call install mock only' {
-                Assert-MockCalled -commandName Install-AdcsOnlineResponder -Exactly 1
+                Assert-MockCalled -ModuleName MSFT_xAdcsOnlineResponder -commandName Install-AdcsOnlineResponder -Exactly 1
             }
         }
 
@@ -104,7 +102,6 @@ InModuleScope MSFT_xAdcsOnlineResponder {
             $Splat = @{
                 Name = 'Test'
                 Ensure = 'Absent'
-                Credential = New-Object System.Management.Automation.PSCredential ('testing', (ConvertTo-SecureString 'notreal' -AsPlainText -Force))
             }
             $Result = Test-TargetResource @Splat
 
@@ -112,7 +109,7 @@ InModuleScope MSFT_xAdcsOnlineResponder {
                 $Result | Should be $True
             }
             It 'should call install mock only' {
-                Assert-MockCalled -commandName Install-AdcsOnlineResponder -Exactly 1
+                Assert-MockCalled -ModuleName MSFT_xAdcsOnlineResponder -commandName Install-AdcsOnlineResponder -Exactly 1
             }
         }
     }
