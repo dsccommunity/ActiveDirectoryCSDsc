@@ -219,7 +219,7 @@ In a specific example, when building out a web server workload such as an intern
 
 | Required | Key?  | Default value |
 | -------- | ----- | ------------- |
-| False    | False | none          |
+| True     | False | none          |
   
 `Ensure = <String> { Present | Absent }`
   Specifies whether the Online Responder feature should be installed or uninstalled. 
