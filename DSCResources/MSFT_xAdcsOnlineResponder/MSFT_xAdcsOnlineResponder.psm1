@@ -21,6 +21,7 @@ Function Get-TargetResource
         Name = $Name }
 
     $ADCSParams += @{ StateOK = Test-TargetResource @ADCSParams }
+    Return $ADCSParams
 }
 # Get-TargetResource -Name 'Test' -Credential (Get-Credential)
 # Expected Outcome: Return a table of appropriate values.
