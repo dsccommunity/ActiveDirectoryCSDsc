@@ -115,6 +115,5 @@ InModuleScope MSFT_xAdcsOnlineResponder {
                 Assert-MockCalled -commandName Install-AdcsOnlineResponder -Exactly 1
             }
         }
-
     }
 }

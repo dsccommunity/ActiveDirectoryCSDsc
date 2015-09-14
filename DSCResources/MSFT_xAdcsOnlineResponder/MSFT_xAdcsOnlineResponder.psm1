@@ -12,7 +12,7 @@ Function Get-TargetResource
     [string]$Name
     )
 
-    $ADCSParams = @{ Ensure = $Ensure; Credential = $Credential; Name = $Name; }
+    $ADCSParams = @{ Ensure = $Ensure; Credential = $Credential; Name = $Name }
 
     return @{
         Name = $Nam
@@ -63,7 +63,7 @@ Function Test-TargetResource
     [string]$Name
     )
 
-    $ADCSParams = @{ Credential = $Credential; Name = $Name; }
+    $ADCSParams = @{ Credential = $Credential; Name = $Name }
 
     try{
         $test = Install-AdcsOnlineResponder @ADCSParams -WhatIf
