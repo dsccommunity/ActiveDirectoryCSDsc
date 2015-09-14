@@ -8,20 +8,18 @@ Function Get-TargetResource
         [ValidateSet('Present','Absent')]
         [string]$Ensure = 'Present',
 
+        [Parameter(Mandatory)]
         [pscredential]$Credential,
 
         [Parameter(Mandatory)]
         [string]$Name
     )
 
-    If ($Credential) {
-        $ADCSParams = @{ Credential = $Credential; Ensure = $Ensure; Name = $Name }
-    } Else {
-        $ADCSParams = @{ Ensure = $Ensure; Name = $Name }
-    }
-    $ADCSParams += @{ StateOK = Test-TargetResource @ADCSParams }
-    
-    return $ADCSParams
+    Return @{
+        Credential = $Credential
+        Ensure = $Ensure
+        Name = $Name
+        StateOK = Test-TargetResource @ADCSParams }
 }
 # Get-TargetResource -Name 'Test' -Credential (Get-Credential)
 # Expected Outcome: Return a table of appropriate values.
@@ -36,17 +34,14 @@ Function Set-TargetResource
         [ValidateSet('Present','Absent')]
         [string]$Ensure = 'Present',
 
+        [Parameter(Mandatory)]
         [pscredential]$Credential,
 
         [Parameter(Mandatory)]
         [string]$Name
     )
 
-    If ($Credential) {
-        $ADCSParams = @{ Credential = $Credential }
-    } Else {
-        $ADCSParams = @{ }
-    }
+    $ADCSParams = @{ Credential = $Credential }
 
     switch ($Ensure) {
         'Present' {(Install-AdcsOnlineResponder @ADCSParams -Force).ErrorString}
@@ -67,17 +62,14 @@ Function Test-TargetResource
         [ValidateSet('Present','Absent')]
         [string]$Ensure = 'Present',
 
+        [Parameter(Mandatory)]
         [pscredential]$Credential,
         
         [Parameter(Mandatory)]
         [string]$Name
     )
 
-    If ($Credential) {
-        $ADCSParams = @{ Credential = $Credential }
-    } Else {
-        $ADCSParams = @{ }
-    }
+    $ADCSParams = @{ Credential = $Credential }
 
     try{
         $test = Install-AdcsOnlineResponder @ADCSParams -WhatIf
