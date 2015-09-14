@@ -12,9 +12,11 @@ Function Get-TargetResource
     [string]$Name
     )
 
-    $ADCSParams = @{Credential = $Credential}
+    $ADCSParams = @{ Ensure = $Ensure; Credential = $Credential; Name = $Name; }
 
-    return @{Ensure = $Ensure
+    return @{
+        Name = $Nam
+        Ensure = $Ensure
         Credential = $Credential
         IsResponder = Test-TargetResource @ADCSParams
     }
@@ -36,7 +38,7 @@ Function Set-TargetResource
     [string]$Name
     )
 
-    $ADCSParams =@{Credential = $Credential}
+    $ADCSParams = @{ Credential = $Credential }
 
     switch ($Ensure) {
         'Present' {(Install-AdcsOnlineResponder @ADCSParams -Force).ErrorString}
@@ -61,7 +63,7 @@ Function Test-TargetResource
     [string]$Name
     )
 
-    $ADCSParams = @{Credential = $Credential}
+    $ADCSParams = @{ Ensure = $Ensure; Credential = $Credential; Name = $Name; }
 
     try{
         $test = Install-AdcsOnlineResponder @ADCSParams -WhatIf
