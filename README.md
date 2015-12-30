@@ -21,7 +21,7 @@ In a specific example, when building out a web server workload such as an intern
 
 #### Properties
 
-```CAType = <String> { EnterpriseRootCA | EnterpriseSubordinateCA | StandaloneRootCA | StandaloneSubordinateCA }`
+`CAType = <String> { EnterpriseRootCA | EnterpriseSubordinateCA | StandaloneRootCA | StandaloneSubordinateCA }`
   Specifies the type of certification authority to install.
 
 | Required | Key?  | Default value |
