@@ -1,9 +1,9 @@
-#---------------------------------# 
-#      environment configuration  # 
-#---------------------------------# 
+#---------------------------------#
+#      environment configuration  #
+#---------------------------------#
 os: WMF 5
 version: 0.1.{build}.0
-install: 
+install:
   - cinst -y pester --version 3.3.13
   - git clone https://github.com/PowerShell/DscResource.Tests
   - ps: Push-Location
@@ -11,22 +11,22 @@ install:
   - ps: Import-Module .\TestHelper.psm1 -force
   - ps: Pop-Location
 
-#---------------------------------# 
-#      build configuration        # 
-#---------------------------------# 
+#---------------------------------#
+#      build configuration        #
+#---------------------------------#
 
 build: false
 
-#---------------------------------# 
-#      test configuration         # 
-#---------------------------------# 
+#---------------------------------#
+#      test configuration         #
+#---------------------------------#
 
 test_script:
     - ps: |
         $testResultsFile = ".\TestsResults.xml"
         $res = Invoke-Pester -OutputFormat NUnitXml -OutputFile $testResultsFile -PassThru
         (New-Object 'System.Net.WebClient').UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path $testResultsFile))
-        if ($res.FailedCount -gt 0) { 
+        if ($res.FailedCount -gt 0) {
             throw "$($res.FailedCount) tests failed."
         }
 
@@ -34,9 +34,9 @@ test_script:
 #      deployment configuration   #
 #---------------------------------#
 
-# scripts to run before deployment 
+# scripts to run before deployment
 deploy_script:
-   - ps: |
+  - ps: |
       # Creating project artifact
       $stagingDirectory = (Resolve-Path ..).Path
       $manifest = Join-Path $pwd "xAdcsDeployment.psd1"
