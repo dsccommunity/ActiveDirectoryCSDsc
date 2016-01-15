@@ -1,5 +1,5 @@
-$Global:DSCModuleName   = 'xAdcsOnlineResponder'
-$Global:DSCResourceName = 'MSFT_xAdcsDeployment'
+$Global:DSCModuleName   = 'xAdcsDeployment'
+$Global:DSCResourceName = 'MSFT_xAdcsOnlineResponder'
 
 #region HEADER
 if ( (-not (Test-Path -Path '.\DSCResource.Tests\')) -or `
