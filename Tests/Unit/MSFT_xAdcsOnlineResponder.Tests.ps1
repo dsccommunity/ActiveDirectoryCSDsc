@@ -49,7 +49,7 @@ try
 
             Context 'comparing Ensure' {
                 $Splat = @{
-                    Name = 'Test'
+                    IsSingleInstance = 'Yes'
                     Ensure = 'Present'
                     Credential = New-Object System.Management.Automation.PSCredential ("Administrator", (ConvertTo-SecureString 'NotReal' -AsPlainText -Force))
                 }
@@ -75,7 +75,7 @@ try
 
             Context 'testing Ensure Present' {
                 $Splat = @{
-                    Name = 'Test'
+                    IsSingleInstance = 'Yes'
                     Ensure = 'Present'
                     Credential = New-Object System.Management.Automation.PSCredential ("Administrator", (ConvertTo-SecureString 'NotReal' -AsPlainText -Force))
                 }
@@ -89,7 +89,7 @@ try
 
             Context 'testing Ensure Absent' {
                 $Splat = @{
-                    Name = 'Test'
+                    IsSingleInstance = 'Yes'
                     Ensure = 'Absent'
                     Credential = New-Object System.Management.Automation.PSCredential ("Administrator", (ConvertTo-SecureString 'NotReal' -AsPlainText -Force))
                 }
@@ -111,7 +111,7 @@ try
 
             Context 'testing ensure present' {
                 $Splat = @{
-                    Name = 'Test'
+                    IsSingleInstance = 'Yes'
                     Ensure = 'Present'
                     Credential = New-Object System.Management.Automation.PSCredential ("Administrator", (ConvertTo-SecureString 'NotReal' -AsPlainText -Force))
                 }
@@ -127,7 +127,7 @@ try
 
             Context 'testing ensure absent' {
                 $Splat = @{
-                    Name = 'Test'
+                    IsSingleInstance = 'Yes'
                     Ensure = 'Absent'
                     Credential = New-Object System.Management.Automation.PSCredential ("Administrator", (ConvertTo-SecureString 'NotReal' -AsPlainText -Force))
                 }

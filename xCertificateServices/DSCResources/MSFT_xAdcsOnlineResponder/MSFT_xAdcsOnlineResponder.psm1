@@ -7,15 +7,17 @@ Function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     [CmdletBinding()]
     param(
+        [parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [String]
+        $IsSingleInstance, 
+
         [Parameter(Mandatory)]
         [ValidateSet('Present','Absent')]
         [string]$Ensure = 'Present',
 
         [Parameter(Mandatory)]
-        [pscredential]$Credential,
-
-        [Parameter(Mandatory)]
-        [string]$Name
+        [pscredential]$Credential
     )
 
     $ADCSParams = @{
@@ -33,15 +35,17 @@ Function Set-TargetResource
 {
     [CmdletBinding()]
     param(
+        [parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [String]
+        $IsSingleInstance, 
+
         [Parameter(Mandatory)]
         [ValidateSet('Present','Absent')]
         [string]$Ensure = 'Present',
 
         [Parameter(Mandatory)]
-        [pscredential]$Credential,
-
-        [Parameter(Mandatory)]
-        [string]$Name
+        [pscredential]$Credential
     )
 
     $ADCSParams = @{ Credential = $Credential }
@@ -59,21 +63,23 @@ Function Test-TargetResource
     [OutputType([System.Boolean])]
     [CmdletBinding()]
     param(
+        [parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [String]
+        $IsSingleInstance, 
+
         [Parameter(Mandatory)]
         [ValidateSet('Present','Absent')]
         [string]$Ensure = 'Present',
 
         [Parameter(Mandatory)]
-        [pscredential]$Credential,
-        
-        [Parameter(Mandatory)]
-        [string]$Name
+        [pscredential]$Credential
     )
 
     $ADCSParams = @{ Credential = $Credential }
 
     try{
-        $test = Install-AdcsOnlineResponder @ADCSParams -WhatIf
+        $null = Install-AdcsOnlineResponder @ADCSParams -WhatIf
         Switch ($Ensure) {
             'Present' {return $false}
             'Absent' {return $true}

@@ -219,6 +219,13 @@ For more information on ADCS Online Responders, see [this article on TechNet](ht
 
 #### Properties
 
+`IsSingleInstance = <String>`
+  Specifies the resource is a single instance, the value must be 'Yes'
+  
+| Required | Key?  | Default value |
+| -------- | ----- | ------------- |
+| True     | True  | none          |
+
 `Credential = <PSCredential>`
   If the Online Responder service is configured to use Standalone certification authority, then an account that is a member of the local Administrators on the CA is required.
   If the Online Responder service is configured to use an Enterprise CA, then an account that is a member of Domain Admins is required.
@@ -233,20 +240,14 @@ For more information on ADCS Online Responders, see [this article on TechNet](ht
 | Required | Key?  | Default value |
 | -------- | ----- | ------------- |
 | True     | False | Present       |
-  
-`Name = <String>`
-  A name that provides a unique identifier for the resource instance. It can be set to any value.
-  
-| Required | Key?  | Default value |
-| -------- | ----- | ------------- |
-| True     | True  | none          |
 
 
 ## Versions
 
 Unreleased
 
-*   Added support for Installing the Online Responder Service in xADCSOnlineResponder.
+* Added the following resources:
+    * MSFT_xADCSOnlineResponder resource to install the Online Responder service.
 *   Correction to xAdcsCertificationAuthority property title in Readme.md.
 *   Addition of .gitignore to ensure DSCResource.Tests folder is commited.
 *   Updated AppVeyor.yml to use WMF 5 build environment.
