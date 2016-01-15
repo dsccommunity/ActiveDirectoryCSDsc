@@ -8,7 +8,7 @@ Function Get-TargetResource
     [CmdletBinding()]
     param(
         [parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
+        [ValidateSet('Yes')]
         [String]
         $IsSingleInstance, 
 
@@ -36,7 +36,7 @@ Function Set-TargetResource
     [CmdletBinding()]
     param(
         [parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
+        [ValidateSet('Yes')]
         [String]
         $IsSingleInstance, 
 
@@ -64,7 +64,7 @@ Function Test-TargetResource
     [CmdletBinding()]
     param(
         [parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
+        [ValidateSet('Yes')]
         [String]
         $IsSingleInstance, 
 
