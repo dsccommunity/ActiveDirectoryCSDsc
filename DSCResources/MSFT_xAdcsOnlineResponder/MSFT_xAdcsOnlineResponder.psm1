@@ -1,3 +1,6 @@
+# This resource can be used to install an ADCS Online Responder after the feature has been installed on the server.
+# For more information on ADCS Online Responders, see https://technet.microsoft.com/en-us/library/cc725958.aspx
+
 #region Get Resource
 Function Get-TargetResource
 {
@@ -23,8 +26,6 @@ Function Get-TargetResource
     $ADCSParams += @{ StateOK = Test-TargetResource @ADCSParams }
     Return $ADCSParams
 }
-# Get-TargetResource -Name 'Test' -Credential (Get-Credential)
-# Expected Outcome: Return a table of appropriate values.
 #endregion
 
 #region Set Resource
@@ -50,8 +51,6 @@ Function Set-TargetResource
         'Absent' {(Uninstall-AdcsOnlineResponder -Force).ErrorString}
         }
 }
-# Set-TargetResource -Name 'Test' -Credential (Get-Credential)
-# Expected Outcome: Setup Certificate Services Online Responder on this node.
 #endregion
 
 #region Test Resource
@@ -88,8 +87,6 @@ Function Test-TargetResource
             }
     }
 }
-# Test-TargetResource -Name 'Test' -Credential (Get-Credential)
-# Expected Outcome: Returns a boolean indicating whether Certificate Services Online Responder is installed on this node.
 #endregion
 
 Export-ModuleMember -Function *-TargetResource

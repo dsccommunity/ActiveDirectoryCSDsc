@@ -22,7 +22,7 @@ In a specific example, when building out a web server workload such as an intern
 
 #### Properties
 
-```CAType = <String> { EnterpriseRootCA | EnterpriseSubordinateCA | StandaloneRootCA | StandaloneSubordinateCA }`
+`CAType = <String> { EnterpriseRootCA | EnterpriseSubordinateCA | StandaloneRootCA | StandaloneSubordinateCA }`
   Specifies the type of certification authority to install.
 
 | Required | Key?  | Default value |
@@ -213,6 +213,12 @@ In a specific example, when building out a web server workload such as an intern
 
 ### xAdcsOnlineResponder
 
+This resource can be used to install an ADCS Online Responder after the feature has been installed on the server.
+
+For more information on ADCS Online Responders, see [this article on TechNet](https://technet.microsoft.com/en-us/library/cc725958.aspx).
+
+#### Properties
+
 `Credential = <PSCredential>`
   If the Online Responder service is configured to use Standalone certification authority, then an account that is a member of the local Administrators on the CA is required.
   If the Online Responder service is configured to use an Enterprise CA, then an account that is a member of Domain Admins is required.
@@ -229,7 +235,7 @@ In a specific example, when building out a web server workload such as an intern
 | True     | False | Present       |
   
 `Name = <String>`
-  A name that provides a unique identifier for the resource instance.
+  A name that provides a unique identifier for the resource instance. It can be set to any value.
   
 | Required | Key?  | Default value |
 | -------- | ----- | ------------- |
@@ -240,7 +246,10 @@ In a specific example, when building out a web server workload such as an intern
 
 Unreleased
 
-*  Added support for Installing the Online Responder Service in xADCSOnlineResponder.
+*   Added support for Installing the Online Responder Service in xADCSOnlineResponder.
+*   Correction to xAdcsCertificationAuthority property title in Readme.md.
+*   Addition of .gitignore to ensure DSCResource.Tests folder is commited.
+*   Updated AppVeyor.yml to use WMF 5 build environment.
 
 0.1.0.0
 
@@ -299,7 +308,7 @@ Configuration RetireCertificateAuthority
             Ensure = 'Absent'
             Name = 'CertSrv'
         }
-	WindowsFeature ADCS-Web-Enrollment
+	    WindowsFeature ADCS-Web-Enrollment
         {
             Ensure = 'Absent'
             Name = 'ADCS-Web-Enrollment'
@@ -310,7 +319,7 @@ Configuration RetireCertificateAuthority
             Ensure = 'Absent'
             DependsOn = '[WindowsFeature]ADCS-Web-Enrollment'              
         }
-	WindowsFeature ADCS-Cert-Authority
+	    WindowsFeature ADCS-Cert-Authority
         {
             Ensure = 'Absent'
             Name = 'ADCS-Cert-Authority'
