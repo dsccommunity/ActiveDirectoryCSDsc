@@ -34,9 +34,9 @@ test_script:
 #      deployment configuration   #
 #---------------------------------#
 
-# scripts to run before deployment
+# scripts to run before deployment 
 deploy_script:
-  - ps: |
+   - ps: |
       # Creating project artifact
       $stagingDirectory = (Resolve-Path ..).Path
       $manifest = Join-Path $pwd "xAdcsDeployment.psd1"
