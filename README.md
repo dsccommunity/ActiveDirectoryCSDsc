@@ -16,6 +16,7 @@ In a specific example, when building out a web server workload such as an intern
 
 * **xAdcsCertificationAuthority**
 * **xAdcsWebEnrollment**
+* **xAdcsOnlineResponder**
 
 ### xAdcsCertificationAuthority
 
@@ -210,7 +211,46 @@ In a specific example, when building out a web server workload such as an intern
 | -------- | ----- | ------------- |
 | True     | True  | none          |
 
+### xAdcsOnlineResponder
+
+This resource can be used to install an ADCS Online Responder after the feature has been installed on the server.
+
+For more information on ADCS Online Responders, see [this article on TechNet](https://technet.microsoft.com/en-us/library/cc725958.aspx).
+
+#### Properties
+
+`IsSingleInstance = <String>`
+  Specifies the resource is a single instance, the value must be 'Yes'
+  
+| Required | Key?  | Default value |
+| -------- | ----- | ------------- |
+| True     | True  | none          |
+
+`Credential = <PSCredential>`
+  If the Online Responder service is configured to use Standalone certification authority, then an account that is a member of the local Administrators on the CA is required.
+  If the Online Responder service is configured to use an Enterprise CA, then an account that is a member of Domain Admins is required.
+
+| Required | Key?  | Default value |
+| -------- | ----- | ------------- |
+| True     | False | none          |
+  
+`Ensure = <String> { Present | Absent }`
+  Specifies whether the Online Responder feature should be installed or uninstalled. 
+  
+| Required | Key?  | Default value |
+| -------- | ----- | ------------- |
+| True     | False | Present       |
+
+
 ## Versions
+
+Unreleased
+
+* Added the following resources:
+    * MSFT_xADCSOnlineResponder resource to install the Online Responder service.
+*   Correction to xAdcsCertificationAuthority property title in Readme.md.
+*   Addition of .gitignore to ensure DSCResource.Tests folder is commited.
+*   Updated AppVeyor.yml to use WMF 5 build environment.
 
 0.1.0.0
 
@@ -269,7 +309,7 @@ Configuration RetireCertificateAuthority
             Ensure = 'Absent'
             Name = 'CertSrv'
         }
-	WindowsFeature ADCS-Web-Enrollment
+	    WindowsFeature ADCS-Web-Enrollment
         {
             Ensure = 'Absent'
             Name = 'ADCS-Web-Enrollment'
@@ -280,7 +320,7 @@ Configuration RetireCertificateAuthority
             Ensure = 'Absent'
             DependsOn = '[WindowsFeature]ADCS-Web-Enrollment'              
         }
-	WindowsFeature ADCS-Cert-Authority
+	    WindowsFeature ADCS-Cert-Authority
         {
             Ensure = 'Absent'
             Name = 'ADCS-Cert-Authority'
