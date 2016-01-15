@@ -21,9 +21,9 @@ Function Get-TargetResource
     )
 
     $ADCSParams = @{
+        IsSingleInstance = $IsSingleInstance
         Credential = $Credential
-        Ensure = $Ensure
-        Name = $Name }
+        Ensure = $Ensure }
 
     $ADCSParams += @{ StateOK = Test-TargetResource @ADCSParams }
     Return $ADCSParams
