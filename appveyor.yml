@@ -34,7 +34,7 @@ test_script:
 #      deployment configuration   # 
 #---------------------------------# 
 
-# scripts to run before deployment 
+# scripts to run before deployment
 deploy_script:
   - ps: |
       # Creating project artifact
