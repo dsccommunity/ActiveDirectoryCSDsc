@@ -244,7 +244,7 @@ For more information on ADCS Online Responders, see [this article on TechNet](ht
 
 ## Versions
 
-Unreleased
+### Unreleased
 
 * Added the following resources:
     * MSFT_xADCSOnlineResponder resource to install the Online Responder service.
@@ -252,7 +252,7 @@ Unreleased
 *   Addition of .gitignore to ensure DSCResource.Tests folder is commited.
 *   Updated AppVeyor.yml to use WMF 5 build environment.
 
-0.1.0.0
+### 0.1.0.0
 
 *   Initial release with the following resources 
     *   <span style="font-family:Calibri; font-size:medium">xAdcsCertificationAuthority and xAdcsWebEnrollment.</span> 
