@@ -38,10 +38,10 @@ PrivateData = @{
         Tags = @('DesiredStateConfiguration', 'DSC', 'DSCResourceKit', 'DSCResource')
 
         # A URL to the license for this module.
-        LicenseUri = 'https://github.com/PowerShell/xActiveDirectory/blob/master/LICENSE'
+        LicenseUri = 'https://github.com/PowerShell/xAdcsDeployment/blob/master/LICENSE'
 
         # A URL to the main website for this project.
-        ProjectUri = 'https://github.com/PowerShell/xActiveDirectory'
+        ProjectUri = 'https://github.com/PowerShell/xAdcsDeployment'
 
         # A URL to an icon representing this module.
         # IconUri = ''
