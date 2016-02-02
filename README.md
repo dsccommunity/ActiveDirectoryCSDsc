@@ -246,6 +246,8 @@ For more information on ADCS Online Responders, see [this article on TechNet](ht
 
 ### Unreleased
 
+### 0.2.0.0
+
 * Added the following resources:
     * MSFT_xADCSOnlineResponder resource to install the Online Responder service.
 *   Correction to xAdcsCertificationAuthority property title in Readme.md.
