@@ -248,6 +248,7 @@ For more information on ADCS Online Responders, see [this article on TechNet](ht
 
 * Moved Examples folder into root.
 * Removed legacy xCertificateServices folder.
+* Prevented Unit tests from Violating PSSA rules.
 
 ### 0.2.0.0
 
