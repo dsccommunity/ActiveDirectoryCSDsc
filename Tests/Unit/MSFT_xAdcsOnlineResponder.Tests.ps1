@@ -39,7 +39,8 @@ try
 {
     #region Pester Tests
     InModuleScope MSFT_xAdcsOnlineResponder {
-
+        $DummyCredential = New-Object System.Management.Automation.PSCredential ("Administrator",(New-Object -Type SecureString))
+        
         Describe 'Get-TargetResource' {
 
             #region Mocks
@@ -51,7 +52,7 @@ try
                 $Splat = @{
                     IsSingleInstance = 'Yes'
                     Ensure = 'Present'
-                    Credential = New-Object System.Management.Automation.PSCredential ("Administrator", (ConvertTo-SecureString 'NotReal' -AsPlainText -Force))
+                    Credential = $DummyCredential
                 }
                 $Result = Get-TargetResource @Splat
 
@@ -77,7 +78,7 @@ try
                 $Splat = @{
                     IsSingleInstance = 'Yes'
                     Ensure = 'Present'
-                    Credential = New-Object System.Management.Automation.PSCredential ("Administrator", (ConvertTo-SecureString 'NotReal' -AsPlainText -Force))
+                    Credential = $DummyCredential
                 }
                 Set-TargetResource @Splat
 
@@ -91,7 +92,7 @@ try
                 $Splat = @{
                     IsSingleInstance = 'Yes'
                     Ensure = 'Absent'
-                    Credential = New-Object System.Management.Automation.PSCredential ("Administrator", (ConvertTo-SecureString 'NotReal' -AsPlainText -Force))
+                    Credential = $DummyCredential
                 }
                 Set-TargetResource @Splat
 
@@ -113,7 +114,7 @@ try
                 $Splat = @{
                     IsSingleInstance = 'Yes'
                     Ensure = 'Present'
-                    Credential = New-Object System.Management.Automation.PSCredential ("Administrator", (ConvertTo-SecureString 'NotReal' -AsPlainText -Force))
+                    Credential = $DummyCredential
                 }
                 $Result = Test-TargetResource @Splat
 
@@ -129,7 +130,7 @@ try
                 $Splat = @{
                     IsSingleInstance = 'Yes'
                     Ensure = 'Absent'
-                    Credential = New-Object System.Management.Automation.PSCredential ("Administrator", (ConvertTo-SecureString 'NotReal' -AsPlainText -Force))
+                    Credential = $DummyCredential
                 }
                 $Result = Test-TargetResource @Splat
 

@@ -10,7 +10,7 @@ Active Directory Certificate Services (AD CS) is used to create certification au
 Certificates are widely used to establish trust relationships between computers.
 This DSC resource can be used to address some of the most common scenarios including the need for a Stand-Alone Certificate Authority or an Active Directory Trusted Root Certificate Authority and the Certificate Services website for users to submit and complete certificate requests. 
 
-In a specific example, when building out a web server workload such as an internal website that provides confidential information to be accessed from computers that are members of an Active Directory domain, AD CS can provide a source for the SSL certificats that will automatically be trusted. 
+In a specific example, when building out a web server workload such as an internal website that provides confidential information to be accessed from computers that are members of an Active Directory domain, AD CS can provide a source for the SSL certificats that will automatically be trusted.
 
 ## Resources
 
@@ -246,6 +246,10 @@ For more information on ADCS Online Responders, see [this article on TechNet](ht
 
 ### Unreleased
 
+* Moved Examples folder into root.
+* Removed legacy xCertificateServices folder.
+* Prevented Unit tests from Violating PSSA rules.
+
 ### 0.2.0.0
 
 * Added the following resources:
@@ -267,10 +271,10 @@ This example will add the Windows Server Roles and Features to support a Certifi
 
 ```powershell
 Configuration CertificateAuthority
-{        
+{
     Node ‘NodeName’ 
     {  
-    	WindowsFeature ADCS-Cert-Authority
+        WindowsFeature ADCS-Cert-Authority
         {
                Ensure = 'Present'
                Name = 'ADCS-Cert-Authority'
@@ -294,9 +298,9 @@ Configuration CertificateAuthority
             Name = 'CertSrv'
             Credential = $Node.Credential
             DependsOn = '[WindowsFeature]ADCS-Web-Enrollment','[xADCSCertificationAuthority]ADCS'
-        } 
-    }  
-} 
+        }
+    }
+}
 ```
 
 #### Example 2: Remove the AD CS functionality from a server. 
@@ -305,13 +309,12 @@ Configuration CertificateAuthority
 Configuration RetireCertificateAuthority
 {        
     Node ‘NodeName’ 
-    {  
+    {
         xADCSWebEnrollment CertSrv
         {
             Ensure = 'Absent'
             Name = 'CertSrv'
         }
-	    WindowsFeature ADCS-Web-Enrollment
         {
             Ensure = 'Absent'
             Name = 'ADCS-Web-Enrollment'
@@ -320,15 +323,15 @@ Configuration RetireCertificateAuthority
         xADCSCertificationAuthority ADCS
         {
             Ensure = 'Absent'
-            DependsOn = '[WindowsFeature]ADCS-Web-Enrollment'              
+            DependsOn = '[WindowsFeature]ADCS-Web-Enrollment'
         }
-	    WindowsFeature ADCS-Cert-Authority
+            WindowsFeature ADCS-Cert-Authority
         {
             Ensure = 'Absent'
             Name = 'ADCS-Cert-Authority'
             DependsOn = ‘[xADCSCertificationAuthority]ADCS’
-        }        
-    }  
+        }
+    }
 }
 ```
 
