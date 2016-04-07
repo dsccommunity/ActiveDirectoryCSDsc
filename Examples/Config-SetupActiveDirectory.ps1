@@ -161,12 +161,12 @@ if ((test-path C:\Windows\temp\FirstDC.txt) -eq $True)
                 DependsOn = '[WindowsFeature]ADCS-Cert-Authority'              
             }
 
-            xadcswebenrollment certsrv
+            xADCSWebEnrollment CertSrv
             {
-                ensure = 'absent'
-                name = 'certsrv'
-                credential = $node.credential
-                dependson = '[xadcscertificationauthority]adcs'
+                Ensure = 'Absent'
+                Name = 'CertSrv'
+                Credential = $Node.Credential
+                DependsOn = '[xADCSCertificationAuthority]ADCS'
             }
             
             LocalConfigurationManager            {                CertificateId = $node.Thumbprint                ConfigurationMode = 'ApplyandAutoCorrect'
