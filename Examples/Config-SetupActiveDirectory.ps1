@@ -107,11 +107,11 @@ if ((test-path C:\Windows\temp\FirstDC.txt) -eq $True)
 {
     configuration FirstDomainController
     {
-        Import-DscResource -ModuleName xComputerManagement, xActiveDirectory, xCertificateServices
+        Import-DscResource -ModuleName xComputerManagement, xActiveDirectory, xStorage, xAdcsDeployment
 
         node $AllNodes.Where{$_.ServerRole -eq 'Active Directory Domain Controller'}.Nodename
         {    
-            xWaitForDisk SMA
+            xWaitforDisk SMA
             {
                 DiskNumber = $Node.Disk
                 RetryCount = 720
@@ -168,7 +168,7 @@ if ((test-path C:\Windows\temp\FirstDC.txt) -eq $True)
                 Credential = $Node.Credential
                 DependsOn = '[xADCSCertificationAuthority]ADCS'
             }
-
+            
             LocalConfigurationManager            {                CertificateId = $node.Thumbprint                ConfigurationMode = 'ApplyandAutoCorrect'
                 RebootNodeIfNeeded = 'True'
             }
@@ -187,11 +187,11 @@ if ((test-path C:\Windows\temp\FirstDC.txt) -eq $False)
 {
     configuration DomainController
     {
-        Import-DscResource -ModuleName xComputerManagement, xActiveDirectory
+        Import-DscResource -ModuleName xComputerManagement, xActiveDirectory, xStorage
 
         node $AllNodes.Where{$_.ServerRole -eq 'Active Directory Domain Controller'}.Nodename
         {    
-             xWaitForDisk DataDisk
+             xWaitforDisk DataDisk
             {
                 DiskNumber = $Node.Disk
                 RetryCount = 720
