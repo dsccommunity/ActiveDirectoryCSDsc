@@ -1,5 +1,5 @@
 $Global:DSCModuleName   = 'xAdcsDeployment'
-$Global:DSCResourceName = 'MSFT_xAdcsOnlineResponder'
+$Global:DSCResourceName = 'MSFT_xAdcsWebEnrollment'
 
 #region HEADER
 # Unit Test Template Version: 1.0
@@ -29,36 +29,37 @@ try
 
         Describe "$($Global:DSCResourceName)\Get-TargetResource" {
 
-            function Install-AdcsOnlineResponder {
-                [CmdletBinding()]
-                param($Credential,[Switch]$Force,[Switch]$WhatIf)
+            function Install-AdcsWebEnrollment {
+                [cmdletbinding()]
+                param($CAConfig,$Credential,[Switch]$Force,[Switch]$WhatIf)
             }
-            function Uninstall-AdcsOnlineResponder {
-                [CmdletBinding()]
+            function Uninstall-AdcsWebEnrollment {
+                [cmdletbinding()]
                 param([Switch]$Force)
             }
 
             #region Mocks
-            Mock Install-AdcsOnlineResponder 
-            Mock Uninstall-AdcsOnlineResponder
+            Mock Install-AdcsWebEnrollment 
+            Mock Uninstall-AdcsWebEnrollment
             #endregion
 
             Context 'comparing Ensure' {
                 $Splat = @{
                     IsSingleInstance = 'Yes'
                     Ensure = 'Present'
+                    CAConfig = 'CA1.contoso.com\contoso-CA1-CA'
                     Credential = $DummyCredential
                 }
                 $Result = Get-TargetResource @Splat
 
                 It 'should return StateOK false' {
                     $Result.Ensure | Should Be $Splat.Ensure
-                    $Result.StateOK | Should Be $False
+                    $Result.IsCAWeb | Should Be $False
                 }
 
                 It 'should call all mocks' {
                     Assert-MockCalled `
-                        -commandName Install-AdcsOnlineResponder `
+                        -commandName Install-AdcsWebEnrollment `
                         -Exactly 1
                 }
             }
@@ -66,34 +67,35 @@ try
 
         Describe "$($Global:DSCResourceName)\Set-TargetResource" {
 
-            function Install-AdcsOnlineResponder {
-                [CmdletBinding()]
-                param($Credential,[Switch]$Force,[Switch]$WhatIf)
+            function Install-AdcsWebEnrollment {
+                [cmdletbinding()]
+                param($CAConfig,$Credential,[Switch]$Force,[Switch]$WhatIf)
             }
-            function Uninstall-AdcsOnlineResponder {
-                [CmdletBinding()]
+            function Uninstall-AdcsWebEnrollment {
+                [cmdletbinding()]
                 param([Switch]$Force)
             }
 
             #region Mocks
-            Mock Install-AdcsOnlineResponder
-            Mock Uninstall-AdcsOnlineResponder
+            Mock Install-AdcsWebEnrollment
+            Mock Uninstall-AdcsWebEnrollment
             #endregion
 
             Context 'testing Ensure Present' {
                 $Splat = @{
                     IsSingleInstance = 'Yes'
                     Ensure = 'Present'
+                    CAConfig = 'CA1.contoso.com\contoso-CA1-CA'
                     Credential = $DummyCredential
                 }
                 Set-TargetResource @Splat
 
                 It 'should call install mock only' {
                     Assert-MockCalled `
-                        -commandName Install-AdcsOnlineResponder `
+                        -commandName Install-AdcsWebEnrollment `
                         -Exactly 1
                     Assert-MockCalled `
-                        -commandName Uninstall-AdcsOnlineResponder `
+                        -commandName Uninstall-AdcsWebEnrollment `
                         -Exactly 0
                 }
             }
@@ -102,16 +104,17 @@ try
                 $Splat = @{
                     IsSingleInstance = 'Yes'
                     Ensure = 'Absent'
+                    CAConfig = 'CA1.contoso.com\contoso-CA1-CA'
                     Credential = $DummyCredential
                 }
                 Set-TargetResource @Splat
 
                 It 'should call uninstall mock only' {
                     Assert-MockCalled `
-                        -commandName Install-AdcsOnlineResponder `
+                        -commandName Install-AdcsWebEnrollment `
                         -Exactly 0
                     Assert-MockCalled `
-                        -commandName Uninstall-AdcsOnlineResponder `
+                        -commandName Uninstall-AdcsWebEnrollment `
                         -Exactly 1
                 }
             }
@@ -119,24 +122,25 @@ try
 
         Describe "$($Global:DSCResourceName)\Test-TargetResource" {
 
-            function Install-AdcsOnlineResponder {
-                [CmdletBinding()]
-                param($Credential,[Switch]$Force,[Switch]$WhatIf)
+            function Install-AdcsWebEnrollment {
+                [cmdletbinding()]
+                param($CAConfig,$Credential,[Switch]$Force,[Switch]$WhatIf)
             }
-            function Uninstall-AdcsOnlineResponder {
-                [CmdletBinding()]
+            function Uninstall-AdcsWebEnrollment {
+                [cmdletbinding()]
                 param([Switch]$Force)
             }
 
             #region Mocks
-            Mock Install-AdcsOnlineResponder
-            Mock Uninstall-AdcsOnlineResponder
+            Mock Install-AdcsWebEnrollment
+            Mock Uninstall-AdcsWebEnrollment
             #endregion
 
             Context 'testing ensure present' {
                 $Splat = @{
                     IsSingleInstance = 'Yes'
                     Ensure = 'Present'
+                    CAConfig = 'CA1.contoso.com\contoso-CA1-CA'
                     Credential = $DummyCredential
                 }
                 $Result = Test-TargetResource @Splat
@@ -146,7 +150,7 @@ try
                 }
                 It 'should call install mock only' {
                     Assert-MockCalled `
-                        -commandName Install-AdcsOnlineResponder `
+                        -commandName Install-AdcsWebEnrollment `
                         -Exactly 1
                 }
             }
@@ -155,6 +159,7 @@ try
                 $Splat = @{
                     IsSingleInstance = 'Yes'
                     Ensure = 'Absent'
+                    CAConfig = 'CA1.contoso.com\contoso-CA1-CA'
                     Credential = $DummyCredential
                 }
                 $Result = Test-TargetResource @Splat
@@ -164,7 +169,7 @@ try
                 }
                 It 'should call install mock only' {
                     Assert-MockCalled `
-                        -commandName Install-AdcsOnlineResponder `
+                        -commandName Install-AdcsWebEnrollment `
                         -Exactly 1
                 }
             }

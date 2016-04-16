@@ -3,12 +3,12 @@
 # xAdcsDeployment
 
 The **xAdcsDeployment** DSC resources have been specifically tested as a method to populate a Certificate Services server role on Windows Server 2012 R2 after the Certificate Services role and the Web Enrollment feature have been enabled.
-Active Directory Certificate Services (AD CS) is used to create certification authorities and related role services that allow you to issue and manage certificates used in a variety of applications. 
+Active Directory Certificate Services (AD CS) is used to create certification authorities and related role services that allow you to issue and manage certificates used in a variety of applications.
 
 ## Scenario
 
 Certificates are widely used to establish trust relationships between computers.
-This DSC resource can be used to address some of the most common scenarios including the need for a Stand-Alone Certificate Authority or an Active Directory Trusted Root Certificate Authority and the Certificate Services website for users to submit and complete certificate requests. 
+This DSC resource can be used to address some of the most common scenarios including the need for a Stand-Alone Certificate Authority or an Active Directory Trusted Root Certificate Authority and the Certificate Services website for users to submit and complete certificate requests.
 
 In a specific example, when building out a web server workload such as an internal website that provides confidential information to be accessed from computers that are members of an Active Directory domain, AD CS can provide a source for the SSL certificats that will automatically be trusted.
 
@@ -181,10 +181,17 @@ In a specific example, when building out a web server workload such as an intern
 
 ### xAdcsWebEnrollment
 
+`IsSingleInstance = <String>`
+  Specifies the resource is a single instance, the value must be 'Yes'
+
+| Required | Key?  | Default value |
+| -------- | ----- | ------------- |
+| True     | True  | none          |
+
 `CAConfig = <String>`
   CAConfig parameter string. 
   Do not specify this if there is a local CA installed. 
-  
+
 | Required | Key?  | Default value |
 | -------- | ----- | ------------- |
 | False    | False | none          |
@@ -196,20 +203,13 @@ In a specific example, when building out a web server workload such as an intern
 | Required | Key?  | Default value |
 | -------- | ----- | ------------- |
 | True     | False | none          |
-  
+
 `Ensure = <String> { Present | Absent }`
   Specifies whether the Web Enrollment feature should be installed or uninstalled. 
-  
+
 | Required | Key?  | Default value |
 | -------- | ----- | ------------- |
 | False    | False | Present       |
-  
-`Name = <String>`
-  A name that provides a unique identifier for the resource instance.
-  
-| Required | Key?  | Default value |
-| -------- | ----- | ------------- |
-| True     | True  | none          |
 
 ### xAdcsOnlineResponder
 
@@ -221,7 +221,7 @@ For more information on ADCS Online Responders, see [this article on TechNet](ht
 
 `IsSingleInstance = <String>`
   Specifies the resource is a single instance, the value must be 'Yes'
-  
+
 | Required | Key?  | Default value |
 | -------- | ----- | ------------- |
 | True     | True  | none          |
@@ -233,14 +233,13 @@ For more information on ADCS Online Responders, see [this article on TechNet](ht
 | Required | Key?  | Default value |
 | -------- | ----- | ------------- |
 | True     | False | none          |
-  
+
 `Ensure = <String> { Present | Absent }`
-  Specifies whether the Online Responder feature should be installed or uninstalled. 
-  
+  Specifies whether the Online Responder feature should be installed or uninstalled.
+
 | Required | Key?  | Default value |
 | -------- | ----- | ------------- |
 | True     | False | Present       |
-
 
 ## Versions
 
@@ -249,19 +248,25 @@ For more information on ADCS Online Responders, see [this article on TechNet](ht
 * Moved Examples folder into root.
 * Removed legacy xCertificateServices folder.
 * Prevented Unit tests from Violating PSSA rules.
+* MSFT_xAdcsWebEnrollment: Created unit tests based on v1.0 Test Template.
+                           Update to meet Style Guidelines and ensure consistency.
+                           Updated to IsSingleInstance model. **Breaking change**
+* MSFT_xAdcsOnlineResponder: Update Unit tests to use v1.0 Test Template.
+                             Unit tests can be run without AD CS installed.
+                             Update to meet Style Guidelines and ensure consistency.
 
 ### 0.2.0.0
 
 * Added the following resources:
     * MSFT_xADCSOnlineResponder resource to install the Online Responder service.
 *   Correction to xAdcsCertificationAuthority property title in Readme.md.
-*   Addition of .gitignore to ensure DSCResource.Tests folder is commited.
+*   Addition of .gitignore to ensure DSCResource.Tests folder is committed.
 *   Updated AppVeyor.yml to use WMF 5 build environment.
 
 ### 0.1.0.0
 
 *   Initial release with the following resources 
-    *   <span style="font-family:Calibri; font-size:medium">xAdcsCertificationAuthority and xAdcsWebEnrollment.</span> 
+    *   <span style="font-family:Calibri; font-size:medium">xAdcsCertificationAuthority and xAdcsWebEnrollment.</span>
 
 ### Examples
 
@@ -272,8 +277,8 @@ This example will add the Windows Server Roles and Features to support a Certifi
 ```powershell
 Configuration CertificateAuthority
 {
-    Node ‘NodeName’ 
-    {  
+    Node ‘NodeName’
+    {
         WindowsFeature ADCS-Cert-Authority
         {
                Ensure = 'Present'
@@ -284,7 +289,7 @@ Configuration CertificateAuthority
             Ensure = 'Present'
             Credential = $Node.Credential
             CAType = 'EnterpriseRootCA'
-            DependsOn = '[WindowsFeature]ADCS-Cert-Authority'              
+            DependsOn = '[WindowsFeature]ADCS-Cert-Authority'
         }
         WindowsFeature ADCS-Web-Enrollment
         {
@@ -295,7 +300,7 @@ Configuration CertificateAuthority
         xADCSWebEnrollment CertSrv
         {
             Ensure = 'Present'
-            Name = 'CertSrv'
+            IsSingleInstance = 'Yes'
             Credential = $Node.Credential
             DependsOn = '[WindowsFeature]ADCS-Web-Enrollment','[xADCSCertificationAuthority]ADCS'
         }
@@ -303,12 +308,12 @@ Configuration CertificateAuthority
 }
 ```
 
-#### Example 2: Remove the AD CS functionality from a server. 
+#### Example 2: Remove the AD CS functionality from a server
 
 ```powershell
 Configuration RetireCertificateAuthority
 {        
-    Node ‘NodeName’ 
+    Node ‘NodeName’
     {
         xADCSWebEnrollment CertSrv
         {

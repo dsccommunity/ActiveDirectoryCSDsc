@@ -163,13 +163,16 @@ if ((test-path C:\Windows\temp\FirstDC.txt) -eq $True)
 
             xADCSWebEnrollment CertSrv
             {
+                IsSingleInstance = 'Yes'
                 Ensure = 'Absent'
-                Name = 'CertSrv'
                 Credential = $Node.Credential
                 DependsOn = '[xADCSCertificationAuthority]ADCS'
             }
             
-            LocalConfigurationManager            {                CertificateId = $node.Thumbprint                ConfigurationMode = 'ApplyandAutoCorrect'
+            LocalConfigurationManager
+            {
+                CertificateId = $node.Thumbprint
+                ConfigurationMode = 'ApplyandAutoCorrect'
                 RebootNodeIfNeeded = 'True'
             }
         }
@@ -230,7 +233,10 @@ if ((test-path C:\Windows\temp\FirstDC.txt) -eq $False)
                 DependsOn = '[xDisk]DataDisk', '[WindowsFeature]AD-Domain-Services', '[xWaitforADDomain]WaitforDomain'
             }
 
-            LocalConfigurationManager            {                CertificateId = $node.Thumbprint                ConfigurationMode = 'ApplyandAutoCorrect'
+            LocalConfigurationManager
+            {
+                CertificateId = $node.Thumbprint
+                ConfigurationMode = 'ApplyandAutoCorrect'
                 RebootNodeIfNeeded = 'True'
             }
         }
@@ -240,7 +246,11 @@ DomainController -ConfigurationData $configData -OutputPath $PSScriptRoot
 
 }
 
-#endregion#region Apply MOFwinrm quickconfig -quiet
+#endregion
+
+#region Apply MOF
+
+winrm quickconfig -quiet
 
 Set-DscLocalConfigurationManager -ComputerName $env:COMPUTERNAME -Path $PSScriptRoot -Verbose
 Start-DscConfiguration -ComputerName $env:COMPUTERNAME -Path $PSScriptRoot -Force -Verbose -Wait
