@@ -250,7 +250,7 @@ DomainController -ConfigurationData $configData -OutputPath $PSScriptRoot
 
 #region Apply MOF
 
-winrm quickconfig -quiet
+Set-WSManQuickConfig -Force > $null
 
 Set-DscLocalConfigurationManager -ComputerName $env:COMPUTERNAME -Path $PSScriptRoot -Verbose
 Start-DscConfiguration -ComputerName $env:COMPUTERNAME -Path $PSScriptRoot -Force -Verbose -Wait
