@@ -254,6 +254,7 @@ For more information on ADCS Online Responders, see [this article on TechNet](ht
 * MSFT_xAdcsOnlineResponder: Update Unit tests to use v1.0 Test Template.
                              Unit tests can be run without AD CS installed.
                              Update to meet Style Guidelines and ensure consistency.
+* Usage of WinRm.exe replaced in Config-SetupActiveDirectory.ps1 example file with Set-WSManQuickConfig cmdlet. 
 
 ### 0.2.0.0
 
