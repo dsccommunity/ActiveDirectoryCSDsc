@@ -31,138 +31,138 @@ In a specific example, when building out a web server workload such as an intern
 | Required | Key?  | Default value |
 | -------- | ----- | ------------- |
 | True     | True  | none          |
-  
+
 `Credential = <PSCredential>`
   To install an enterprise certification authority, the computer must be joined to an Active Directory Domain Services domain and a user account that is a member of the Enterprise Admin group is required.
   To install a standalone certification authority, the computer can be in a workgroup or AD DS domain.
   If the computer is in a workgroup, a user account that is a member of Administrators is required.
-  If the computer is in an AD DS domain, a user account that is a member of Domain Admins is required. 
-  
+  If the computer is in an AD DS domain, a user account that is a member of Domain Admins is required.
+
 | Required | Key?  | Default value |
 | -------- | ----- | ------------- |
 | True     | False | none          |
-  
+
 `Ensure = <String> { Present | Absent }`
-  Specifies whether the Certificate Authority should be installed or uninstalled. 
-  
+  Specifies whether the Certificate Authority should be installed or uninstalled.
+
 | Required | Key?  | Default value |
 | -------- | ----- | ------------- |
 | False    | False | Present       |
-  
+
 `CACommonName = <String>`
-  Specifies the certification authority common name. 
+  Specifies the certification authority common name.
 
 | Required | Key?  | Default value |
 | -------- | ----- | ------------- |
 | False    | False | none          |
-  
+
 `CADistinguishedNameSuffix = <String>`
-  Specifies the certification authority distinguished name suffix. 
-  
+  Specifies the certification authority distinguished name suffix.
+
 | Required | Key?  | Default value |
 | -------- | ----- | ------------- |
 | False    | False | none          |
-  
+
 `CertFile = <String>`
-  Specifies the file name of certification authority PKCS 12 formatted certificate file. 
-  
+  Specifies the file name of certification authority PKCS 12 formatted certificate file.
+
 | Required | Key?  | Default value |
 | -------- | ----- | ------------- |
 | False    | False | none          |
 
 `CertFilePassword = <PSCredential>`
-  Specifies the password for certification authority certificate file. 
+  Specifies the password for certification authority certificate file.
 
 | Required | Key?  | Default value |
 | -------- | ----- | ------------- |
 | False    | False | none          |
-  
+
 `CertificateID = <String>`
-  Specifies the thumbprint or serial number of certification authority certificate. 
-  
+  Specifies the thumbprint or serial number of certification authority certificate.
+
 | Required | Key?  | Default value |
 | -------- | ----- | ------------- |
 | False    | False | none          |
 
 `CryptoProviderName = <String>`
-  The name of the cryptographic service provider or key storage provider that is used to generate or store the private key for the CA. 
+  The name of the cryptographic service provider or key storage provider that is used to generate or store the private key for the CA.
 
 | Required | Key?  | Default value |
 | -------- | ----- | ------------- |
 | False    | False | none          |
 
 `DatabaseDirectory = <String>`
-  Specifies the folder location of the certification authority database. 
+  Specifies the folder location of the certification authority database.
 
 | Required | Key?  | Default value |
 | -------- | ----- | ------------- |
-| False    | False | none          |  
+| False    | False | none          |
 
 `HashAlgorithmName = <String>`
-  Specifies the signature hash algorithm used by the certification authority. 
+  Specifies the signature hash algorithm used by the certification authority.
 
 | Required | Key?  | Default value |
 | -------- | ----- | ------------- |
 | False    | False | none          |
 
 `IgnoreUnicode = <Boolean>`
-  Specifies whether Unicode characters are allowed in certification authority name string. 
+  Specifies whether Unicode characters are allowed in certification authority name string.
 
 | Required | Key?  | Default value |
 | -------- | ----- | ------------- |
 | False    | False | none          |
 
 `KeyContainerName = <String>`
-  Specifies the name of an existing private key container. 
+  Specifies the name of an existing private key container.
 
 | Required | Key?  | Default value |
 | -------- | ----- | ------------- |
 | False    | False | none          |
-  
+
 `KeyLength = <UInt32>`
-  Specifies the length of an existing private key container. 
+  Specifies the length of an existing private key container.
 
 | Required | Key?  | Default value |
 | -------- | ----- | ------------- |
 | False    | False | none          |
 
 `LogDirectory = <String>`
-  Specifies the folder location of the certification authority database log. 
-  
+  Specifies the folder location of the certification authority database log.
+
 | Required | Key?  | Default value |
 | -------- | ----- | ------------- |
 | False    | False | none          |
 
 `OutputCertRequestFile = <String>`
-  Specifies the folder location for certificate request file. 
+  Specifies the folder location for certificate request file.
 
 | Required | Key?  | Default value |
 | -------- | ----- | ------------- |
 | False    | False | none          |
 
 `OverwriteExistingCAinDS = <Boolean>`
-  Specifies that the computer object in the Active Directory Domain Service domain should be overwritten with the same computer name. 
+  Specifies that the computer object in the Active Directory Domain Service domain should be overwritten with the same computer name.
 
 | Required | Key?  | Default value |
 | -------- | ----- | ------------- |
 | False    | False | none          |
 
 `OverwriteExistingDatabase = <Boolean>`
-  Specifies that the existing certification authority database should be overwritten. 
+  Specifies that the existing certification authority database should be overwritten.
 
 | Required | Key?  | Default value |
 | -------- | ----- | ------------- |
 | False    | False | none          |
 
 `OverwriteExistingKey = <Boolean>`
-  Overwrite existing key container with the same name. 
+  Overwrite existing key container with the same name.
 
 | Required | Key?  | Default value |
 | -------- | ----- | ------------- |
 | False    | False | none          |
 
 `ParentCA = <String> { Hours | Days | Months | Years }`
-  Specifies the configuration string of the parent certification authority that will certify this CA. 
+  Specifies the configuration string of the parent certification authority that will certify this CA.
 
 | Required | Key?  | Default value |
 | -------- | ----- | ------------- |
@@ -176,7 +176,7 @@ In a specific example, when building out a web server workload such as an intern
 
 `ValidityPeriodUnits = <UInt32>`
   Validity period of the certification authority certificate.
-  If this is a subordinate CA, do not specify this parameter because the validity period is determined by the parent CA. 
+  If this is a subordinate CA, do not specify this parameter because the validity period is determined by the parent CA.
 
 | Required | Key?  | Default value |
 | -------- | ----- | ------------- |
@@ -192,8 +192,8 @@ In a specific example, when building out a web server workload such as an intern
 | True     | True  | none          |
 
 `CAConfig = <String>`
-  CAConfig parameter string. 
-  Do not specify this if there is a local CA installed. 
+  CAConfig parameter string.
+  Do not specify this if there is a local CA installed.
 
 | Required | Key?  | Default value |
 | -------- | ----- | ------------- |
@@ -208,7 +208,7 @@ In a specific example, when building out a web server workload such as an intern
 | True     | False | none          |
 
 `Ensure = <String> { Present | Absent }`
-  Specifies whether the Web Enrollment feature should be installed or uninstalled. 
+  Specifies whether the Web Enrollment feature should be installed or uninstalled.
 
 | Required | Key?  | Default value |
 | -------- | ----- | ------------- |
@@ -248,6 +248,9 @@ For more information on ADCS Online Responders, see [this article on TechNet](ht
 
 ### Unreleased
 
+* Converted AppVeyor.yml to pull Pester from PSGallery instead of Chocolatey.
+* Changed AppVeyor.yml to use default image
+
 ### 1.0.0.0
 
 * Moved Examples folder into root.
@@ -259,7 +262,7 @@ For more information on ADCS Online Responders, see [this article on TechNet](ht
 * MSFT_xAdcsOnlineResponder: Update Unit tests to use v1.0 Test Template.
                              Unit tests can be run without AD CS installed.
                              Update to meet Style Guidelines and ensure consistency.
-* Usage of WinRm.exe replaced in Config-SetupActiveDirectory.ps1 example file with Set-WSManQuickConfig cmdlet. 
+* Usage of WinRm.exe replaced in Config-SetupActiveDirectory.ps1 example file with Set-WSManQuickConfig cmdlet.
 
 ### 0.2.0.0
 
@@ -271,12 +274,12 @@ For more information on ADCS Online Responders, see [this article on TechNet](ht
 
 ### 0.1.0.0
 
-*   Initial release with the following resources 
+*   Initial release with the following resources
     *   <span style="font-family:Calibri; font-size:medium">xAdcsCertificationAuthority and xAdcsWebEnrollment.</span>
 
 ### Examples
 
-#### Example 1: Add a Certificate Authority and configure it for AD CS and Web Enrollment. 
+#### Example 1: Add a Certificate Authority and configure it for AD CS and Web Enrollment.
 
 This example will add the Windows Server Roles and Features to support a Certificate Authority and configure it to provide AD CS and Web Enrollment.
 
@@ -318,7 +321,7 @@ Configuration CertificateAuthority
 
 ```powershell
 Configuration RetireCertificateAuthority
-{        
+{
     Node ‘NodeName’
     {
         xADCSWebEnrollment CertSrv
