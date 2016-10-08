@@ -1,13 +1,18 @@
 #---------------------------------#
 #      environment configuration  #
 #---------------------------------#
-version: 1.0.0.{build}
+version: 1.0.{build}.0
 install:
   - git clone https://github.com/PowerShell/DscResource.Tests
   - ps: |
         Import-Module .\DscResource.Tests\TestHelper.psm1 -force
         Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
         Install-Module -Name Pester -Repository PSGallery -Force
+        Install-WindowsFeature ADCS-Cert-Authority,ADCS-Web-Enrollment,ADCS-Online-Cert
+        # Add an administrator user to be able run integration tests
+        net user /add ADCSAdmin P4ssword1!
+        net localgroup administrators ADCSAdmin /add
+
 #---------------------------------#
 #      build configuration        #
 #---------------------------------#
