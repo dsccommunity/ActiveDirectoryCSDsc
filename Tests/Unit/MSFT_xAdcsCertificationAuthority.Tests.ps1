@@ -309,7 +309,7 @@ try
                 }
             }
 
-            Context 'CA is installed and should not be' {
+            Context 'CA is installed but should not be' {
                 $Result = Test-TargetResource @TestParametersAbsent
 
                 It 'should return false' {
