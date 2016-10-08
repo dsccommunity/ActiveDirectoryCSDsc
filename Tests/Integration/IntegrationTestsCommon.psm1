@@ -25,8 +25,7 @@ function Test-WindowsFeature
         Return $false
     }
     # Server OS
-    $InstalledFeatures = Get-WindowsFeature | Where-Object -Property Installed -EQ $True
-    if ($InstalledFeatures -notcontains $Name)
+    if (-not (Get-WindowsFeature @PSBoundParameters).Installed)
     {
         Write-Verbose -Message "Integration tests cannot be run because $Name is not installed." -Verbose
         Return $false

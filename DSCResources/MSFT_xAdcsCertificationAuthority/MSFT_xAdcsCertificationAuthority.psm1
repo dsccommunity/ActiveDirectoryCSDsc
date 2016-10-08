@@ -299,7 +299,7 @@ Function Set-TargetResource
 
 <#
     .SYNOPSIS
-        Tests is the ADCS CA is instatlled.
+        Tests is the ADCS CA is in the desired state.
     .PARAMETER CAType
         Specifies the type of certification authority to install.
     .PARAMETER Credential
@@ -356,7 +356,7 @@ Function Set-TargetResource
         Validity period of the certification authority certificate. If this is a subordinate CA, do not
         specify this parameter because the validity period is determined by the parent CA.
     .OUTPUTS
-        Returns boolean indicating whether this machine is a Certificate Authority.
+        Returns true if this machine is in the desired state.
 #>
 Function Test-TargetResource
 {
@@ -437,7 +437,7 @@ Function Test-TargetResource
                         $($LocalizedData.AdcsCANotInstalledButShouldBeMessage -f $CAType)
                     ) -join '' )
 
-                return $true
+                return $false
             }
             'Absent'
             {
@@ -447,7 +447,7 @@ Function Test-TargetResource
                         $($LocalizedData.AdcsCANotInstalledAndShouldNotBeMessage -f $CAType)
                     ) -join '' )
 
-                return $false
+                return $true
             }
         } # switch
     }
@@ -466,7 +466,7 @@ Function Test-TargetResource
                         $($LocalizedData.AdcsCAInstalledAndShouldBeMessage -f $CAType)
                     ) -join '' )
 
-                return $false
+                return $true
             }
             'Absent'
             {
@@ -476,7 +476,7 @@ Function Test-TargetResource
                         $($LocalizedData.AdcsCAInstalledButShouldNotBeMessage -f $CAType)
                     ) -join '' )
 
-                return $true
+                return $false
             }
         } # switch
     } # try

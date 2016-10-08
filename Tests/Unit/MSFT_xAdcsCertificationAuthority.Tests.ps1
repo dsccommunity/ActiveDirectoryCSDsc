@@ -298,8 +298,8 @@ try
             Context 'CA is installed and should be' {
                 $Result = Test-TargetResource @TestParametersPresent
 
-                It 'should return false' {
-                    $Result | Should be $False
+                It 'should return true' {
+                    $Result | Should be $True
                 }
                 It 'should call expected mocks' {
                     Assert-VerifiableMocks
@@ -313,7 +313,7 @@ try
                 $Result = Test-TargetResource @TestParametersAbsent
 
                 It 'should return false' {
-                    $Result | Should be $True
+                    $Result | Should be $False
                 }
                 It 'should call expected mocks' {
                     Assert-VerifiableMocks
@@ -332,7 +332,7 @@ try
                 $Result = Test-TargetResource @TestParametersPresent
 
                 It 'should return false' {
-                    $Result | Should be $True
+                    $Result | Should be $false
                 }
                 It 'should call expected mocks' {
                     Assert-VerifiableMocks
@@ -345,8 +345,8 @@ try
             Context 'CA is not installed and should not be' {
                 $Result = Test-TargetResource @TestParametersAbsent
 
-                It 'should return false' {
-                    $Result | Should be $False
+                It 'should return true' {
+                    $Result | Should be $True
                 }
                 It 'should call expected mocks' {
                     Assert-VerifiableMocks

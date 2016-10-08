@@ -8,7 +8,9 @@ param ()
 # ADCS component being tested. Please change the following values to the
 # credentials that are set up for this purpose.
 # These tests can not be run on AppVeyor because installing ADCS components
-# requires restart of the server which is not supported.
+# on WS2012R2 requires restart of the server which is not supported.
+# However, on WS2016 ADCS installation does not require a restart so when
+# this machine type is available executing these tests should be supported.
 $script:adminUsername   = 'AdcsAdmin'
 $script:adminPassword   = 'NotARealPassword!'
 $script:DSCModuleName   = 'xAdcsDeployment'
@@ -59,8 +61,9 @@ try
                     $ConfigData = @{
                         AllNodes = @(
                             @{
-                                NodeName    = 'localhost'
-                                AdminCred   = $AdminCred
+                                NodeName                    = 'localhost'
+                                AdminCred                   = $AdminCred
+                                PsDscAllowPlainTextPassword = $true
                             }
                         )
                     }
@@ -80,7 +83,7 @@ try
 
             It 'Should have set the resource and all the parameters should match' {
                 $current = Get-DscConfiguration | Where-Object {
-                    $_.ConfigurationName -eq "$($script:DSCResourceName)_Config"
+                    $_.ConfigurationName -eq "$($script:DSCResourceName)_Install_Config"
                 }
                 $current.Ensure           | Should Be 'Present'
             }
@@ -101,8 +104,9 @@ try
                     $ConfigData = @{
                         AllNodes = @(
                             @{
-                                NodeName    = 'localhost'
-                                AdminCred   = $AdminCred
+                                NodeName                    = 'localhost'
+                                AdminCred                   = $AdminCred
+                                PsDscAllowPlainTextPassword = $true
                             }
                         )
                     }
@@ -122,7 +126,7 @@ try
 
             It 'Should have set the resource and all the parameters should match' {
                 $current = Get-DscConfiguration | Where-Object {
-                    $_.ConfigurationName -eq "$($script:DSCResourceName)_Config"
+                    $_.ConfigurationName -eq "$($script:DSCResourceName)_Uninstall_Config"
                 }
                 $current.Ensure           | Should Be 'Absent'
             }

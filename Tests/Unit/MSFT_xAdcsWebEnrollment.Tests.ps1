@@ -1,33 +1,30 @@
-$Global:DSCModuleName   = 'xAdcsDeployment'
-$Global:DSCResourceName = 'MSFT_xAdcsWebEnrollment'
+$script:DSCModuleName   = 'xAdcsDeployment'
+$script:DSCResourceName = 'MSFT_xAdcsWebEnrollment'
 
 #region HEADER
-# Unit Test Template Version: 1.0
-[String] $moduleRoot = Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $Script:MyInvocation.MyCommand.Path))
-if ( (-not (Test-Path -Path (Join-Path -Path $moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
-     (-not (Test-Path -Path (Join-Path -Path $moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
+# Integration Test Template Version: 1.1.0
+[String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
+     (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
 {
-    & git @('clone','https://github.com/PowerShell/DscResource.Tests.git',(Join-Path -Path $moduleRoot -ChildPath '\DSCResource.Tests\'))
+    & git @('clone','https://github.com/PowerShell/DscResource.Tests.git',(Join-Path -Path $script:moduleRoot -ChildPath '\DSCResource.Tests\'))
 }
-else
-{
-    & git @('-C',(Join-Path -Path $moduleRoot -ChildPath '\DSCResource.Tests\'),'pull')
-}
-Import-Module (Join-Path -Path $moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
+
+Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
 $TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName $Global:DSCModuleName `
-    -DSCResourceName $Global:DSCResourceName `
-    -TestType Unit 
-#endregion HEADER
+    -DSCModuleName $script:DSCModuleName `
+    -DSCResourceName $script:DSCResourceName `
+    -TestType Unit
+#endregion
 
 # Begin Testing
 try
 {
     #region Pester Tests
-    InModuleScope $Global:DSCResourceName {
+    InModuleScope $script:DSCResourceName {
         $DummyCredential = New-Object System.Management.Automation.PSCredential ("Administrator",(New-Object -Type SecureString))
 
-        Describe "$($Global:DSCResourceName)\Get-TargetResource" {
+        Describe 'MSFT_xAdcsWebEnrollment\Get-TargetResource' {
 
             function Install-AdcsWebEnrollment {
                 [cmdletbinding()]
@@ -39,7 +36,7 @@ try
             }
 
             #region Mocks
-            Mock Install-AdcsWebEnrollment 
+            Mock Install-AdcsWebEnrollment
             Mock Uninstall-AdcsWebEnrollment
             #endregion
 
@@ -65,7 +62,7 @@ try
             }
         }
 
-        Describe "$($Global:DSCResourceName)\Set-TargetResource" {
+        Describe 'MSFT_xAdcsWebEnrollment\Set-TargetResource' {
 
             function Install-AdcsWebEnrollment {
                 [cmdletbinding()]
@@ -120,7 +117,7 @@ try
             }
         }
 
-        Describe "$($Global:DSCResourceName)\Test-TargetResource" {
+        Describe 'MSFT_xAdcsWebEnrollment\Test-TargetResource' {
 
             function Install-AdcsWebEnrollment {
                 [cmdletbinding()]
