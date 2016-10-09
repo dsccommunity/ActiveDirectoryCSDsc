@@ -356,7 +356,7 @@ Function Set-TargetResource
         Validity period of the certification authority certificate. If this is a subordinate CA, do not
         specify this parameter because the validity period is determined by the parent CA.
     .OUTPUTS
-        Returns true if this machine is in the desired state.
+        Returns true if the ADCS CA is in the desired state.
 #>
 Function Test-TargetResource
 {

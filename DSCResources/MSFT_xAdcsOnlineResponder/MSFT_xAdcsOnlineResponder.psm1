@@ -1,7 +1,18 @@
-# This resource can be used to install an ADCS Online Responder after the feature has been installed on the server.
-# For more information on ADCS Online Responders, see https://technet.microsoft.com/en-us/library/cc725958.aspx
-
-#region Get Resource
+<#
+    .SYNOPSIS
+        Returns an object containing the current state information for the ADCS Online Responder.
+    .PARAMETER IsSingleInstance
+        Specifies the resource is a single instance, the value must be 'Yes'.
+    .PARAMETER Credential
+        If the Online Responder service is configured to use Standalone certification authority,
+        then an account that is a member of the local Administrators on the CA is required. If
+        the Online Responder service is configured to use an Enterprise CA, then an account that
+        is a member of Domain Admins is required.
+    .PARAMETER Ensure
+        Specifies whether the Online Responder feature should be installed or uninstalled.
+    .OUTPUTS
+        Returns an object containing the ADCS Online Responder state information.
+#>
 Function Get-TargetResource
 {
     [OutputType([System.Collections.Hashtable])]
@@ -9,14 +20,14 @@ Function Get-TargetResource
     param(
         [parameter(Mandatory = $true)]
         [ValidateSet('Yes')]
-        [String] $IsSingleInstance, 
+        [String] $IsSingleInstance,
+
+        [Parameter(Mandatory = $true)]
+        [pscredential] $Credential,
 
         [Parameter(Mandatory = $true)]
         [ValidateSet('Present','Absent')]
-        [string] $Ensure = 'Present',
-
-        [Parameter(Mandatory = $true)]
-        [pscredential] $Credential
+        [string] $Ensure = 'Present'
     )
 
     $ADCSParams = @{
@@ -29,24 +40,35 @@ Function Get-TargetResource
         StateOK = Test-TargetResource @ADCSParams
     }
     Return $ADCSParams
-}
-#endregion
+} # Function Get-TargetResource
 
-#region Set Resource
+<#
+    .SYNOPSIS
+        Installs or uinstalls the ADCS Online Responder from the server.
+    .PARAMETER IsSingleInstance
+        Specifies the resource is a single instance, the value must be 'Yes'.
+    .PARAMETER Credential
+        If the Online Responder service is configured to use Standalone certification authority,
+        then an account that is a member of the local Administrators on the CA is required. If
+        the Online Responder service is configured to use an Enterprise CA, then an account that
+        is a member of Domain Admins is required.
+    .PARAMETER Ensure
+        Specifies whether the Online Responder feature should be installed or uninstalled.
+#>
 Function Set-TargetResource
 {
     [CmdletBinding()]
     param(
         [parameter(Mandatory = $true)]
         [ValidateSet('Yes')]
-        [String] $IsSingleInstance, 
+        [String] $IsSingleInstance,
+
+        [Parameter(Mandatory = $true)]
+        [pscredential] $Credential,
 
         [Parameter(Mandatory = $true)]
         [ValidateSet('Present','Absent')]
-        [string] $Ensure = 'Present',
-
-        [Parameter(Mandatory = $true)]
-        [pscredential] $Credential
+        [string] $Ensure = 'Present'
     )
 
     $ADCSParams = @{
@@ -64,10 +86,23 @@ Function Set-TargetResource
             (Uninstall-AdcsOnlineResponder -Force).ErrorString
         }
     } # Switch
-}
-#endregion
+} # Function Set-TargetResource
 
-#region Test Resource
+<#
+    .SYNOPSIS
+        Tests is the ADCS Online Responder is in the desired state.
+    .PARAMETER IsSingleInstance
+        Specifies the resource is a single instance, the value must be 'Yes'.
+    .PARAMETER Credential
+        If the Online Responder service is configured to use Standalone certification authority,
+        then an account that is a member of the local Administrators on the CA is required. If
+        the Online Responder service is configured to use an Enterprise CA, then an account that
+        is a member of Domain Admins is required.
+    .PARAMETER Ensure
+        Specifies whether the Online Responder feature should be installed or uninstalled.
+    .OUTPUTS
+        Returns true if the ADCS Online Responder is in the desired state.
+#>
 Function Test-TargetResource
 {
     [OutputType([System.Boolean])]
@@ -78,11 +113,11 @@ Function Test-TargetResource
         [String] $IsSingleInstance,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('Present','Absent')]
-        [string] $Ensure = 'Present',
+        [pscredential] $Credential,
 
         [Parameter(Mandatory = $true)]
-        [pscredential] $Credential
+        [ValidateSet('Present','Absent')]
+        [string] $Ensure = 'Present'
     )
 
     $ADCSParams = @{
@@ -119,7 +154,6 @@ Function Test-TargetResource
             }
         } # Switch
     } # try
-}
-#endregion
+} # Function Test-TargetResource
 
 Export-ModuleMember -Function *-TargetResource

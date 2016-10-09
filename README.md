@@ -88,9 +88,11 @@ For more information on ADCS Online Responders, see [this article on TechNet](ht
 * xAdcsOnlineResponder:
   * Change property format in Readme.md to be standard layout.
   * Added unit test header to be latest version.
+  * Added function help.
 * xAdcsWebEnrollment:
   * Change property format in Readme.md to be standard layout.
   * Added unit test header to be latest version.
+  * Added function help.
 * Added CommonResourceHelper.psm1 (copied from xPSDesiredStateConfiguration).
 * Removed Technet Documentation HTML file from root folder.
 * Removed redundant code from AppVeyor.yml.
