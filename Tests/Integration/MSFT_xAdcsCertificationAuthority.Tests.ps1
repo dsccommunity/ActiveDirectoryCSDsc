@@ -11,7 +11,7 @@ param ()
 # and a new Administrator account will be created that uses credentials that
 # match the ones following.
 $script:adminUsername   = 'AdcsAdmin'
-$script:adminPassword   = 'NotARealPassword'
+$script:adminPassword   = 'NotPass12!'
 $script:DSCModuleName   = 'xAdcsDeployment'
 $script:DSCResourceName = 'MSFT_xAdcsCertificationAuthority'
 

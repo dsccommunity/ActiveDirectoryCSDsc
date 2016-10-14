@@ -8,10 +8,10 @@ install:
         Import-Module .\DscResource.Tests\TestHelper.psm1 -force
         Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
         Install-Module -Name Pester -Repository PSGallery -Force
-        Install-WindowsFeature -Name ADCS-Cert-Authority
+        Install-WindowsFeature -Name ADCS-Cert-Authority,RSAT-ADCS
         Restart-Computer -Force
         Start-Sleep -s 10
-        net user AdcsAdmin NotARealPassword /ADD
+        net user AdcsAdmin NotPassword /ADD
         net localgroup administrators AdcsAdmin /ADD
 #---------------------------------#
 #      build configuration        #
