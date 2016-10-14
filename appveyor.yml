@@ -9,10 +9,10 @@ install:
         Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
         Install-Module -Name Pester -Repository PSGallery -Force
         Install-WindowsFeature -Name ADCS-Cert-Authority,RSAT-ADCS
+        & net @('user','AdcsAdmin','NotPass12!','/ADD')
+        & net @('localgroup','administrators','AdcsAdmin','/ADD')
         Restart-Computer -Force
         Start-Sleep -s 10
-        net user AdcsAdmin NotPass12! /ADD
-        net localgroup administrators AdcsAdmin /ADD
 #---------------------------------#
 #      build configuration        #
 #---------------------------------#
