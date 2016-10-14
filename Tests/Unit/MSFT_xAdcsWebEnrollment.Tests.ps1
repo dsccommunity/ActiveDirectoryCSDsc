@@ -22,9 +22,11 @@ try
 {
     #region Pester Tests
     InModuleScope $script:DSCResourceName {
+        $DSCResourceName = 'MSFT_xAdcsWebEnrollment'
+
         $DummyCredential = New-Object System.Management.Automation.PSCredential ("Administrator",(New-Object -Type SecureString))
 
-        Describe 'MSFT_xAdcsWebEnrollment\Get-TargetResource' {
+        Describe "$DSCResourceName\Get-TargetResource" {
 
             function Install-AdcsWebEnrollment {
                 [cmdletbinding()]
@@ -62,7 +64,7 @@ try
             }
         }
 
-        Describe 'MSFT_xAdcsWebEnrollment\Set-TargetResource' {
+        Describe "$DSCResourceName\Set-TargetResource" {
 
             function Install-AdcsWebEnrollment {
                 [cmdletbinding()]
@@ -117,7 +119,7 @@ try
             }
         }
 
-        Describe 'MSFT_xAdcsWebEnrollment\Test-TargetResource' {
+        Describe "$DSCResourceName\Test-TargetResource" {
 
             function Install-AdcsWebEnrollment {
                 [cmdletbinding()]

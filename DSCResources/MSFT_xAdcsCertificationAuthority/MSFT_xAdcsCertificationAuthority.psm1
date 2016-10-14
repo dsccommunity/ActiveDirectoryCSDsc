@@ -136,13 +136,16 @@ Function Get-TargetResource
         # CA is not installed
         $Ensure = 'Absent'
     }
+    catch [Microsoft.CertificateServices.Deployment.Common.CA.CertificationAuthoritySetupException]
+    {
+        # CA is already installed
+        $Ensure = 'Present'
+    }
     catch
     {
-        # CA is probably already installed - output the exception just in case
-        # it is some other problem.
-        Write-Verbose -Message $_
-        $Ensure = 'Present'
-    } # try
+        # Something else went wrong
+        Throw $_
+    }
 
     return @{
         Ensure = $Ensure
@@ -451,11 +454,9 @@ Function Test-TargetResource
             }
         } # switch
     }
-    catch
+    catch [Microsoft.CertificateServices.Deployment.Common.CA.CertificationAuthoritySetupException]
     {
-        # CA is probably already installed - output the exception just in case
-        # it is some other problem.
-        Write-Verbose -Message $_
+        # CA is already installed
         switch ($Ensure)
         {
             'Present'
@@ -479,6 +480,11 @@ Function Test-TargetResource
                 return $false
             }
         } # switch
+    }
+    catch
+    {
+        # Something else went wrong
+        Throw $_
     } # try
 } # Function Test-TargetResource
 

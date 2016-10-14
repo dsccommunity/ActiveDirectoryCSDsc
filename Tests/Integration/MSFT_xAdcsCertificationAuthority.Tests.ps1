@@ -7,12 +7,11 @@ param ()
 # available on the machine running the tests that can be used to install the
 # ADCS component being tested. Please change the following values to the
 # credentials that are set up for this purpose.
-# These tests can not be run on AppVeyor because installing ADCS components
-# on WS2012R2 requires restart of the server which is not supported.
-# However, on WS2016 ADCS installation does not require a restart so when
-# this machine type is available executing these tests should be supported.
+# When these tests are run on AppVeyor, ADCS-Cert-Authority will be installed
+# and a new Administrator account will be created that uses credentials that
+# match the ones following.
 $script:adminUsername   = 'AdcsAdmin'
-$script:adminPassword   = 'NotARealPassword!'
+$script:adminPassword   = 'NotARealPassword'
 $script:DSCModuleName   = 'xAdcsDeployment'
 $script:DSCResourceName = 'MSFT_xAdcsCertificationAuthority'
 

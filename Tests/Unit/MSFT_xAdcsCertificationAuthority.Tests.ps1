@@ -22,6 +22,22 @@ try
 {
     #region Pester Tests
     InModuleScope $($script:DSCResourceName) {
+        if (-not ([System.Management.Automation.PSTypeName]'Microsoft.CertificateServices.Deployment.Common.CA.CertificationAuthoritySetupException2').Type)
+        {
+            # Define the exception class:
+            # Microsoft.CertificateServices.Deployment.Common.CA.CertificationAuthoritySetupException
+            # so that unit tests can be run without ADCS being installed.
+
+            $ExceptionDefinition = @'
+namespace Microsoft.CertificateServices.Deployment.Common.CA {
+    public class CertificationAuthoritySetupException: System.Exception {
+    }
+}
+'@
+            Add-Type -TypeDefinition $ExceptionDefinition
+        }
+        $DSCResourceName = 'MSFT_xAdcsCertificationAuthority'
+
         $DummyCredential = New-Object System.Management.Automation.PSCredential ("Administrator",(New-Object -Type SecureString))
 
         $TestParametersPresent = @{
@@ -38,7 +54,7 @@ try
             Verbose    = $true
         }
 
-        Describe 'MSFT_xAdcsCertificationAuthority\Get-TargetResource' {
+        Describe "$DSCResourceName\Get-TargetResource" {
 
             function Install-AdcsCertificationAuthority {
                 [CmdletBinding()]
@@ -98,7 +114,7 @@ try
             #region Mocks
             Mock `
                 -CommandName Install-AdcsCertificationAuthority `
-                -MockWith { Throw 'CA is already installed' } `
+                -MockWith { Throw (New-Object -TypeName 'Microsoft.CertificateServices.Deployment.Common.CA.CertificationAuthoritySetupException') } `
                 -Verifiable
             #endregion
 
@@ -137,7 +153,7 @@ try
             }
         }
 
-        Describe 'MSFT_xAdcsCertificationAuthority\Set-TargetResource' {
+        Describe "$DSCResourceName\Set-TargetResource" {
 
             function Install-AdcsCertificationAuthority {
                 [CmdletBinding()]
@@ -232,7 +248,7 @@ try
             }
         }
 
-        Describe 'MSFT_xAdcsCertificationAuthority\Test-TargetResource' {
+        Describe "$DSCResourceName\Test-TargetResource" {
 
             function Install-AdcsCertificationAuthority {
                 [CmdletBinding()]
@@ -291,7 +307,7 @@ try
 
             #region Mocks
             Mock -CommandName Install-AdcsCertificationAuthority `
-                -MockWith { Throw 'CA is already installed' } `
+                -MockWith { Throw (New-Object -TypeName 'Microsoft.CertificateServices.Deployment.Common.CA.CertificationAuthoritySetupException') } `
                 -Verifiable
             #endregion
 

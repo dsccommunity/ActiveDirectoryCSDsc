@@ -22,9 +22,11 @@ try
 {
     #region Pester Tests
     InModuleScope $script:DSCResourceName {
+        $DSCResourceName = 'MSFT_xAdcsOnlineResponder'
+
         $DummyCredential = New-Object System.Management.Automation.PSCredential ("Administrator",(New-Object -Type SecureString))
 
-        Describe 'MSFT_xAdcsOnlineResponder\Get-TargetResource' {
+        Describe "$DSCResourceName\Get-TargetResource" {
 
             function Install-AdcsOnlineResponder {
                 [CmdletBinding()]
@@ -61,7 +63,7 @@ try
             }
         }
 
-        Describe 'MSFT_xAdcsOnlineResponder\Set-TargetResource' {
+        Describe "$DSCResourceName\Set-TargetResource" {
 
             function Install-AdcsOnlineResponder {
                 [CmdletBinding()]
@@ -114,7 +116,7 @@ try
             }
         }
 
-        Describe 'MSFT_xAdcsOnlineResponder\Test-TargetResource' {
+        Describe "$DSCResourceName\Test-TargetResource" {
 
             function Install-AdcsOnlineResponder {
                 [CmdletBinding()]
