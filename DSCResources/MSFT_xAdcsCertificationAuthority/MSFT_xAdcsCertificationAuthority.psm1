@@ -70,54 +70,96 @@ Function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory = $true)]
         [ValidateSet('EnterpriseRootCA','EnterpriseSubordinateCA','StandaloneRootCA','StandaloneSubordinateCA')]
-        [string] $CAType,
+        [string]
+        $CAType,
 
-        [Parameter(Mandatory)]
-        [pscredential] $Credential,
+        [Parameter(Mandatory = $true)]
+        [pscredential]
+        $Credential,
 
+        [Parameter()]
         [ValidateSet('Present','Absent')]
-        [string] $Ensure = 'Present',
+        [string]
+        $Ensure = 'Present',
 
-        [string] $CACommonName,
+        [Parameter()]
+        [string]
+        $CACommonName,
 
-        [string] $CADistinguishedNameSuffix,
+        [Parameter()]
+        [string]
+        $CADistinguishedNameSuffix,
 
-        [string] $CertFile,
+        [Parameter()]
+        [string]
+        $CertFile,
 
-        [pscredential] $CertFilePassword,
+        [Parameter()]
+        [pscredential]
+        $CertFilePassword,
 
-        [string] $CertificateID,
+        [Parameter()]
+        [string]
+        $CertificateID,
 
-        [string] $CryptoProviderName,
+        [Parameter()]
+        [string]
+        $CryptoProviderName,
 
-        [string] $DatabaseDirectory,
+        [Parameter()]
+        [string]
+        $DatabaseDirectory,
 
-        [string] $HashAlgorithmName,
+        [Parameter()]
+        [string]
+        $HashAlgorithmName,
 
-        [boolean] $IgnoreUnicode,
+        [Parameter()]
+        [boolean]
+        $IgnoreUnicode,
 
-        [string] $KeyContainerName,
+        [Parameter()]
+        [string]
+        $KeyContainerName,
 
-        [uint32] $KeyLength,
+        [Parameter()]
+        [uint32]
+        $KeyLength,
 
-        [string] $LogDirectory,
+        [Parameter()]
+        [string]
+        $LogDirectory,
 
-        [string] $OutputCertRequestFile,
+        [Parameter()]
+        [string]
+        $OutputCertRequestFile,
 
-        [boolean] $OverwriteExistingCAinDS,
+        [Parameter()]
+        [boolean]
+        $OverwriteExistingCAinDS,
 
-        [boolean] $OverwriteExistingDatabase,
+        [Parameter()]
+        [boolean]
+        $OverwriteExistingDatabase,
 
-        [boolean] $OverwriteExistingKey,
+        [Parameter()]
+        [boolean]
+        $OverwriteExistingKey,
 
-        [string] $ParentCA,
+        [Parameter()]
+        [string]
+        $ParentCA,
 
+        [Parameter()]
         [ValidateSet('Hours','Days','Months','Years')]
-        [string] $ValidityPeriod,
+        [string]
+        $ValidityPeriod,
 
-        [uint32] $ValidityPeriodUnits
+        [Parameter()]
+        [uint32]
+        $ValidityPeriodUnits
     )
 
     Write-Verbose -Message ( @(
@@ -217,54 +259,96 @@ Function Set-TargetResource
 {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory = $true)]
         [ValidateSet('EnterpriseRootCA','EnterpriseSubordinateCA','StandaloneRootCA','StandaloneSubordinateCA')]
-        [string] $CAType,
+        [string]
+        $CAType,
 
-        [Parameter(Mandatory)]
-        [pscredential] $Credential,
+        [Parameter(Mandatory = $true)]
+        [pscredential]
+        $Credential,
 
+        [Parameter()]
         [ValidateSet('Present','Absent')]
-        [string] $Ensure = 'Present',
+        [string]
+        $Ensure = 'Present',
 
-        [string] $CACommonName,
+        [Parameter()]
+        [string]
+        $CACommonName,
 
-        [string] $CADistinguishedNameSuffix,
+        [Parameter()]
+        [string]
+        $CADistinguishedNameSuffix,
 
-        [string] $CertFile,
+        [Parameter()]
+        [string]
+        $CertFile,
 
-        [pscredential] $CertFilePassword,
+        [Parameter()]
+        [pscredential]
+        $CertFilePassword,
 
-        [string] $CertificateID,
+        [Parameter()]
+        [string]
+        $CertificateID,
 
-        [string] $CryptoProviderName,
+        [Parameter()]
+        [string]
+        $CryptoProviderName,
 
-        [string] $DatabaseDirectory,
+        [Parameter()]
+        [string]
+        $DatabaseDirectory,
 
-        [string] $HashAlgorithmName,
+        [Parameter()]
+        [string]
+        $HashAlgorithmName,
 
-        [boolean] $IgnoreUnicode,
+        [Parameter()]
+        [boolean]
+        $IgnoreUnicode,
 
-        [string] $KeyContainerName,
+        [Parameter()]
+        [string]
+        $KeyContainerName,
 
-        [uint32] $KeyLength,
+        [Parameter()]
+        [uint32]
+        $KeyLength,
 
-        [string] $LogDirectory,
+        [Parameter()]
+        [string]
+        $LogDirectory,
 
-        [string] $OutputCertRequestFile,
+        [Parameter()]
+        [string]
+        $OutputCertRequestFile,
 
-        [boolean] $OverwriteExistingCAinDS,
+        [Parameter()]
+        [boolean]
+        $OverwriteExistingCAinDS,
 
-        [boolean] $OverwriteExistingDatabase,
+        [Parameter()]
+        [boolean]
+        $OverwriteExistingDatabase,
 
-        [boolean] $OverwriteExistingKey,
+        [Parameter()]
+        [boolean]
+        $OverwriteExistingKey,
 
-        [string] $ParentCA,
+        [Parameter()]
+        [string]
+        $ParentCA,
 
+        [Parameter()]
         [ValidateSet('Hours','Days','Months','Years')]
-        [string] $ValidityPeriod,
+        [string]
+        $ValidityPeriod,
 
-        [uint32] $ValidityPeriodUnits
+        [Parameter()]
+        [uint32]
+        $ValidityPeriodUnits
     )
 
     Write-Verbose -Message ( @(
@@ -366,54 +450,96 @@ Function Test-TargetResource
     [OutputType([System.Boolean])]
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory = $true)]
         [ValidateSet('EnterpriseRootCA','EnterpriseSubordinateCA','StandaloneRootCA','StandaloneSubordinateCA')]
-        [string] $CAType,
+        [string]
+        $CAType,
 
-        [Parameter(Mandatory)]
-        [pscredential] $Credential,
+        [Parameter(Mandatory = $true)]
+        [pscredential]
+        $Credential,
 
+        [Parameter()]
         [ValidateSet('Present','Absent')]
-        [string] $Ensure = 'Present',
+        [string]
+        $Ensure = 'Present',
 
-        [string] $CACommonName,
+        [Parameter()]
+        [string]
+        $CACommonName,
 
-        [string] $CADistinguishedNameSuffix,
+        [Parameter()]
+        [string]
+        $CADistinguishedNameSuffix,
 
-        [string] $CertFile,
+        [Parameter()]
+        [string]
+        $CertFile,
 
-        [pscredential] $CertFilePassword,
+        [Parameter()]
+        [pscredential]
+        $CertFilePassword,
 
-        [string] $CertificateID,
+        [Parameter()]
+        [string]
+        $CertificateID,
 
-        [string] $CryptoProviderName,
+        [Parameter()]
+        [string]
+        $CryptoProviderName,
 
-        [string] $DatabaseDirectory,
+        [Parameter()]
+        [string]
+        $DatabaseDirectory,
 
-        [string] $HashAlgorithmName,
+        [Parameter()]
+        [string]
+        $HashAlgorithmName,
 
-        [boolean] $IgnoreUnicode,
+        [Parameter()]
+        [boolean]
+        $IgnoreUnicode,
 
-        [string] $KeyContainerName,
+        [Parameter()]
+        [string]
+        $KeyContainerName,
 
-        [uint32] $KeyLength,
+        [Parameter()]
+        [uint32]
+        $KeyLength,
 
-        [string] $LogDirectory,
+        [Parameter()]
+        [string]
+        $LogDirectory,
 
-        [string] $OutputCertRequestFile,
+        [Parameter()]
+        [string]
+        $OutputCertRequestFile,
 
-        [boolean] $OverwriteExistingCAinDS,
+        [Parameter()]
+        [boolean]
+        $OverwriteExistingCAinDS,
 
-        [boolean] $OverwriteExistingDatabase,
+        [Parameter()]
+        [boolean]
+        $OverwriteExistingDatabase,
 
-        [boolean] $OverwriteExistingKey,
+        [Parameter()]
+        [boolean]
+        $OverwriteExistingKey,
 
-        [string] $ParentCA,
+        [Parameter()]
+        [string]
+        $ParentCA,
 
+        [Parameter()]
         [ValidateSet('Hours','Days','Months','Years')]
-        [string] $ValidityPeriod,
+        [string]
+        $ValidityPeriod,
 
-        [uint32] $ValidityPeriodUnits
+        [Parameter()]
+        [uint32]
+        $ValidityPeriodUnits
     )
 
     Write-Verbose -Message ( @(

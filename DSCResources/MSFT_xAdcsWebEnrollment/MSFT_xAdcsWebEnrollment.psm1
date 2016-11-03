@@ -20,17 +20,23 @@ Function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     [CmdletBinding()]
     param(
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateSet('Yes')]
-        [String] $IsSingleInstance,
+        [String]
+        $IsSingleInstance,
 
-        [String] $CAConfig,
+        [Parameter()]
+        [String]
+        $CAConfig,
 
         [Parameter(Mandatory = $true)]
-        [pscredential] $Credential,
+        [pscredential]
+        $Credential,
 
+        [Parameter()]
         [ValidateSet('Present','Absent')]
-        [String] $Ensure = 'Present'
+        [String]
+        $Ensure = 'Present'
     )
 
     $ADCSParams = @{
@@ -71,17 +77,23 @@ Function Set-TargetResource
 {
     [CmdletBinding()]
     param(
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateSet('Yes')]
-        [String] $IsSingleInstance,
+        [String]
+        $IsSingleInstance,
 
-        [String] $CAConfig,
+        [Parameter()]
+        [String]
+        $CAConfig,
 
         [Parameter(Mandatory = $true)]
-        [pscredential] $Credential,
+        [pscredential]
+        $Credential,
 
+        [Parameter()]
         [ValidateSet('Present','Absent')]
-        [String] $Ensure = 'Present'
+        [String]
+        $Ensure = 'Present'
     )
 
     if (-not $CAConfig)
@@ -133,15 +145,19 @@ Function Test-TargetResource
     [OutputType([System.Boolean])]
     [CmdletBinding()]
     param(
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateSet('Yes')]
-        [String] $IsSingleInstance,
+        [String]
+        $IsSingleInstance,
 
-        [String] $CAConfig,
+        [Parameter()]
+        [String]
+        $CAConfig,
 
         [Parameter(Mandatory = $true)]
         [pscredential] $Credential,
 
+        [Parameter()]
         [ValidateSet('Present','Absent')]
         [String] $Ensure = 'Present'
     )

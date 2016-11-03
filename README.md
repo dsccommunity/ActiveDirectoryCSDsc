@@ -1,12 +1,16 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/2uua9s0qgmfmqqrh/branch/master?svg=true)](https://ci.appveyor.com/project/PowerShell/xadcsdeployment/branch/master)
-
 # xAdcsDeployment
+
+[![Build status](https://ci.appveyor.com/api/projects/status/2uua9s0qgmfmqqrh/branch/master?svg=true)](https://ci.appveyor.com/project/PowerShell/xadcsdeployment/branch/master)
 
 The **xAdcsDeployment** DSC resources have been specifically tested as a method to populate a Certificate Services server role on Windows Server 2012 R2 after the Certificate Services role and the Web Enrollment feature have been enabled.
 Active Directory Certificate Services (AD CS) is used to create certification authorities and related role services that allow you to issue and manage certificates used in a variety of applications.
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+
+## Contributing
+
+Please check out common DSC Resources [contributing guidelines](https://github.com/PowerShell/DscResource.Kit/blob/master/CONTRIBUTING.md).
 
 ## Scenario
 
@@ -17,13 +21,13 @@ In a specific example, when building out a web server workload such as an intern
 
 ## Resources
 
-* **xAdcsCertificationAuthority**
-* **xAdcsWebEnrollment**
-* **xAdcsOnlineResponder**
+- **xAdcsCertificationAuthority**: This resource can be used to install the ADCS Certificte Authority after the feature has been installed on the server.
+- **xAdcsWebEnrollment**: This resource can be used to install the ADCS Web Enrollment service after the feature has been installed on the server.
+  For more information on Web Enrollment services, see [this article on TechNet](https://technet.microsoft.com/en-us/library/cc732517.aspx).
+- **xAdcsOnlineResponder**: This resource can be used to install an ADCS Online Responder after the feature has been installed on the server.
+  For more information on ADCS Online Responders, see [this article on TechNet](https://technet.microsoft.com/en-us/library/cc725958.aspx).
 
 ### xAdcsCertificationAuthority
-
-#### Properties
 
 - **`[String]` CAType** (_Key_): Specifies the type of certification authority to install. { EnterpriseRootCA | EnterpriseSubordinateCA | StandaloneRootCA | StandaloneSubordinateCA }
 - **`[PSCredential]` Credential** (_Required_): To install an enterprise certification authority, the computer must be joined to an Active Directory Domain Services domain and a user account that is a member of the Enterprise Admin group is required. To install a standalone certification authority, the computer can be in a workgroup or AD DS domain. If the computer is in a workgroup, a user account that is a member of Administrators is required. If the computer is in an AD DS domain, a user account that is a member of Domain Admins is required.
@@ -50,22 +54,12 @@ In a specific example, when building out a web server workload such as an intern
 
 ### xAdcsWebEnrollment
 
-This resource can be used to install the ADCS Web Enrollment service after the feature has been installed on the server.
-For more information on Web Enrollment services, see [this article on TechNet](https://technet.microsoft.com/en-us/library/cc732517.aspx).
-
-#### Properties
-
 - **`[String]` IsSingleInstance** (_Key_): Specifies the resource is a single instance, the value must be 'Yes' { Yes }
 - **`[String]` CAConfig** (_Write_): CAConfig parameter string. Do not specify this if there is a local CA installed.
 - **`[PSCredential]` Credential** (_Required_): If the Web Enrollment service is configured to use Standalone certification authority, then an account that is a member of the local Administrators on the CA is required. If the Web Enrollment service is configured to use an Enterprise CA, then an account that is a member of Domain Admins is required.
 - **`[String]` Ensure** (_Write_): Specifies whether the Web Enrollment feature should be installed or uninstalled. { *Present* | Absent }
 
 ### xAdcsOnlineResponder
-
-This resource can be used to install an ADCS Online Responder after the feature has been installed on the server.
-For more information on ADCS Online Responders, see [this article on TechNet](https://technet.microsoft.com/en-us/library/cc725958.aspx).
-
-#### Properties
 
 - **`[String]` IsSingleInstance** (_Key_): Specifies the resource is a single instance, the value must be 'Yes' { Yes }
 - **`[String]` CAConfig** (_Write_): CAConfig parameter string. Do not specify this if there is a local CA installed.
@@ -76,52 +70,56 @@ For more information on ADCS Online Responders, see [this article on TechNet](ht
 
 ### Unreleased
 
-* Converted AppVeyor.yml to pull Pester from PSGallery instead of Chocolatey.
-* Changed AppVeyor.yml to use default image.
-* xAdcsCertificateAuthority:
-  * Change property format in Readme.md to be standard layout.
-  * Converted style to meet HQRM guidelines.
-  * Added verbose logging support.
-  * Added string localization.
-  * Fixed Get-TargetResource by removing IsCA and changing Ensure to return whether or not CA is installed.
-  * Added unit tests.
-* xAdcsOnlineResponder:
-  * Change property format in Readme.md to be standard layout.
-  * Added unit test header to be latest version.
-  * Added function help.
-* xAdcsWebEnrollment:
-  * Change property format in Readme.md to be standard layout.
-  * Added unit test header to be latest version.
-  * Added function help.
-* Added CommonResourceHelper.psm1 (copied from xPSDesiredStateConfiguration).
-* Removed Technet Documentation HTML file from root folder.
-* Removed redundant code from AppVeyor.yml.
+- Converted AppVeyor.yml to pull Pester from PSGallery instead of Chocolatey.
+- Changed AppVeyor.yml to use default image.
+- xAdcsCertificateAuthority:
+  - Change property format in Readme.md to be standard layout.
+  - Converted style to meet HQRM guidelines.
+  - Added verbose logging support.
+  - Added string localization.
+  - Fixed Get-TargetResource by removing IsCA and changing Ensure to return whether or not CA is installed.
+  - Added unit tests.
+  - Updated parameter format to meet HQRM guidelines.
+- xAdcsOnlineResponder:
+  - Change property format in Readme.md to be standard layout.
+  - Added unit test header to be latest version.
+  - Added function help.
+  - Updated parameter format to meet HQRM guidelines.
+- xAdcsWebEnrollment:
+  - Change property format in Readme.md to be standard layout.
+  - Added unit test header to be latest version.
+  - Added function help.
+  - Updated parameter format to meet HQRM guidelines.
+- Added CommonResourceHelper.psm1 (copied from xPSDesiredStateConfiguration).
+- Removed Technet Documentation HTML file from root folder.
+- Removed redundant code from AppVeyor.yml.
+- Fix markdown violations in Readme.md.
 
 ### 1.0.0.0
 
-* Moved Examples folder into root.
-* Removed legacy xCertificateServices folder.
-* Prevented Unit tests from Violating PSSA rules.
-* MSFT_xAdcsWebEnrollment: Created unit tests based on v1.0 Test Template.
+- Moved Examples folder into root.
+- Removed legacy xCertificateServices folder.
+- Prevented Unit tests from Violating PSSA rules.
+- MSFT_xAdcsWebEnrollment: Created unit tests based on v1.0 Test Template.
                            Update to meet Style Guidelines and ensure consistency.
                            Updated to IsSingleInstance model. **Breaking change**
-* MSFT_xAdcsOnlineResponder: Update Unit tests to use v1.0 Test Template.
+- MSFT_xAdcsOnlineResponder: Update Unit tests to use v1.0 Test Template.
                              Unit tests can be run without AD CS installed.
                              Update to meet Style Guidelines and ensure consistency.
-* Usage of WinRm.exe replaced in Config-SetupActiveDirectory.ps1 example file with Set-WSManQuickConfig cmdlet.
+- Usage of WinRm.exe replaced in Config-SetupActiveDirectory.ps1 example file with Set-WSManQuickConfig cmdlet.
 
 ### 0.2.0.0
 
-* Added the following resources:
-    * MSFT_xADCSOnlineResponder resource to install the Online Responder service.
-*   Correction to xAdcsCertificationAuthority property title in Readme.md.
-*   Addition of .gitignore to ensure DSCResource.Tests folder is committed.
-*   Updated AppVeyor.yml to use WMF 5 build environment.
+- Added the following resources:
+  - MSFT_xADCSOnlineResponder resource to install the Online Responder service.
+- Correction to xAdcsCertificationAuthority property title in Readme.md.
+- Addition of .gitignore to ensure DSCResource.Tests folder is committed.
+- Updated AppVeyor.yml to use WMF 5 build environment.
 
 ### 0.1.0.0
 
-*   Initial release with the following resources
-    *   <span style="font-family:Calibri; font-size:medium">xAdcsCertificationAuthority and xAdcsWebEnrollment.</span>
+- Initial release with the following resources
+  - xAdcsCertificationAuthority and xAdcsWebEnrollment.
 
 ### Examples
 
@@ -194,6 +192,3 @@ Configuration RetireCertificateAuthority
     }
 }
 ```
-
-## Contributing
-Please check out common DSC Resources [contributing guidelines](https://github.com/PowerShell/DscResource.Kit/blob/master/CONTRIBUTING.md).
