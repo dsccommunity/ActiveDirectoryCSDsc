@@ -1,3 +1,9 @@
+Import-Module -Name (Join-Path -Path (Split-Path $PSScriptRoot -Parent) `
+    -ChildPath 'CommonResourceHelper.psm1')
+
+# Localized messages for Write-Verbose statements in this resource
+$script:localizedData = Get-LocalizedData -ResourceName 'MSFT_xAdcsWebEnrollment'
+
 <#
     .SYNOPSIS
         Returns an object containing the current state information for the ADCS Web Enrollment.
@@ -39,23 +45,39 @@ Function Get-TargetResource
         $Ensure = 'Present'
     )
 
-    $ADCSParams = @{
-        IsSingleInstance = $IsSingleInstance
-        Credential = $Credential
-        Ensure = $Ensure
-    }
+    Write-Verbose -Message ( @(
+            "$($MyInvocation.MyCommand): "
+            $($LocalizedData.GettingAdcsWebEnrollmentStatusMessage)
+        ) -join '' )
 
-    if ($CAConfig)
+    $ADCSParams = @{} + $PSBoundParameters
+    $null = $ADCSParams.Remove('IsSingleInstance')
+    $null = $ADCSParams.Remove('Ensure')
+    $null = $ADCSParams.Remove('Debug')
+    $null = $ADCSParams.Remove('ErrorAction')
+
+    try
     {
-        $ADCSParams += @{
-            CAConfig = $CAConfig
-        }
-    } # if
-
-    $ADCSParams += @{
-        IsCAWeb = Test-TargetResource @ADCSParams
+        $null = Install-AdcsWebEnrollment @ADCSParams -WhatIf
+        # CA is not installed
+        $Ensure = 'Absent'
     }
-    return $ADCSParams
+    catch [Microsoft.CertificateServices.Deployment.Common.WEP.WebEnrollmentSetupException]
+    {
+        # CA is already installed
+        $Ensure = 'Present'
+    }
+    catch
+    {
+        # Something else went wrong
+        Throw $_
+    }
+
+    return @{
+        Ensure     = $Ensure
+        CAType     = $CAType
+        Credential = $Credential
+    }
 } # Function Get-TargetResource
 
 <#
@@ -96,28 +118,35 @@ Function Set-TargetResource
         $Ensure = 'Present'
     )
 
-    if (-not $CAConfig)
-    {
-        $ADCSParams = @{
-            Credential = $Credential
-        }
-    }
-    else
-    {
-        $ADCSParams = @{
-            CAConfig = $CAConfig
-            Credential = $Credential
-        }
-    } # if
+    Write-Verbose -Message ( @(
+            "$($MyInvocation.MyCommand): "
+            $($LocalizedData.SettingAdcsWebEnrollmentStatusMessage)
+        ) -join '' )
+
+    $ADCSParams = @{} + $PSBoundParameters
+    $null = $ADCSParams.Remove('IsSingleInstance')
+    $null = $ADCSParams.Remove('Ensure')
+    $null = $ADCSParams.Remove('Debug')
+    $null = $ADCSParams.Remove('ErrorAction')
 
     switch ($Ensure)
     {
         'Present'
         {
+            Write-Verbose -Message ( @(
+                    "$($MyInvocation.MyCommand): "
+                    $($LocalizedData.InstallingAdcsWebEnrollmentMessage)
+                ) -join '' )
+
             (Install-AdcsWebEnrollment @ADCSParams -Force).ErrorString
         }
         'Absent'
         {
+            Write-Verbose -Message ( @(
+                    "$($MyInvocation.MyCommand): "
+                    $($LocalizedData.UninstallingAdcsWebEnrollmentMessage)
+                ) -join '' )
+
             (Uninstall-AdcsWebEnrollment -Force).ErrorString
         }
     } # switch
@@ -162,49 +191,77 @@ Function Test-TargetResource
         [String] $Ensure = 'Present'
     )
 
-    if (-not $CAConfig)
-    {
-        $ADCSParams = @{
-            Credential = $Credential
-        }
-    }
-    else
-    {
-        $ADCSParams = @{
-            CAConfig = $CAConfig
-            Credential = $Credential
-        }
-    } # if
+
+    Write-Verbose -Message ( @(
+            "$($MyInvocation.MyCommand): "
+            $($LocalizedData.TestingAdcsWebEnrollmentStatusMessage -f $CAType)
+        ) -join '' )
+
+    $ADCSParams = @{} + $PSBoundParameters
+    $null = $ADCSParams.Remove('IsSingleInstance')
+    $null = $ADCSParams.Remove('Ensure')
+    $null = $ADCSParams.Remove('Debug')
+    $null = $ADCSParams.Remove('ErrorAction')
 
     try
     {
         $null = Install-AdcsWebEnrollment @ADCSParams -WhatIf
-        Switch ($Ensure)
+        # Web Enrollment is not installed
+        switch ($Ensure)
         {
             'Present'
             {
+                # Web Enrollment is not installed but should be - change required
+                Write-Verbose -Message ( @(
+                        "$($MyInvocation.MyCommand): "
+                        $($LocalizedData.AdcsWebEnrollmentNotInstalledButShouldBeMessage)
+                    ) -join '' )
+
                 return $false
             }
             'Absent'
             {
+                # Web Enrollment is not installed and should not be - change not required
+                Write-Verbose -Message ( @(
+                        "$($MyInvocation.MyCommand): "
+                        $($LocalizedData.AdcsWebEnrollmentNotInstalledAndShouldNotBeMessage)
+                    ) -join '' )
+
                 return $true
+            }
+        } # switch
+    }
+    catch [Microsoft.CertificateServices.Deployment.Common.WEP.WebEnrollmentSetupException]
+    {
+        # Web Enrollment is already installed
+        switch ($Ensure)
+        {
+            'Present'
+            {
+                # Web Enrollment is installed and should be - change not required
+                Write-Verbose -Message ( @(
+                        "$($MyInvocation.MyCommand): "
+                        $($LocalizedData.AdcsWebEnrollmentInstalledAndShouldBeMessage)
+                    ) -join '' )
+
+                return $true
+            }
+            'Absent'
+            {
+                # Web Enrollment is installed and should not be - change required
+                Write-Verbose -Message ( @(
+                        "$($MyInvocation.MyCommand): "
+                        $($LocalizedData.AdcsWebEnrollmentInstalledButShouldNotBeMessage)
+                    ) -join '' )
+
+                return $false
             }
         } # switch
     }
     catch
     {
-        Write-verbose $_
-        Switch ($Ensure)
-        {
-            'Present'
-            {
-                return $true
-            }
-            'Absent'
-            {
-                return $false
-            }
-        } # switch
+        # Something else went wrong
+        Throw $_
     } # try
 } # Function Test-TargetResource
 

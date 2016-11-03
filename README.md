@@ -85,11 +85,13 @@ In a specific example, when building out a web server workload such as an intern
   - Added unit test header to be latest version.
   - Added function help.
   - Updated parameter format to meet HQRM guidelines.
+  - Updated resource to meet HQRM guidelines.
 - xAdcsWebEnrollment:
   - Change property format in Readme.md to be standard layout.
   - Added unit test header to be latest version.
   - Added function help.
   - Updated parameter format to meet HQRM guidelines.
+  - Updated resource to meet HQRM guidelines.
 - Added CommonResourceHelper.psm1 (copied from xPSDesiredStateConfiguration).
 - Removed Technet Documentation HTML file from root folder.
 - Removed redundant code from AppVeyor.yml.

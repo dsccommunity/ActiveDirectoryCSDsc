@@ -22,7 +22,7 @@ try
 {
     #region Pester Tests
     InModuleScope $($script:DSCResourceName) {
-        if (-not ([System.Management.Automation.PSTypeName]'Microsoft.CertificateServices.Deployment.Common.CA.CertificationAuthoritySetupException2').Type)
+        if (-not ([System.Management.Automation.PSTypeName]'Microsoft.CertificateServices.Deployment.Common.CA.CertificationAuthoritySetupException').Type)
         {
             # Define the exception class:
             # Microsoft.CertificateServices.Deployment.Common.CA.CertificationAuthoritySetupException
@@ -59,11 +59,11 @@ namespace Microsoft.CertificateServices.Deployment.Common.CA {
             function Install-AdcsCertificationAuthority {
                 [CmdletBinding()]
                 param (
-                    [Parameter(Mandatory)]
+                    [Parameter(Mandatory = $True)]
                     [ValidateSet('EnterpriseRootCA','EnterpriseSubordinateCA','StandaloneRootCA','StandaloneSubordinateCA')]
                     [string] $CAType,
 
-                    [Parameter(Mandatory)]
+                    [Parameter(Mandatory = $True)]
                     [pscredential] $Credential,
 
                     [string] $CACommonName,
@@ -158,11 +158,11 @@ namespace Microsoft.CertificateServices.Deployment.Common.CA {
             function Install-AdcsCertificationAuthority {
                 [CmdletBinding()]
                 param (
-                    [Parameter(Mandatory)]
+                    [Parameter(Mandatory = $True)]
                     [ValidateSet('EnterpriseRootCA','EnterpriseSubordinateCA','StandaloneRootCA','StandaloneSubordinateCA')]
                     [string] $CAType,
 
-                    [Parameter(Mandatory)]
+                    [Parameter(Mandatory = $True)]
                     [pscredential] $Credential,
 
                     [string] $CACommonName,
@@ -253,11 +253,11 @@ namespace Microsoft.CertificateServices.Deployment.Common.CA {
             function Install-AdcsCertificationAuthority {
                 [CmdletBinding()]
                 param (
-                    [Parameter(Mandatory)]
+                    [Parameter(Mandatory = $True)]
                     [ValidateSet('EnterpriseRootCA','EnterpriseSubordinateCA','StandaloneRootCA','StandaloneSubordinateCA')]
                     [string] $CAType,
 
-                    [Parameter(Mandatory)]
+                    [Parameter(Mandatory = $True)]
                     [pscredential] $Credential,
 
                     [string] $CACommonName,

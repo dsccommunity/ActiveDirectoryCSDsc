@@ -1,3 +1,9 @@
+Import-Module -Name (Join-Path -Path (Split-Path $PSScriptRoot -Parent) `
+    -ChildPath 'CommonResourceHelper.psm1')
+
+# Localized messages for Write-Verbose statements in this resource
+$script:localizedData = Get-LocalizedData -ResourceName 'MSFT_xAdcsOnlineResponder'
+
 <#
     .SYNOPSIS
         Returns an object containing the current state information for the ADCS Online Responder.
@@ -33,16 +39,39 @@ Function Get-TargetResource
         $Ensure = 'Present'
     )
 
-    $ADCSParams = @{
-        IsSingleInstance = $IsSingleInstance
-        Credential = $Credential
-        Ensure = $Ensure
+    Write-Verbose -Message ( @(
+            "$($MyInvocation.MyCommand): "
+            $($LocalizedData.GettingAdcsOnlineResponderStatusMessage)
+        ) -join '' )
+
+    $ADCSParams = @{} + $PSBoundParameters
+    $null = $ADCSParams.Remove('IsSingleInstance')
+    $null = $ADCSParams.Remove('Ensure')
+    $null = $ADCSParams.Remove('Debug')
+    $null = $ADCSParams.Remove('ErrorAction')
+
+    try
+    {
+        $null = Install-AdcsOnlineResponder @ADCSParams -WhatIf
+        # CA is not installed
+        $Ensure = 'Absent'
+    }
+    catch [Microsoft.CertificateServices.Deployment.Common.OCSP.OnlineResponderSetupException]
+    {
+        # CA is already installed
+        $Ensure = 'Present'
+    }
+    catch
+    {
+        # Something else went wrong
+        Throw $_
     }
 
-    $ADCSParams += @{
-        StateOK = Test-TargetResource @ADCSParams
+    return @{
+        Ensure     = $Ensure
+        CAType     = $CAType
+        Credential = $Credential
     }
-    Return $ADCSParams
 } # Function Get-TargetResource
 
 <#
@@ -77,21 +106,38 @@ Function Set-TargetResource
         $Ensure = 'Present'
     )
 
-    $ADCSParams = @{
-        Credential = $Credential
-    }
+    Write-Verbose -Message ( @(
+            "$($MyInvocation.MyCommand): "
+            $($LocalizedData.SettingAdcsOnlineResponderStatusMessage)
+        ) -join '' )
+
+    $ADCSParams = @{} + $PSBoundParameters
+    $null = $ADCSParams.Remove('IsSingleInstance')
+    $null = $ADCSParams.Remove('Ensure')
+    $null = $ADCSParams.Remove('Debug')
+    $null = $ADCSParams.Remove('ErrorAction')
 
     switch ($Ensure)
     {
         'Present'
         {
+            Write-Verbose -Message ( @(
+                    "$($MyInvocation.MyCommand): "
+                    $($LocalizedData.InstallingAdcsOnlineResponderMessage)
+                ) -join '' )
+
             (Install-AdcsOnlineResponder @ADCSParams -Force).ErrorString
         }
         'Absent'
         {
+            Write-Verbose -Message ( @(
+                    "$($MyInvocation.MyCommand): "
+                    $($LocalizedData.UninstallingAdcsOnlineResponderMessage)
+                ) -join '' )
+
             (Uninstall-AdcsOnlineResponder -Force).ErrorString
         }
-    } # Switch
+    } # switch
 } # Function Set-TargetResource
 
 <#
@@ -129,39 +175,76 @@ Function Test-TargetResource
         $Ensure = 'Present'
     )
 
-    $ADCSParams = @{
-        Credential = $Credential
-    }
+    Write-Verbose -Message ( @(
+            "$($MyInvocation.MyCommand): "
+            $($LocalizedData.TestingAdcsOnlineResponderStatusMessage -f $CAType)
+        ) -join '' )
+
+    $ADCSParams = @{} + $PSBoundParameters
+    $null = $ADCSParams.Remove('IsSingleInstance')
+    $null = $ADCSParams.Remove('Ensure')
+    $null = $ADCSParams.Remove('Debug')
+    $null = $ADCSParams.Remove('ErrorAction')
 
     try
     {
         $null = Install-AdcsOnlineResponder @ADCSParams -WhatIf
-        Switch ($Ensure)
+        # Online Responder is not installed
+        switch ($Ensure)
         {
             'Present'
             {
+                # Online Responder is not installed but should be - change required
+                Write-Verbose -Message ( @(
+                        "$($MyInvocation.MyCommand): "
+                        $($LocalizedData.AdcsOnlineResponderNotInstalledButShouldBeMessage)
+                    ) -join '' )
+
                 return $false
             }
             'Absent'
             {
+                # Online Responder is not installed and should not be - change not required
+                Write-Verbose -Message ( @(
+                        "$($MyInvocation.MyCommand): "
+                        $($LocalizedData.AdcsOnlineResponderNotInstalledAndShouldNotBeMessage)
+                    ) -join '' )
+
                 return $true
             }
-        } # Switch
+        } # switch
+    }
+    catch [Microsoft.CertificateServices.Deployment.Common.OCSP.OnlineResponderSetupException]
+    {
+        # Online Responder is already installed
+        switch ($Ensure)
+        {
+            'Present'
+            {
+                # Online Responder is installed and should be - change not required
+                Write-Verbose -Message ( @(
+                        "$($MyInvocation.MyCommand): "
+                        $($LocalizedData.AdcsOnlineResponderInstalledAndShouldBeMessage)
+                    ) -join '' )
+
+                return $true
+            }
+            'Absent'
+            {
+                # Online Responder is installed and should not be - change required
+                Write-Verbose -Message ( @(
+                        "$($MyInvocation.MyCommand): "
+                        $($LocalizedData.AdcsOnlineResponderInstalledButShouldNotBeMessage)
+                    ) -join '' )
+
+                return $false
+            }
+        } # switch
     }
     catch
     {
-        Write-verbose -Verbose $_
-        Switch ($Ensure)
-        {
-            'Present'
-            {
-                return $true
-            }
-            'Absent'
-            {
-                return $false
-            }
-        } # Switch
+        # Something else went wrong
+        Throw $_
     } # try
 } # Function Test-TargetResource
 
