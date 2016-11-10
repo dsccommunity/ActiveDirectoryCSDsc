@@ -9,11 +9,8 @@ install:
         Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
         Install-Module -Name Pester -Repository PSGallery -Force
         Install-WindowsFeature -Name ADCS-Cert-Authority,RSAT-ADCS
-        $Password = ConvertTo-SecureString -String 'NotPass12!' -AsPlainText -Force
-        New-LocalUser -Name 'AdcsAdmin' -Password $Password
-        # & net @('user','AdcsAdmin','NotPass12!','/ADD')
-        Add-LocalGroupMember -Group 'administrators' -Member 'AdcsAdmin'
-        # & net @('localgroup','administrators','AdcsAdmin','/ADD')
+        & net @('user','AdcsAdmin','NotPass12!','/ADD')
+        & net @('localgroup','administrators','AdcsAdmin','/ADD')
         Restart-Computer -Force
         Start-Sleep -s 10
 #---------------------------------#
