@@ -190,8 +190,8 @@ Function Get-TargetResource
     }
 
     return @{
-        Ensure = $Ensure
-        CAType = $CAType
+        Ensure     = $Ensure
+        CAType     = $CAType
         Credential = $Credential
     }
 } # Function Get-TargetResource
