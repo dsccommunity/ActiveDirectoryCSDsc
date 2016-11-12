@@ -5,29 +5,26 @@
 The **xAdcsDeployment** DSC resources have been specifically tested as a method to populate a Certificate Services server role on Windows Server 2012 R2 after the Certificate Services role and the Web Enrollment feature have been enabled.
 Active Directory Certificate Services (AD CS) is used to create certification authorities and related role services that allow you to issue and manage certificates used in a variety of applications.
 
+This DSC resource can be used to address some of the most common scenarios including the need for a Stand-Alone Certificate Authority or an Active Directory Trusted Root Certificate Authority and the Certificate Services website for users to submit and complete certificate requests.
+In a specific example, when building out a web server workload such as an internal website that provides confidential information to be accessed from computers that are members of an Active Directory domain, AD CS can provide a source for the SSL certificats that will automatically be trusted.
+
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
-## Contributing
+## How to Contribute
 
-Please check out common DSC Resources [contributing guidelines](https://github.com/PowerShell/DscResource.Kit/blob/master/CONTRIBUTING.md).
-
-## Scenario
-
-Certificates are widely used to establish trust relationships between computers.
-This DSC resource can be used to address some of the most common scenarios including the need for a Stand-Alone Certificate Authority or an Active Directory Trusted Root Certificate Authority and the Certificate Services website for users to submit and complete certificate requests.
-
-In a specific example, when building out a web server workload such as an internal website that provides confidential information to be accessed from computers that are members of an Active Directory domain, AD CS can provide a source for the SSL certificats that will automatically be trusted.
+If you would like to contribute to this repository, please read the DSC Resource Kit [contributing guidelines](https://github.com/PowerShell/DscResource.Kit/blob/master/CONTRIBUTING.md).
 
 ## Resources
 
 - **xAdcsCertificationAuthority**: This resource can be used to install the ADCS Certificte Authority after the feature has been installed on the server.
 - **xAdcsWebEnrollment**: This resource can be used to install the ADCS Web Enrollment service after the feature has been installed on the server.
-  For more information on Web Enrollment services, see [this article on TechNet](https://technet.microsoft.com/en-us/library/cc732517.aspx).
 - **xAdcsOnlineResponder**: This resource can be used to install an ADCS Online Responder after the feature has been installed on the server.
-  For more information on ADCS Online Responders, see [this article on TechNet](https://technet.microsoft.com/en-us/library/cc725958.aspx).
 
 ### xAdcsCertificationAuthority
+
+This resource can be used to install the ADCS Certificte Authority after the feature has been installed on the server.
+Using this DSC Resource to confifgure an ADCS Certificate Authority assumes that the ```ADCS-Cert-Authority``` feature has already been installed.
 
 - **`[String]` CAType** (_Key_): Specifies the type of certification authority to install. { EnterpriseRootCA | EnterpriseSubordinateCA | StandaloneRootCA | StandaloneSubordinateCA }
 - **`[PSCredential]` Credential** (_Required_): To install an enterprise certification authority, the computer must be joined to an Active Directory Domain Services domain and a user account that is a member of the Enterprise Admin group is required. To install a standalone certification authority, the computer can be in a workgroup or AD DS domain. If the computer is in a workgroup, a user account that is a member of Administrators is required. If the computer is in an AD DS domain, a user account that is a member of Domain Admins is required.
@@ -54,12 +51,20 @@ In a specific example, when building out a web server workload such as an intern
 
 ### xAdcsWebEnrollment
 
+This resource can be used to install the ADCS Web Enrollment service after the feature has been installed on the server.
+Using this DSC Resource to confifgure an ADCS Certificate Authority assumes that the ```ADCS-Web-Enrollment``` feature has already been installed.
+For more information on Web Enrollment services, see [this article on TechNet](https://technet.microsoft.com/en-us/library/cc732517.aspx).
+
 - **`[String]` IsSingleInstance** (_Key_): Specifies the resource is a single instance, the value must be 'Yes' { Yes }
 - **`[String]` CAConfig** (_Write_): CAConfig parameter string. Do not specify this if there is a local CA installed.
 - **`[PSCredential]` Credential** (_Required_): If the Web Enrollment service is configured to use Standalone certification authority, then an account that is a member of the local Administrators on the CA is required. If the Web Enrollment service is configured to use an Enterprise CA, then an account that is a member of Domain Admins is required.
 - **`[String]` Ensure** (_Write_): Specifies whether the Web Enrollment feature should be installed or uninstalled. { *Present* | Absent }
 
 ### xAdcsOnlineResponder
+
+This resource can be used to install an ADCS Online Responder after the feature has been installed on the server.
+Using this DSC Resource to confifgure an ADCS Certificate Authority assumes that the ```ADCS-Online-Responder``` feature has already been installed.
+For more information on ADCS Online Responders, see [this article on TechNet](https://technet.microsoft.com/en-us/library/cc725958.aspx).
 
 - **`[String]` IsSingleInstance** (_Key_): Specifies the resource is a single instance, the value must be 'Yes' { Yes }
 - **`[String]` CAConfig** (_Write_): CAConfig parameter string. Do not specify this if there is a local CA installed.
@@ -96,6 +101,7 @@ In a specific example, when building out a web server workload such as an intern
 - Removed Technet Documentation HTML file from root folder.
 - Removed redundant code from AppVeyor.yml.
 - Fix markdown violations in Readme.md.
+- Updated readme.md to match DSCResource.Template\Readme.md.
 
 ### 1.0.0.0
 
