@@ -40,7 +40,7 @@ Function Get-TargetResource
         [System.Management.Automation.Credential()]
         $Credential,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter()]
         [ValidateSet('Present','Absent')]
         [string]
         $Ensure = 'Present'
@@ -109,7 +109,7 @@ Function Set-TargetResource
         [System.Management.Automation.Credential()]
         $Credential,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter()]
         [ValidateSet('Present','Absent')]
         [string]
         $Ensure = 'Present'
@@ -180,7 +180,7 @@ Function Test-TargetResource
         [System.Management.Automation.Credential()]
         $Credential,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter()]
         [ValidateSet('Present','Absent')]
         [string]
         $Ensure = 'Present'
