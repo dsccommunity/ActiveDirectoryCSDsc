@@ -1,3 +1,8 @@
+# Suppressed as per PSSA Rule Severity guidelines for unit/integration tests:
+# https://github.com/PowerShell/DscResources/blob/master/PSSARuleSeverities.md
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
+param ()
+
 Import-Module -Name (Join-Path -Path (Split-Path $PSScriptRoot -Parent) `
     -ChildPath 'CommonResourceHelper.psm1')
 
@@ -67,8 +72,9 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_xAdcsCertification
 #>
 Function Get-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess', '')]
+    [CmdletBinding(SupportsShouldProcess = $true)]
     [OutputType([System.Collections.Hashtable])]
-    [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
         [ValidateSet('EnterpriseRootCA','EnterpriseSubordinateCA','StandaloneRootCA','StandaloneSubordinateCA')]
@@ -258,6 +264,7 @@ Function Get-TargetResource
 #>
 Function Set-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess', '')]
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
@@ -449,8 +456,9 @@ Function Set-TargetResource
 #>
 Function Test-TargetResource
 {
-    [OutputType([System.Boolean])]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess', '')]
     [CmdletBinding()]
+    [OutputType([System.Boolean])]
     param (
         [Parameter(Mandatory = $true)]
         [ValidateSet('EnterpriseRootCA','EnterpriseSubordinateCA','StandaloneRootCA','StandaloneSubordinateCA')]
