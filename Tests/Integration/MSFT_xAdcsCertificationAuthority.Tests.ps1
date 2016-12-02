@@ -68,9 +68,9 @@ try
                     }
 
                     & "$($script:DSCResourceName)_Install_Config" `
-                        -OutputPath $TestEnvironment.WorkingFolder `
+                        -OutputPath $TestDrive `
                         -ConfigurationData $ConfigData
-                    Start-DscConfiguration -Path $TestEnvironment.WorkingFolder `
+                    Start-DscConfiguration -Path $TestDrive `
                         -ComputerName localhost -Wait -Verbose -Force
                 } | Should not throw
             }
@@ -111,9 +111,9 @@ try
                     }
 
                     & "$($script:DSCResourceName)_Uninstall_Config" `
-                        -OutputPath $TestEnvironment.WorkingFolder `
+                        -OutputPath $TestDrive `
                         -ConfigurationData $ConfigData
-                    Start-DscConfiguration -Path $TestEnvironment.WorkingFolder `
+                    Start-DscConfiguration -Path $TestDrive `
                         -ComputerName localhost -Wait -Verbose -Force
                 } | Should not throw
             }

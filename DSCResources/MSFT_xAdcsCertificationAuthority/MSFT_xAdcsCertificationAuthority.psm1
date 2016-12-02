@@ -76,7 +76,8 @@ Function Get-TargetResource
         $CAType,
 
         [Parameter(Mandatory = $true)]
-        [pscredential]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [Parameter()]
@@ -265,7 +266,8 @@ Function Set-TargetResource
         $CAType,
 
         [Parameter(Mandatory = $true)]
-        [pscredential]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [Parameter()]
@@ -456,7 +458,8 @@ Function Test-TargetResource
         $CAType,
 
         [Parameter(Mandatory = $true)]
-        [pscredential]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [Parameter()]

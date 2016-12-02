@@ -36,7 +36,8 @@ Function Get-TargetResource
         $CAConfig,
 
         [Parameter(Mandatory = $true)]
-        [pscredential]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [Parameter()]
@@ -109,7 +110,8 @@ Function Set-TargetResource
         $CAConfig,
 
         [Parameter(Mandatory = $true)]
-        [pscredential]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [Parameter()]
@@ -184,11 +186,14 @@ Function Test-TargetResource
         $CAConfig,
 
         [Parameter(Mandatory = $true)]
-        [pscredential] $Credential,
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        $Credential,
 
         [Parameter()]
         [ValidateSet('Present','Absent')]
-        [String] $Ensure = 'Present'
+        [String]
+        $Ensure = 'Present'
     )
 
 

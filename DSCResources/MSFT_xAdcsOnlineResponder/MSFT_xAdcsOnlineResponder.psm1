@@ -30,7 +30,8 @@ Function Get-TargetResource
         $IsSingleInstance,
 
         [Parameter(Mandatory = $true)]
-        [pscredential]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [Parameter(Mandatory = $true)]
@@ -97,7 +98,8 @@ Function Set-TargetResource
         $IsSingleInstance,
 
         [Parameter(Mandatory = $true)]
-        [pscredential]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [Parameter(Mandatory = $true)]
@@ -166,7 +168,8 @@ Function Test-TargetResource
         $IsSingleInstance,
 
         [Parameter(Mandatory = $true)]
-        [pscredential]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [Parameter(Mandatory = $true)]
