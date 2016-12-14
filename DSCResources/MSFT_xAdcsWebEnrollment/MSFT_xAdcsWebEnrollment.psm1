@@ -1,158 +1,281 @@
-#region Get Resource
+# Suppressed as per PSSA Rule Severity guidelines for unit/integration tests:
+# https://github.com/PowerShell/DscResources/blob/master/PSSARuleSeverities.md
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
+param ()
+
+Import-Module -Name (Join-Path -Path (Split-Path $PSScriptRoot -Parent) `
+    -ChildPath 'CommonResourceHelper.psm1')
+
+# Localized messages for Write-Verbose statements in this resource
+$script:localizedData = Get-LocalizedData -ResourceName 'MSFT_xAdcsWebEnrollment'
+
+<#
+    .SYNOPSIS
+        Returns an object containing the current state information for the ADCS Web Enrollment.
+    .PARAMETER IsSingleInstance
+        Specifies the resource is a single instance, the value must be 'Yes'.
+    .PARAMETER CAConfig
+        CAConfig parameter string. Do not specify this if there is a local CA installed.
+    .PARAMETER Credential
+        If the Web Enrollment service is configured to use Standalone certification authority, then
+        an account that is a member of the local Administrators on the CA is required. If the
+        Web Enrollment service is configured to use an Enterprise CA, then an account that is a
+        member of Domain Admins is required.
+    .PARAMETER Ensure
+        Specifies whether the Web Enrollment feature should be installed or uninstalled.
+    .OUTPUTS
+        Returns an object containing the ADCS Web Enrollment state information.
+#>
 Function Get-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess', '')]
+    [CmdletBinding(SupportsShouldProcess = $true)]
     [OutputType([System.Collections.Hashtable])]
-    [CmdletBinding()]
     param(
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateSet('Yes')]
-        [String] $IsSingleInstance,
+        [String]
+        $IsSingleInstance,
 
-        [ValidateSet('Present','Absent')]
-        [string] $Ensure = 'Present',
-
-        [string] $CAConfig,
+        [Parameter()]
+        [String]
+        $CAConfig,
 
         [Parameter(Mandatory = $true)]
-        [pscredential] $Credential
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        $Credential,
+
+        [Parameter()]
+        [ValidateSet('Present','Absent')]
+        [String]
+        $Ensure = 'Present'
     )
 
-    $ADCSParams = @{
-        IsSingleInstance = $IsSingleInstance
-        Credential = $Credential
-        Ensure = $Ensure        
-    }
+    Write-Verbose -Message ( @(
+            "$($MyInvocation.MyCommand): "
+            $($LocalizedData.GettingAdcsWebEnrollmentStatusMessage)
+        ) -join '' )
 
-    if ($CAConfig)
+    $ADCSParams = @{} + $PSBoundParameters
+    $null = $ADCSParams.Remove('IsSingleInstance')
+    $null = $ADCSParams.Remove('Ensure')
+    $null = $ADCSParams.Remove('Debug')
+    $null = $ADCSParams.Remove('ErrorAction')
+
+    try
     {
-        $ADCSParams += @{
-            CAConfig = $CAConfig
-        }
-    } # if
-
-    $ADCSParams += @{
-        IsCAWeb = Test-TargetResource @ADCSParams
+        $null = Install-AdcsWebEnrollment @ADCSParams -WhatIf
+        # CA is not installed
+        $Ensure = 'Absent'
     }
-    return $ADCSParams
-}
-# Get-TargetResource -Name 'Test' -Credential (Get-Credential)
-# Expected Outcome: Return a table of appropriate values.
-#endregion
+    catch [Microsoft.CertificateServices.Deployment.Common.WEP.WebEnrollmentSetupException]
+    {
+        # CA is already installed
+        $Ensure = 'Present'
+    }
+    catch
+    {
+        # Something else went wrong
+        Throw $_
+    }
 
-#region Set Resource
+    return @{
+        Ensure     = $Ensure
+        CAType     = $CAType
+        Credential = $Credential
+    }
+} # Function Get-TargetResource
+
+<#
+    .SYNOPSIS
+        Installs or uinstalls the ADCS Web Enrollment from the server.
+    .PARAMETER IsSingleInstance
+        Specifies the resource is a single instance, the value must be 'Yes'.
+    .PARAMETER CAConfig
+        CAConfig parameter string. Do not specify this if there is a local CA installed.
+    .PARAMETER Credential
+        If the Web Enrollment service is configured to use Standalone certification authority, then
+        an account that is a member of the local Administrators on the CA is required. If the
+        Web Enrollment service is configured to use an Enterprise CA, then an account that is a
+        member of Domain Admins is required.
+    .PARAMETER Ensure
+        Specifies whether the Web Enrollment feature should be installed or uninstalled.
+#>
 Function Set-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess', '')]
     [CmdletBinding()]
     param(
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateSet('Yes')]
-        [String] $IsSingleInstance,
+        [String]
+        $IsSingleInstance,
 
-        [ValidateSet('Present','Absent')]
-        [string] $Ensure = 'Present',
-
-        [string] $CAConfig,
+        [Parameter()]
+        [String]
+        $CAConfig,
 
         [Parameter(Mandatory = $true)]
-        [pscredential] $Credential
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        $Credential,
+
+        [Parameter()]
+        [ValidateSet('Present','Absent')]
+        [String]
+        $Ensure = 'Present'
     )
 
-    if (-not $CAConfig)
-    {
-        $ADCSParams = @{
-            Credential = $Credential
-        }
-    }
-    else
-    {
-        $ADCSParams = @{
-            CAConfig = $CAConfig
-            Credential = $Credential
-        }
-    } # if
+    Write-Verbose -Message ( @(
+            "$($MyInvocation.MyCommand): "
+            $($LocalizedData.SettingAdcsWebEnrollmentStatusMessage)
+        ) -join '' )
+
+    $ADCSParams = @{} + $PSBoundParameters
+    $null = $ADCSParams.Remove('IsSingleInstance')
+    $null = $ADCSParams.Remove('Ensure')
+    $null = $ADCSParams.Remove('Debug')
+    $null = $ADCSParams.Remove('ErrorAction')
 
     switch ($Ensure)
     {
         'Present'
         {
+            Write-Verbose -Message ( @(
+                    "$($MyInvocation.MyCommand): "
+                    $($LocalizedData.InstallingAdcsWebEnrollmentMessage)
+                ) -join '' )
+
             (Install-AdcsWebEnrollment @ADCSParams -Force).ErrorString
         }
         'Absent'
         {
+            Write-Verbose -Message ( @(
+                    "$($MyInvocation.MyCommand): "
+                    $($LocalizedData.UninstallingAdcsWebEnrollmentMessage)
+                ) -join '' )
+
             (Uninstall-AdcsWebEnrollment -Force).ErrorString
         }
     } # switch
-}
-# Set-TargetResource -Name 'Test' -Credential (Get-Credential)
-# Expected Outcome: Setup Certificate Services Web Enrollment on this node.
-#endregion
+} # Function Set-TargetResource
 
-#region Test Resource
+<#
+    .SYNOPSIS
+        Tests is the ADCS Web Enrollment is in the desired state.
+    .PARAMETER IsSingleInstance
+        Specifies the resource is a single instance, the value must be 'Yes'.
+    .PARAMETER CAConfig
+        CAConfig parameter string. Do not specify this if there is a local CA installed.
+    .PARAMETER Credential
+        If the Web Enrollment service is configured to use Standalone certification authority, then
+        an account that is a member of the local Administrators on the CA is required. If the
+        Web Enrollment service is configured to use an Enterprise CA, then an account that is a
+        member of Domain Admins is required.
+    .PARAMETER Ensure
+        Specifies whether the Web Enrollment feature should be installed or uninstalled.
+    .OUTPUTS
+        Returns true if the ADCS Web Enrollment is in the desired state.
+#>
 Function Test-TargetResource
 {
-    [OutputType([System.Boolean])]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess', '')]
     [CmdletBinding()]
+    [OutputType([System.Boolean])]
     param(
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateSet('Yes')]
-        [String] $IsSingleInstance,
+        [String]
+        $IsSingleInstance,
 
-        [ValidateSet('Present','Absent')]
-        [string] $Ensure = 'Present',
-
-        [string] $CAConfig,
+        [Parameter()]
+        [String]
+        $CAConfig,
 
         [Parameter(Mandatory = $true)]
-        [pscredential] $Credential
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        $Credential,
+
+        [Parameter()]
+        [ValidateSet('Present','Absent')]
+        [String]
+        $Ensure = 'Present'
     )
 
-    if (-not $CAConfig)
-    {
-        $ADCSParams = @{
-            Credential = $Credential
-        }
-    }
-    else
-    {
-        $ADCSParams = @{
-            CAConfig = $CAConfig
-            Credential = $Credential
-        }
-    } # if
+
+    Write-Verbose -Message ( @(
+            "$($MyInvocation.MyCommand): "
+            $($LocalizedData.TestingAdcsWebEnrollmentStatusMessage -f $CAType)
+        ) -join '' )
+
+    $ADCSParams = @{} + $PSBoundParameters
+    $null = $ADCSParams.Remove('IsSingleInstance')
+    $null = $ADCSParams.Remove('Ensure')
+    $null = $ADCSParams.Remove('Debug')
+    $null = $ADCSParams.Remove('ErrorAction')
 
     try
     {
         $null = Install-AdcsWebEnrollment @ADCSParams -WhatIf
-        Switch ($Ensure)
+        # Web Enrollment is not installed
+        switch ($Ensure)
         {
             'Present'
             {
+                # Web Enrollment is not installed but should be - change required
+                Write-Verbose -Message ( @(
+                        "$($MyInvocation.MyCommand): "
+                        $($LocalizedData.AdcsWebEnrollmentNotInstalledButShouldBeMessage)
+                    ) -join '' )
+
                 return $false
             }
             'Absent'
             {
+                # Web Enrollment is not installed and should not be - change not required
+                Write-Verbose -Message ( @(
+                        "$($MyInvocation.MyCommand): "
+                        $($LocalizedData.AdcsWebEnrollmentNotInstalledAndShouldNotBeMessage)
+                    ) -join '' )
+
                 return $true
+            }
+        } # switch
+    }
+    catch [Microsoft.CertificateServices.Deployment.Common.WEP.WebEnrollmentSetupException]
+    {
+        # Web Enrollment is already installed
+        switch ($Ensure)
+        {
+            'Present'
+            {
+                # Web Enrollment is installed and should be - change not required
+                Write-Verbose -Message ( @(
+                        "$($MyInvocation.MyCommand): "
+                        $($LocalizedData.AdcsWebEnrollmentInstalledAndShouldBeMessage)
+                    ) -join '' )
+
+                return $true
+            }
+            'Absent'
+            {
+                # Web Enrollment is installed and should not be - change required
+                Write-Verbose -Message ( @(
+                        "$($MyInvocation.MyCommand): "
+                        $($LocalizedData.AdcsWebEnrollmentInstalledButShouldNotBeMessage)
+                    ) -join '' )
+
+                return $false
             }
         } # switch
     }
     catch
     {
-        Write-verbose $_
-        Switch ($Ensure)
-        {
-            'Present'
-            {
-                return $true
-            }
-            'Absent'
-            {
-                return $false
-            }
-        } # switch
+        # Something else went wrong
+        Throw $_
     } # try
-}
-# Test-TargetResource -Name 'Test' -Credential (Get-Credential)
-# Expected Outcome: Returns a boolean indicating whether Certificate Services Web Enrollment is installed on this node.
-#endregion
+} # Function Test-TargetResource
 
 Export-ModuleMember -Function *-TargetResource

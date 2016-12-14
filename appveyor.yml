@@ -1,16 +1,18 @@
 #---------------------------------#
 #      environment configuration  #
 #---------------------------------#
-os: WMF 5
 version: 1.0.{build}.0
 install:
-  - cinst -y pester --version 3.3.13
   - git clone https://github.com/PowerShell/DscResource.Tests
-  - ps: Push-Location
-  - cd DscResource.Tests
-  - ps: Import-Module .\TestHelper.psm1 -force
-  - ps: Pop-Location
-
+  - ps: |
+        Import-Module -Name .\DscResource.Tests\TestHelper.psm1 -force
+        Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+        Install-Module -Name Pester -Repository PSGallery -Force
+        Install-WindowsFeature -Name ADCS-Cert-Authority,RSAT-ADCS
+        & net @('user','AdcsAdmin','NotPass12!','/ADD')
+        & net @('localgroup','administrators','AdcsAdmin','/ADD')
+        Restart-Computer -Force
+        Start-Sleep -s 10
 #---------------------------------#
 #      build configuration        #
 #---------------------------------#
