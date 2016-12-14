@@ -1,6 +1,6 @@
 @{
 # Version number of this module.
-ModuleVersion = '1.0.0.0'
+ModuleVersion = '1.1.0.0'
 
 # ID used to uniquely identify this module
 GUID = 'f8ddd7fc-c6d6-469e-8a80-c96efabe2fcc'
@@ -47,16 +47,33 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = '* Moved Examples folder into root.
-* Removed legacy xCertificateServices folder.
-* Prevented Unit tests from Violating PSSA rules.
-* MSFT_xAdcsWebEnrollment: Created unit tests based on v1.0 Test Template.
-                           Update to meet Style Guidelines and ensure consistency.
-                           Updated to IsSingleInstance model. **Breaking change**
-* MSFT_xAdcsOnlineResponder: Update Unit tests to use v1.0 Test Template.
-                             Unit tests can be run without AD CS installed.
-                             Update to meet Style Guidelines and ensure consistency.
-* Usage of WinRm.exe replaced in Config-SetupActiveDirectory.ps1 example file with Set-WSManQuickConfig cmdlet. 
+        ReleaseNotes = '- Converted AppVeyor.yml to pull Pester from PSGallery instead of Chocolatey.
+- Changed AppVeyor.yml to use default image.
+- xAdcsCertificateAuthority:
+  - Change property format in Readme.md to be standard layout.
+  - Converted style to meet HQRM guidelines.
+  - Added verbose logging support.
+  - Added string localization.
+  - Fixed Get-TargetResource by removing IsCA and changing Ensure to return whether or not CA is installed.
+  - Added unit tests.
+  - Updated parameter format to meet HQRM guidelines.
+- xAdcsOnlineResponder:
+  - Change property format in Readme.md to be standard layout.
+  - Added unit test header to be latest version.
+  - Added function help.
+  - Updated parameter format to meet HQRM guidelines.
+  - Updated resource to meet HQRM guidelines.
+- xAdcsWebEnrollment:
+  - Change property format in Readme.md to be standard layout.
+  - Added unit test header to be latest version.
+  - Added function help.
+  - Updated parameter format to meet HQRM guidelines.
+  - Updated resource to meet HQRM guidelines.
+- Added CommonResourceHelper.psm1 (copied from xPSDesiredStateConfiguration).
+- Removed Technet Documentation HTML file from root folder.
+- Removed redundant code from AppVeyor.yml.
+- Fix markdown violations in Readme.md.
+- Updated readme.md to match DSCResource.Template\Readme.md.
 
 '
 
@@ -64,6 +81,7 @@ PrivateData = @{
 
 } # End of PrivateData hashtable
 }
+
 
 
 

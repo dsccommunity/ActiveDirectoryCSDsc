@@ -75,6 +75,8 @@ For more information on ADCS Online Responders, see [this article on TechNet](ht
 
 ### Unreleased
 
+### 1.1.0.0
+
 - Converted AppVeyor.yml to pull Pester from PSGallery instead of Chocolatey.
 - Changed AppVeyor.yml to use default image.
 - xAdcsCertificateAuthority:
