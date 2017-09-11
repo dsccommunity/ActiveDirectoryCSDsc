@@ -82,7 +82,7 @@ Function Get-TargetResource
 
     return @{
         Ensure     = $Ensure
-        CAType     = $CAType
+        CAConfig     = $CAConfig
         Credential = $Credential
     }
 } # Function Get-TargetResource
@@ -207,7 +207,7 @@ Function Test-TargetResource
 
     Write-Verbose -Message ( @(
             "$($MyInvocation.MyCommand): "
-            $($LocalizedData.TestingAdcsWebEnrollmentStatusMessage -f $CAType)
+            $($LocalizedData.TestingAdcsWebEnrollmentStatusMessage -f $CAConfig)
         ) -join '' )
 
     $ADCSParams = @{} + $PSBoundParameters
