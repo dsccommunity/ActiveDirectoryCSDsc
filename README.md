@@ -75,6 +75,10 @@ For more information on ADCS Online Responders, see [this article on TechNet](ht
 
 ### Unreleased
 
+### 1.2.0.0
+- xAdcsWebEnrollment:
+  - xAdcsWebEnrollment.psm1 - Change reference and variable from CAType to CAConfig  
+
 ### 1.1.0.0
 
 - Converted AppVeyor.yml to pull Pester from PSGallery instead of Chocolatey.
