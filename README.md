@@ -74,6 +74,8 @@ For more information on ADCS Online Responders, see [this article on TechNet](ht
 ## Versions
 
 ### Unreleased
+
+### 1.2.0.0
 - xAdcsWebEnrollment:
   - xAdcsWebEnrollment.psm1 - Change reference and variable from CAType to CAConfig  
 
