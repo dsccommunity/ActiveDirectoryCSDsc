@@ -20,9 +20,6 @@
     # Minimum version of the Windows PowerShell engine required by this module
     PowerShellVersion = '4.0'
 
-    # Minimum version of the common language runtime (CLR) required by this module
-    CLRVersion        = '4.0'
-
     # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
     # NestedModules = @()
 
