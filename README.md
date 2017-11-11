@@ -1,8 +1,8 @@
 # xAdcsDeployment
 
 The **xAdcsDeployment** DSC resources have been specifically tested as a method
-to populate a Certificate Services server role on Windows Server 2012 R2 after
-the Certificate Services role and the Web Enrollment feature have been enabled.
+to populate a Certificate Services server role on Windows Server 2012 R2 and above
+after the Certificate Services role and the Web Enrollment feature have been enabled.
 Active Directory Certificate Services (AD CS) is used to create certification
 authorities and related role services that allow you to issue and manage certificates
 used in a variety of applications.
@@ -48,10 +48,10 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 
 - **xAdcsCertificationAuthority**: This resource can be used to install the ADCS
   Certificate Authority after the feature has been installed on the server.
-- **xAdcsWebEnrollment**: This resource can be used to install the ADCS Web
-  Enrollment service after the feature has been installed on the server.
 - **xAdcsOnlineResponder**: This resource can be used to install an ADCS Online
   Responder after the feature has been installed on the server.
+- **xAdcsWebEnrollment**: This resource can be used to install the ADCS Web
+  Enrollment service after the feature has been installed on the server.
 
 ### xAdcsCertificationAuthority
 
@@ -63,7 +63,7 @@ the `ADCS-Cert-Authority` feature has already been installed.
 - **`[String]` CAType** (_Key_): Specifies the type of certification authority to
   install. { EnterpriseRootCA | EnterpriseSubordinateCA | StandaloneRootCA |
   StandaloneSubordinateCA }
-- **`[System.Management.Automation.PSCredential]` Credential** (_Required_): To
+- **`[PSCredential]` Credential** (_Required_): To
   install an enterprise certification authority, the computer must be joined to
   an Active Directory Domain Services domain and a user account that is a member
   of the Enterprise Admin group is required. To install a standalone certification
@@ -79,7 +79,7 @@ the `ADCS-Cert-Authority` feature has already been installed.
   authority distinguished name suffix.
 - **`[String]` CertFile** (_Write_): Specifies the file name of certification
   authority PKCS 12 formatted certificate file.
-- **`[System.Management.Automation.PSCredential]` CertFilePassword** (_Write_):
+- **`[PSCredential]` CertFilePassword** (_Write_):
   Specifies the password for certification authority certificate file.
 - **`[String]` CertificateID** (_Write_): Specifies the thumbprint or serial
   number of certification authority certificate.
@@ -134,7 +134,7 @@ For more information on ADCS Online Responders, see [this article on TechNet](ht
   instance, the value must be 'Yes' { Yes }
 - **`[String]` CAConfig** (_Write_): CAConfig parameter string. Do not specify
   this if there is a local CA installed.
-- **`[System.Management.Automation.PSCredential]` Credential** (_Required_): If
+- **`[PSCredential]` Credential** (_Required_): If
   the Online Responder service is configured to use Standalone certification
   authority, then an account that is a member of the local Administrators on the
   CA is required. If the Online Responder service is configured to use an Enterprise
@@ -158,7 +158,7 @@ For more information on Web Enrollment services, see [this article on TechNet](h
   instance, the value must be 'Yes' { Yes }
 - **`[String]` CAConfig** (_Write_): CAConfig parameter string. Do not specify
   this if there is a local CA installed.
-- **`[System.Management.Automation.PSCredential]` Credential** (_Required_): If
+- **`[PSCredential]` Credential** (_Required_): If
   the Web Enrollment service is configured to use Standalone certification authority,
   then an account that is a member of the local Administrators on the CA is required.
   If the Web Enrollment service is configured to use an Enterprise CA, then an

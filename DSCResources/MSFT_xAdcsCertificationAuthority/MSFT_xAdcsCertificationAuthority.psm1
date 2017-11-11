@@ -95,8 +95,7 @@ $LocalizedData = Get-LocalizedData `
 #>
 Function Get-TargetResource
 {
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess', '')]
-    [CmdletBinding(SupportsShouldProcess = $true)]
+    [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
     (
@@ -310,7 +309,6 @@ Function Get-TargetResource
 #>
 Function Set-TargetResource
 {
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess', '')]
     [CmdletBinding()]
     param
     (
@@ -533,7 +531,6 @@ Function Set-TargetResource
 #>
 Function Test-TargetResource
 {
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess', '')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
