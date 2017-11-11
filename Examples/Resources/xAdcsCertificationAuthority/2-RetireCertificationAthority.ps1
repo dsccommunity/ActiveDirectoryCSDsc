@@ -20,6 +20,7 @@ Configuration Example
         xAdcsCertificationAuthority CertificateAuthority
         {
             Ensure = 'Absent'
+            CAType = 'EnterpriseRootCA'
         }
 
         WindowsFeature ADCS-Cert-Authority

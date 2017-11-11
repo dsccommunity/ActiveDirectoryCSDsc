@@ -15,7 +15,7 @@
     Copyright         = '(c) 2017 Microsoft Corporation. All rights reserved.'
 
     # Description of the functionality provided by this module
-    Description       = 'The xAdcsDeployment module can be used to install or uninstall Certificate Services components in Windows Server.  All of the resources in the DSC Resource Kit are provided AS IS, and are not supported through any Microsoft standard support program or service.'
+    Description       = 'This DSC Resource module can be used to install or uninstall Certificate Services components in Windows Server.'
 
     # Minimum version of the Windows PowerShell engine required by this module
     PowerShellVersion = '4.0'
@@ -25,6 +25,12 @@
 
     # Cmdlets to export from this module
     CmdletsToExport   = '*'
+
+    # Variables to export from this module
+    VariablesToExport = '*'
+
+    # Aliases to export from this module
+    AliasesToExport   = '*'
 
     # Private data to pass to the module specified in RootModule/ModuleToProcess. This may also contain a PSData hashtable with additional module metadata used by PowerShell.
     PrivateData       = @{
@@ -49,7 +55,6 @@
 
 '
         } # End of PSData hashtable
-
     } # End of PrivateData hashtable
 }
 
