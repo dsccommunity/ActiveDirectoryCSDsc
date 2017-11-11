@@ -193,7 +193,7 @@ Function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [ValidateSet('Yes')]
         [System.String]
         $IsSingleInstance,
