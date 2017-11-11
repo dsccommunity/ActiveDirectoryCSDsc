@@ -51,7 +51,7 @@ try
     Describe "$($script:DSCResourceName)_Install_Integration" {
         Context 'Install ADCS Certification Authority' {
             #region DEFAULT TESTS
-            It 'Should compile without throwing' {
+            It 'Should compile and apply the MOF without throwing' {
                 {
                     $secureAdminPassword = ConvertTo-SecureString -String $script:adminPassword -AsPlainText -Force
                     $adminCred = New-Object -TypeName System.Management.Automation.PSCredential `
@@ -81,7 +81,7 @@ try
                 } | Should -Not Throw
             }
 
-            It 'Should -Be able to call Get-DscConfiguration without throwing' {
+            It 'Should be able to call Get-DscConfiguration without throwing' {
                 { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not Throw
             }
             #endregion
@@ -101,7 +101,7 @@ try
     Describe "$($script:DSCResourceName)_Uninstall_Integration" {
         Context 'Uninstall ADCS Certification Authority' {
             #region DEFAULT TESTS
-            It 'Should compile without throwing' {
+            It 'Should compile and apply the MOF without throwing' {
                 {
                     $secureAdminPassword = ConvertTo-SecureString -String $script:adminPassword -AsPlainText -Force
                     $adminCred = New-Object -TypeName System.Management.Automation.PSCredential `
@@ -132,7 +132,7 @@ try
                 } | Should -Not Throw
             }
 
-            It 'Should -Be able to call Get-DscConfiguration without throwing' {
+            It 'Should be able to call Get-DscConfiguration without throwing' {
                 { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not Throw
             }
             #endregion

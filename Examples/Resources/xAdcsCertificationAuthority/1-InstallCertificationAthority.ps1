@@ -12,6 +12,8 @@ Configuration Example
         $NodeName = 'localhost'
     )
 
+    Import-DscResource -Module xAdcsDeployment
+
     WindowsFeature ADCS-Cert-Authority
     {
         Ensure = 'Present'

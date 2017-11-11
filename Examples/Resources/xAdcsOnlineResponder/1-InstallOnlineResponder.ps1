@@ -13,6 +13,8 @@ Configuration Example
         $NodeName = 'localhost'
     )
 
+    Import-DscResource -Module xAdcsDeployment
+
     WindowsFeature ADCS-Online-Cert
     {
         Ensure = 'Present'

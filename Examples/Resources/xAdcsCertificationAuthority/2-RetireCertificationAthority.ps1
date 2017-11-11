@@ -13,6 +13,8 @@ Configuration Example
         $NodeName = 'localhost'
     )
 
+    Import-DscResource -Module xAdcsDeployment
+
     xAdcsCertificationAuthority CertificateAuthority
     {
         Ensure = 'Absent'

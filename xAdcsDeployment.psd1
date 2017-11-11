@@ -21,7 +21,7 @@
     PowerShellVersion = '4.0'
 
     # Functions to export from this module
-    FunctionsToExport = '*'
+    # FunctionsToExport = '*'
 
     # Cmdlets to export from this module
     CmdletsToExport   = '*'
@@ -48,7 +48,6 @@
   - xAdcsWebEnrollment.psm1 - Change reference and variable from CAType to CAConfig
 
 '
-
         } # End of PSData hashtable
 
     } # End of PrivateData hashtable
