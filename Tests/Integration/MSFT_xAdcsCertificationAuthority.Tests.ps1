@@ -78,7 +78,7 @@ try
                         -Verbose `
                         -Force `
                         -ErrorAction Stop
-                } | Should -Not Throw
+                } | Should -Not -Throw
             }
 
             It 'Should be able to call Get-DscConfiguration without throwing' {
@@ -129,7 +129,7 @@ try
                         -Verbose `
                         -Force `
                         -ErrorAction Stop
-                } | Should -Not Throw
+                } | Should -Not -Throw
             }
 
             It 'Should be able to call Get-DscConfiguration without throwing' {
