@@ -174,7 +174,8 @@ For more information on Web Enrollment services, see [this article on TechNet](h
 
 ### Unreleased
 
-- Updated to meet HQRM guidelines.
+- Updated to meet HQRM guidelines - fixes
+  [issue #33](https://github.com/PowerShell/xAdcsDeployment/issues/33).
 - Fixed markdown rule violations in README.MD.
 - Change examples to meet HQRM standards and optin to Example validation
   tests.
@@ -188,8 +189,13 @@ For more information on Web Enrollment services, see [this article on TechNet](h
   - ISSUE_TEMPLATE.md
   - PULL_REQUEST_TEMPLATE.md
 - Resolved all PSScriptAnalyzer warnings and style guide warnings.
-- Converted all tests to meet Pester V4 guidelines.
+- Converted all tests to meet Pester V4 guidelines - fixes
+  [issue #32](https://github.com/PowerShell/xAdcsDeployment/issues/32).
 - Fixed spelling mistakes in README.MD.
+- Fix to ensure exception thrown if failed to install or uninstall service - fixes
+  [issue #3](https://github.com/PowerShell/xAdcsDeployment/issues/3).
+- Converted AppVeyor.yml to use shared AppVeyor module in DSCResource.Tests - fixes
+  [issue #29](https://github.com/PowerShell/xAdcsDeployment/issues/29).
 
 ### 1.2.0.0
 
