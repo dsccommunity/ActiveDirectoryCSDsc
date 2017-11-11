@@ -15,7 +15,7 @@ CompanyName = 'Microsoft Corporation'
 Copyright = '(c) 2017 Microsoft Corporation. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = 'The xCertificateServices module can be used to install or uninstall Certificate Services components in Windows Server.  All of the resources in the DSC Resource Kit are provided AS IS, and are not supported through any Microsoft standard support program or service.'
+Description = 'The xAdcsDeployment module can be used to install or uninstall Certificate Services components in Windows Server.  All of the resources in the DSC Resource Kit are provided AS IS, and are not supported through any Microsoft standard support program or service.'
 
 # Minimum version of the Windows PowerShell engine required by this module
 PowerShellVersion = '4.0'
@@ -48,7 +48,7 @@ PrivateData = @{
 
         # ReleaseNotes of this module
         ReleaseNotes = '- xAdcsWebEnrollment:
-  - xAdcsWebEnrollment.psm1 - Change reference and variable from CAType to CAConfig  
+  - xAdcsWebEnrollment.psm1 - Change reference and variable from CAType to CAConfig
 
 '
 
