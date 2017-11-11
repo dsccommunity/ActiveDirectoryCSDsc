@@ -10,22 +10,30 @@ Configuration Example
     (
         [Parameter()]
         [System.String[]]
-        $NodeName = 'localhost'
+        $NodeName = 'localhost',
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullorEmpty()]
+        [System.Management.Automation.PSCredential]
+        $Credential
     )
 
     Import-DscResource -Module xAdcsDeployment
 
-    WindowsFeature ADCS-Web-Enrollment
+    Node $AllNodes.NodeName
     {
-        Ensure = 'Present'
-        Name   = 'ADCS-Web-Enrollment'
-    }
+        WindowsFeature ADCS-Web-Enrollment
+        {
+            Ensure = 'Present'
+            Name   = 'ADCS-Web-Enrollment'
+        }
 
-    xAdcsWebEnrollment WebEnrollment
-    {
-        Ensure           = 'Present'
-        IsSingleInstance = 'Yes'
-        Credential       = $Node.Credential
-        DependsOn        = '[WindowsFeature]ADCS-Web-Enrollment'
+        xAdcsWebEnrollment WebEnrollment
+        {
+            Ensure           = 'Present'
+            IsSingleInstance = 'Yes'
+            Credential       = $Credential
+            DependsOn        = '[WindowsFeature]ADCS-Web-Enrollment'
+        }
     }
 }

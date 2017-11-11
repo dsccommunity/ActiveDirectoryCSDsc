@@ -9,22 +9,30 @@ Configuration Example
     (
         [Parameter()]
         [System.String[]]
-        $NodeName = 'localhost'
+        $NodeName = 'localhost',
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullorEmpty()]
+        [System.Management.Automation.PSCredential]
+        $Credential
     )
 
     Import-DscResource -Module xAdcsDeployment
 
-    WindowsFeature ADCS-Cert-Authority
+    Node $AllNodes.NodeName
     {
-        Ensure = 'Present'
-        Name   = 'ADCS-Cert-Authority'
-    }
+        WindowsFeature ADCS-Cert-Authority
+        {
+            Ensure = 'Present'
+            Name   = 'ADCS-Cert-Authority'
+        }
 
-    xAdcsCertificationAuthority CertificateAuthority
-    {
-        Ensure     = 'Present'
-        Credential = $Node.Credential
-        CAType     = 'EnterpriseRootCA'
-        DependsOn  = '[WindowsFeature]ADCS-Cert-Authority'
+        xAdcsCertificationAuthority CertificateAuthority
+        {
+            Ensure     = 'Present'
+            Credential = $Credential
+            CAType     = 'EnterpriseRootCA'
+            DependsOn  = '[WindowsFeature]ADCS-Cert-Authority'
+        }
     }
 }

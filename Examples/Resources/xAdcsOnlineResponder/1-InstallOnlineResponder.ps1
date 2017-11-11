@@ -10,22 +10,30 @@ Configuration Example
     (
         [Parameter()]
         [System.String[]]
-        $NodeName = 'localhost'
+        $NodeName = 'localhost',
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullorEmpty()]
+        [System.Management.Automation.PSCredential]
+        $Credential
     )
 
     Import-DscResource -Module xAdcsDeployment
 
-    WindowsFeature ADCS-Online-Cert
+    Node $AllNodes.NodeName
     {
-        Ensure = 'Present'
-        Name   = 'ADCS-Online-Cert'
-    }
+        WindowsFeature ADCS-Online-Cert
+        {
+            Ensure = 'Present'
+            Name   = 'ADCS-Online-Cert'
+        }
 
-    xAdcsOnlineResponder OnlineResponder
-    {
-        Ensure           = 'Present'
-        IsSingleInstance = 'Yes'
-        Credential       = $Node.Credential
-        DependsOn        = '[WindowsFeature]ADCS-Online-Cert'
+        xAdcsOnlineResponder OnlineResponder
+        {
+            Ensure           = 'Present'
+            IsSingleInstance = 'Yes'
+            Credential       = $Credential
+            DependsOn        = '[WindowsFeature]ADCS-Online-Cert'
+        }
     }
 }

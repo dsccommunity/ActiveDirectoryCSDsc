@@ -15,15 +15,18 @@ Configuration Example
 
     Import-DscResource -Module xAdcsDeployment
 
-    xAdcsCertificationAuthority CertificateAuthority
+    Node $AllNodes.NodeName
     {
-        Ensure = 'Absent'
-    }
+        xAdcsCertificationAuthority CertificateAuthority
+        {
+            Ensure = 'Absent'
+        }
 
-    WindowsFeature ADCS-Cert-Authority
-    {
-        Ensure    = 'Absent'
-        Name      = 'ADCS-Cert-Authority'
-        DependsOn = '[xADCSCertificationAuthority]CertificateAuthority'
+        WindowsFeature ADCS-Cert-Authority
+        {
+            Ensure    = 'Absent'
+            Name      = 'ADCS-Cert-Authority'
+            DependsOn = '[xADCSCertificationAuthority]CertificateAuthority'
+        }
     }
 }
