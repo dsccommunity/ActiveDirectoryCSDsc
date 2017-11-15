@@ -1,9 +1,11 @@
 $script:DSCModuleName   = 'xAdcsDeployment'
 $script:DSCResourceName = 'MSFT_xAdcsCertificationAuthority'
 
+Import-Module -Name (Join-Path -Path (Join-Path -Path (Split-Path $PSScriptRoot -Parent) -ChildPath 'TestHelpers') -ChildPath 'CommonTestHelper.psm1') -Global
+
 #region HEADER
 # Integration Test Template Version: 1.1.0
-[String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+[System.String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
      (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
 {
@@ -22,353 +24,336 @@ try
 {
     #region Pester Tests
     InModuleScope $($script:DSCResourceName) {
+        $DSCResourceName = 'MSFT_xAdcsCertificationAuthority'
+
         if (-not ([System.Management.Automation.PSTypeName]'Microsoft.CertificateServices.Deployment.Common.CA.CertificationAuthoritySetupException').Type)
         {
             # Define the exception class:
             # Microsoft.CertificateServices.Deployment.Common.CA.CertificationAuthoritySetupException
             # so that unit tests can be run without ADCS being installed.
 
-            $ExceptionDefinition = @'
+            $exceptionDefinition = @'
 namespace Microsoft.CertificateServices.Deployment.Common.CA {
     public class CertificationAuthoritySetupException: System.Exception {
     }
 }
 '@
-            Add-Type -TypeDefinition $ExceptionDefinition
+            Add-Type -TypeDefinition $exceptionDefinition
         }
-        $DSCResourceName = 'MSFT_xAdcsCertificationAuthority'
 
-        $DummyCredential = New-Object System.Management.Automation.PSCredential ("Administrator",(New-Object -Type SecureString))
+        $dummyCredential = New-Object System.Management.Automation.PSCredential ("Administrator",(New-Object -Type SecureString))
 
-        $TestParametersPresent = @{
+        $testParametersPresent = @{
             Ensure     = 'Present'
             CAType     = 'StandaloneRootCA'
-            Credential = $DummyCredential
+            Credential = $dummyCredential
             Verbose    = $true
         }
 
-        $TestParametersAbsent = @{
+        $testParametersAbsent = @{
             Ensure     = 'Absent'
             CAType     = 'StandaloneRootCA'
-            Credential = $DummyCredential
+            Credential = $dummyCredential
             Verbose    = $true
+        }
+
+        function Install-AdcsCertificationAuthority {
+            [CmdletBinding()]
+            param
+            (
+                [Parameter(Mandatory = $True)]
+                [ValidateSet('EnterpriseRootCA','EnterpriseSubordinateCA','StandaloneRootCA','StandaloneSubordinateCA')]
+                [System.String]
+                $CAType,
+
+                [Parameter(Mandatory = $True)]
+                [System.Management.Automation.PSCredential]
+                $Credential,
+
+                [Parameter()]
+                [System.String]
+                $CACommonName,
+
+                [Parameter()]
+                [System.String]
+                $CADistinguishedNameSuffix,
+
+                [Parameter()]
+                [System.String]
+                $CertFile,
+
+                [Parameter()]
+                [System.Management.Automation.PSCredential]
+                $CertFilePassword,
+
+                [Parameter()]
+                [System.String]
+                $CertificateID,
+
+                [Parameter()]
+                [System.String]
+                $CryptoProviderName,
+
+                [Parameter()]
+                [System.String]
+                $DatabaseDirectory,
+
+                [Parameter()]
+                [System.String]
+                $HashAlgorithmName,
+
+                [Parameter()]
+                [System.Boolean]
+                $IgnoreUnicode,
+
+                [Parameter()]
+                [System.String]
+                $KeyContainerName,
+
+                [Parameter()]
+                [System.Uint32]
+                $KeyLength,
+
+                [Parameter()]
+                [System.String]
+                $LogDirectory,
+
+                [Parameter()]
+                [System.String]
+                $OutputCertRequestFile,
+
+                [Parameter()]
+                [System.Boolean]
+                $OverwriteExistingCAinDS,
+
+                [Parameter()]
+                [System.Boolean]
+                $OverwriteExistingDatabase,
+
+                [Parameter()]
+                [System.Boolean]
+                $OverwriteExistingKey,
+
+                [Parameter()]
+                [System.String]
+                $ParentCA,
+
+                [Parameter()]
+                [ValidateSet('Hours','Days','Months','Years')]
+                [System.String]
+                $ValidityPeriod,
+
+                [Parameter()]
+                [System.Uint32]
+                $ValidityPeriodUnits,
+
+                [Parameter()]
+                [Switch]
+                $Force,
+
+                [Parameter()]
+                [Switch]
+                $WhatIf
+            )
+        }
+
+        function Uninstall-AdcsCertificationAuthority {
+            [CmdletBinding()]
+            param
+            (
+                [Parameter()]
+                [Switch]
+                $Force
+            )
         }
 
         Describe "$DSCResourceName\Get-TargetResource" {
-
-            function Install-AdcsCertificationAuthority {
-                [CmdletBinding()]
-                param (
-                    [Parameter(Mandatory = $True)]
-                    [ValidateSet('EnterpriseRootCA','EnterpriseSubordinateCA','StandaloneRootCA','StandaloneSubordinateCA')]
-                    [string] $CAType,
-
-                    [Parameter(Mandatory = $True)]
-                    [pscredential] $Credential,
-
-                    [string] $CACommonName,
-
-                    [string] $CADistinguishedNameSuffix,
-
-                    [string] $CertFile,
-
-                    [pscredential] $CertFilePassword,
-
-                    [string] $CertificateID,
-
-                    [string] $CryptoProviderName,
-
-                    [string] $DatabaseDirectory,
-
-                    [string] $HashAlgorithmName,
-
-                    [boolean] $IgnoreUnicode,
-
-                    [string] $KeyContainerName,
-
-                    [uint32] $KeyLength,
-
-                    [string] $LogDirectory,
-
-                    [string] $OutputCertRequestFile,
-
-                    [boolean] $OverwriteExistingCAinDS,
-
-                    [boolean] $OverwriteExistingDatabase,
-
-                    [boolean] $OverwriteExistingKey,
-
-                    [string] $ParentCA,
-
-                    [ValidateSet('Hours','Days','Months','Years')]
-                    [string] $ValidityPeriod,
-
-                    [uint32] $ValidityPeriodUnits,
-
-                    [Switch] $Force,
-
-                    [Switch] $WhatIf
-                )
-            }
-
-            #region Mocks
-            Mock `
-                -CommandName Install-AdcsCertificationAuthority `
-                -MockWith { Throw (New-Object -TypeName 'Microsoft.CertificateServices.Deployment.Common.CA.CertificationAuthoritySetupException') } `
-                -Verifiable
-            #endregion
-
             Context 'CA is installed' {
-                $Result = Get-TargetResource @TestParametersPresent
+                Mock `
+                    -CommandName Install-AdcsCertificationAuthority `
+                    -MockWith { Throw (New-Object -TypeName 'Microsoft.CertificateServices.Deployment.Common.CA.CertificationAuthoritySetupException') } `
+                    -Verifiable
 
-                It 'should return Ensure set to Present' {
-                    $Result.Ensure  | Should Be 'Present'
+                $result = Get-TargetResource @testParametersPresent
+
+                It 'Should return Ensure set to Present' {
+                    $result.Ensure  | Should -Be 'Present'
                 }
 
-                It 'should call expected mocks' {
+                It 'Should call expected mocks' {
                     Assert-VerifiableMocks
+
                     Assert-MockCalled `
                         -CommandName Install-AdcsCertificationAuthority `
-                        -Exactly 1
+                        -Exactly `
+                        -Times 1
                 }
             }
-
-            #region Mocks
-            Mock `
-                -CommandName Install-AdcsCertificationAuthority
-            #endregion
 
             Context 'CA is not installed' {
-                $Result = Get-TargetResource @TestParametersPresent
+                Mock -CommandName Install-AdcsCertificationAuthority
 
-                It 'should return Ensure set to Absent' {
-                    $Result.Ensure  | Should Be 'Absent'
+                $result = Get-TargetResource @testParametersPresent
+
+                It 'Should return Ensure set to Absent' {
+                    $result.Ensure  | Should -Be 'Absent'
                 }
 
-                It 'should call expected mocks' {
+                It 'Should call expected mocks' {
                     Assert-MockCalled `
                         -CommandName Install-AdcsCertificationAuthority `
-                        -Exactly 1
+                        -Exactly `
+                        -Times 1
                 }
             }
         }
 
         Describe "$DSCResourceName\Set-TargetResource" {
-
-            function Install-AdcsCertificationAuthority {
-                [CmdletBinding()]
-                param (
-                    [Parameter(Mandatory = $True)]
-                    [ValidateSet('EnterpriseRootCA','EnterpriseSubordinateCA','StandaloneRootCA','StandaloneSubordinateCA')]
-                    [string] $CAType,
-
-                    [Parameter(Mandatory = $True)]
-                    [pscredential] $Credential,
-
-                    [string] $CACommonName,
-
-                    [string] $CADistinguishedNameSuffix,
-
-                    [string] $CertFile,
-
-                    [pscredential] $CertFilePassword,
-
-                    [string] $CertificateID,
-
-                    [string] $CryptoProviderName,
-
-                    [string] $DatabaseDirectory,
-
-                    [string] $HashAlgorithmName,
-
-                    [boolean] $IgnoreUnicode,
-
-                    [string] $KeyContainerName,
-
-                    [uint32] $KeyLength,
-
-                    [string] $LogDirectory,
-
-                    [string] $OutputCertRequestFile,
-
-                    [boolean] $OverwriteExistingCAinDS,
-
-                    [boolean] $OverwriteExistingDatabase,
-
-                    [boolean] $OverwriteExistingKey,
-
-                    [string] $ParentCA,
-
-                    [ValidateSet('Hours','Days','Months','Years')]
-                    [string] $ValidityPeriod,
-
-                    [uint32] $ValidityPeriodUnits,
-
-                    [Switch] $Force,
-
-                    [Switch] $WhatIf
-                )
-            }
-            function Uninstall-AdcsCertificationAuthority {
-                [CmdletBinding()]
-                param (
-                    [Switch] $Force
-                )
-            }
-
-            #region Mocks
-            Mock -CommandName Install-AdcsCertificationAuthority
-            Mock -CommandName Uninstall-AdcsCertificationAuthority
-            #endregion
-
             Context 'CA is not installed but should be' {
-                Set-TargetResource @TestParametersPresent
+                Mock -CommandName Install-AdcsCertificationAuthority
+                Mock -CommandName Uninstall-AdcsCertificationAuthority
 
-                It 'should call expected mocks' {
+                It 'Should not throw an exception' {
+                    { Set-TargetResource @testParametersPresent } | Should Not Throw
+                }
+
+                It 'Should call expected mocks' {
                     Assert-MockCalled `
                         -CommandName Install-AdcsCertificationAuthority `
-                        -Exactly 1
+                        -Exactly `
+                        -Times 1
+
                     Assert-MockCalled `
                         -CommandName Uninstall-AdcsCertificationAuthority `
-                        -Exactly 0
+                        -Exactly `
+                        -Times 0
+                }
+            }
+
+            Context 'CA is not installed but should be but an error is thrown installing it' {
+                Mock `
+                    -CommandName Install-AdcsCertificationAuthority `
+                    -MockWith { [PSObject] @{ ErrorString = 'Something went wrong' }}
+
+                Mock -CommandName Uninstall-AdcsCertificationAuthority
+
+                It 'Should throw exception' {
+                    $errorRecord = Get-InvalidOperationRecord -Message 'Something went wrong'
+
+                    { Set-TargetResource @testParametersPresent } | Should Throw $errorRecord
+                }
+
+                It 'Should call expected mocks' {
+                    Assert-MockCalled `
+                        -CommandName Install-AdcsCertificationAuthority `
+                        -Exactly `
+                        -Times 1
+
+                    Assert-MockCalled `
+                        -CommandName Uninstall-AdcsCertificationAuthority `
+                        -Exactly `
+                        -Times 0
                 }
             }
 
             Context 'CA is installed but should not be' {
-                Set-TargetResource @TestParametersAbsent
+                Mock -CommandName Install-AdcsCertificationAuthority
+                Mock -CommandName Uninstall-AdcsCertificationAuthority
 
-                It 'should call expected mocks' {
+                It 'Should not throw an exception' {
+                    { Set-TargetResource @testParametersAbsent } | Should Not Throw
+                }
+
+                It 'Should call expected mocks' {
                     Assert-MockCalled `
                         -CommandName Install-AdcsCertificationAuthority `
-                        -Exactly 0
+                        -Exactly `
+                        -Times 0
+
                     Assert-MockCalled `
                         -CommandName Uninstall-AdcsCertificationAuthority `
-                        -Exactly 1
+                        -Exactly `
+                        -Times 1
                 }
             }
         }
 
         Describe "$DSCResourceName\Test-TargetResource" {
-
-            function Install-AdcsCertificationAuthority {
-                [CmdletBinding()]
-                param (
-                    [Parameter(Mandatory = $True)]
-                    [ValidateSet('EnterpriseRootCA','EnterpriseSubordinateCA','StandaloneRootCA','StandaloneSubordinateCA')]
-                    [string] $CAType,
-
-                    [Parameter(Mandatory = $True)]
-                    [pscredential] $Credential,
-
-                    [string] $CACommonName,
-
-                    [string] $CADistinguishedNameSuffix,
-
-                    [string] $CertFile,
-
-                    [pscredential] $CertFilePassword,
-
-                    [string] $CertificateID,
-
-                    [string] $CryptoProviderName,
-
-                    [string] $DatabaseDirectory,
-
-                    [string] $HashAlgorithmName,
-
-                    [boolean] $IgnoreUnicode,
-
-                    [string] $KeyContainerName,
-
-                    [uint32] $KeyLength,
-
-                    [string] $LogDirectory,
-
-                    [string] $OutputCertRequestFile,
-
-                    [boolean] $OverwriteExistingCAinDS,
-
-                    [boolean] $OverwriteExistingDatabase,
-
-                    [boolean] $OverwriteExistingKey,
-
-                    [string] $ParentCA,
-
-                    [ValidateSet('Hours','Days','Months','Years')]
-                    [string] $ValidityPeriod,
-
-                    [uint32] $ValidityPeriodUnits,
-
-                    [Switch] $Force,
-
-                    [Switch] $WhatIf
-                )
-            }
-
-            #region Mocks
-            Mock -CommandName Install-AdcsCertificationAuthority `
-                -MockWith { Throw (New-Object -TypeName 'Microsoft.CertificateServices.Deployment.Common.CA.CertificationAuthoritySetupException') } `
-                -Verifiable
-            #endregion
-
             Context 'CA is installed and should be' {
-                $Result = Test-TargetResource @TestParametersPresent
+                Mock -CommandName Install-AdcsCertificationAuthority `
+                    -MockWith { Throw (New-Object -TypeName 'Microsoft.CertificateServices.Deployment.Common.CA.CertificationAuthoritySetupException') } `
+                    -Verifiable
 
-                It 'should return true' {
-                    $Result | Should be $True
+                $result = Test-TargetResource @testParametersPresent
+
+                It 'Should return true' {
+                    $result | Should -Be $True
                 }
-                It 'should call expected mocks' {
+
+                It 'Should call expected mocks' {
                     Assert-VerifiableMocks
                     Assert-MockCalled `
                         -CommandName Install-AdcsCertificationAuthority `
-                        -Exactly 1
+                        -Exactly `
+                        -Times 1
                 }
             }
 
             Context 'CA is installed but should not be' {
-                $Result = Test-TargetResource @TestParametersAbsent
+                Mock -CommandName Install-AdcsCertificationAuthority `
+                    -MockWith { Throw (New-Object -TypeName 'Microsoft.CertificateServices.Deployment.Common.CA.CertificationAuthoritySetupException') } `
+                    -Verifiable
 
-                It 'should return false' {
-                    $Result | Should be $False
+                $result = Test-TargetResource @testParametersAbsent
+
+                It 'Should return false' {
+                    $result | Should -Be $False
                 }
-                It 'should call expected mocks' {
+
+                It 'Should call expected mocks' {
                     Assert-VerifiableMocks
                     Assert-MockCalled `
                         -CommandName Install-AdcsCertificationAuthority `
-                        -Exactly 1
+                        -Exactly `
+                        -Times 1
                 }
             }
 
-            #region Mocks
-            Mock -CommandName Install-AdcsCertificationAuthority `
-                -Verifiable
-            #endregion
-
             Context 'CA is not installed but should be' {
-                $Result = Test-TargetResource @TestParametersPresent
+                Mock -CommandName Install-AdcsCertificationAuthority `
+                    -Verifiable
 
-                It 'should return false' {
-                    $Result | Should be $false
+                $result = Test-TargetResource @testParametersPresent
+
+                It 'Should return false' {
+                    $result | Should -Be $false
                 }
-                It 'should call expected mocks' {
+
+                It 'Should call expected mocks' {
                     Assert-VerifiableMocks
                     Assert-MockCalled `
                         -CommandName Install-AdcsCertificationAuthority `
-                        -Exactly 1
+                        -Exactly `
+                        -Times 1
                 }
             }
 
             Context 'CA is not installed and should not be' {
-                $Result = Test-TargetResource @TestParametersAbsent
+                Mock -CommandName Install-AdcsCertificationAuthority `
+                    -Verifiable
 
-                It 'should return true' {
-                    $Result | Should be $True
+                $result = Test-TargetResource @testParametersAbsent
+
+                It 'Should return true' {
+                    $result | Should -Be $True
                 }
-                It 'should call expected mocks' {
+
+                It 'Should call expected mocks' {
                     Assert-VerifiableMocks
                     Assert-MockCalled `
                         -CommandName Install-AdcsCertificationAuthority `
-                        -Exactly 1
+                        -Exactly `
+                        -Times 1
                 }
             }
         }
