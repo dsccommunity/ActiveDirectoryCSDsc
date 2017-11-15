@@ -1,6 +1,6 @@
 @{
     # Version number of this module.
-    ModuleVersion     = '1.2.0.0'
+    ModuleVersion = '1.3.0.0'
 
     # ID used to uniquely identify this module
     GUID              = 'f8ddd7fc-c6d6-469e-8a80-c96efabe2fcc'
@@ -47,10 +47,31 @@
             # IconUri = ''
 
             # ReleaseNotes of this module
-            ReleaseNotes = '- xAdcsWebEnrollment:
-- xAdcsWebEnrollment.psm1 - Change reference and variable from CAType to CAConfig
+        ReleaseNotes = '- Updated to meet HQRM guidelines - fixes
+  [issue 33](https://github.com/PowerShell/xAdcsDeployment/issues/33).
+- Fixed markdown rule violations in README.MD.
+- Change examples to meet HQRM standards and optin to Example validation
+  tests.
+- Replaced examples in README.MD to links to Example files.
+- Added the VS Code PowerShell extension formatting settings that cause PowerShell
+  files to be formatted as per the DSC Resource kit style guidelines.
+- Opted into Common Tests "Validate Module Files" and "Validate Script Files".
+- Corrected description in manifest.
+- Added .github support files:
+  - CONTRIBUTING.md
+  - ISSUE_TEMPLATE.md
+  - PULL_REQUEST_TEMPLATE.md
+- Resolved all PSScriptAnalyzer warnings and style guide warnings.
+- Converted all tests to meet Pester V4 guidelines - fixes
+  [issue 32](https://github.com/PowerShell/xAdcsDeployment/issues/32).
+- Fixed spelling mistakes in README.MD.
+- Fix to ensure exception thrown if failed to install or uninstall service - fixes
+  [issue 3](https://github.com/PowerShell/xAdcsDeployment/issues/3).
+- Converted AppVeyor.yml to use shared AppVeyor module in DSCResource.Tests - fixes
+  [issue 29](https://github.com/PowerShell/xAdcsDeployment/issues/29).
 
 '
         } # End of PSData hashtable
     } # End of PrivateData hashtable
 }
+
