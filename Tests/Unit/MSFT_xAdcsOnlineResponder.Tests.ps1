@@ -1,6 +1,8 @@
 $script:DSCModuleName   = 'xAdcsDeployment'
 $script:DSCResourceName = 'MSFT_xAdcsOnlineResponder'
 
+Import-Module -Name (Join-Path -Path (Join-Path -Path (Split-Path $PSScriptRoot -Parent) -ChildPath 'TestHelpers') -ChildPath 'CommonTestHelper.psm1') -Global
+
 #region HEADER
 # Integration Test Template Version: 1.1.0
 [String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
@@ -22,6 +24,8 @@ try
 {
     #region Pester Tests
     InModuleScope $script:DSCResourceName {
+        $DSCResourceName = 'MSFT_xAdcsOnlineResponder'
+
         if (-not ([System.Management.Automation.PSTypeName]'Microsoft.CertificateServices.Deployment.Common.OCSP.OnlineResponderSetupException').Type)
         {
             # Define the exception class:
@@ -37,11 +41,9 @@ namespace Microsoft.CertificateServices.Deployment.Common.OCSP {
             Add-Type -TypeDefinition $ExceptionDefinition
         }
 
-        $DSCResourceName = 'MSFT_xAdcsOnlineResponder'
-
         $DummyCredential = New-Object System.Management.Automation.PSCredential ("Administrator",(New-Object -Type SecureString))
 
-        $TestParametersPresent = @{
+        $testParametersPresent = @{
             IsSingleInstance = 'Yes'
             Ensure           = 'Present'
             Credential       = $DummyCredential
@@ -55,189 +57,223 @@ namespace Microsoft.CertificateServices.Deployment.Common.OCSP {
             Verbose          = $true
         }
 
+        function Install-AdcsOnlineResponder {
+            [CmdletBinding()]
+            param
+            (
+                [Parameter()]
+                [System.Management.Automation.PSCredential]
+                $Credential,
+
+                [Parameter()]
+                [Switch]
+                $Force,
+
+                [Parameter()]
+                [Switch]
+                $WhatIf
+            )
+        }
+
+        function Uninstall-AdcsOnlineResponder {
+            [CmdletBinding()]
+            param
+            (
+                [Parameter()]
+                [Switch]
+                $Force
+            )
+        }
+
         Describe "$DSCResourceName\Get-TargetResource" {
-
-            function Install-AdcsOnlineResponder {
-                [CmdletBinding()]
-                param(
-                    [PSCredential] $Credential,
-
-                    [Switch] $Force,
-
-                    [Switch] $WhatIf
-                )
-            }
-
-            #region Mocks
-            Mock `
-                -CommandName Install-AdcsOnlineResponder `
-                -MockWith { Throw (New-Object -TypeName 'Microsoft.CertificateServices.Deployment.Common.OCSP.OnlineResponderSetupException') } `
-                -Verifiable
-            #endregion
-
             Context 'Online Responder is installed' {
-                $Result = Get-TargetResource @TestParametersPresent
+                Mock `
+                    -CommandName Install-AdcsOnlineResponder `
+                    -MockWith { Throw (New-Object -TypeName 'Microsoft.CertificateServices.Deployment.Common.OCSP.OnlineResponderSetupException') } `
+                    -Verifiable
 
-                It 'should return Ensure set to Present' {
-                    $Result.Ensure  | Should Be 'Present'
+                $result = Get-TargetResource @testParametersPresent
+
+                It 'Should return Ensure set to Present' {
+                    $result.Ensure  | Should -Be 'Present'
                 }
 
-                It 'should call expected mocks' {
+                It 'Should call expected mocks' {
                     Assert-VerifiableMocks
                     Assert-MockCalled `
                         -CommandName Install-AdcsOnlineResponder `
-                        -Exactly 1
+                        -Exactly `
+                        -Times 1
                 }
             }
 
-            #region Mocks
-            Mock `
-                -CommandName Install-AdcsOnlineResponder
-            #endregion
-
             Context 'Online Responder is not installed' {
-                $Result = Get-TargetResource @TestParametersPresent
+                Mock -CommandName Install-AdcsOnlineResponder
 
-                It 'should return Ensure set to Absent' {
-                    $Result.Ensure  | Should Be 'Absent'
+                $result = Get-TargetResource @testParametersPresent
+
+                It 'Should return Ensure set to Absent' {
+                    $result.Ensure  | Should -Be 'Absent'
                 }
 
-                It 'should call expected mocks' {
+                It 'Should call expected mocks' {
                     Assert-MockCalled `
                         -CommandName Install-AdcsOnlineResponder `
-                        -Exactly 1
+                        -Exactly `
+                        -Times 1
                 }
             }
         }
 
         Describe "$DSCResourceName\Set-TargetResource" {
-
-            function Install-AdcsOnlineResponder {
-                [CmdletBinding()]
-                param(
-                    [PSCredential] $Credential,
-
-                    [Switch] $Force,
-
-                    [Switch] $WhatIf
-                )
-            }
-            function Uninstall-AdcsOnlineResponder {
-                [CmdletBinding()]
-                param(
-                    [Switch] $Force
-                )
-            }
-
-            #region Mocks
-            Mock -CommandName Install-AdcsOnlineResponder
-            Mock -CommandName Uninstall-AdcsOnlineResponder
-            #endregion
-
             Context 'Online Responder is not installed but should be' {
-                Set-TargetResource @TestParametersPresent
+                Mock -CommandName Install-AdcsOnlineResponder
+                Mock -CommandName Uninstall-AdcsOnlineResponder
 
-                It 'should call expected mocks' {
+                It 'Should not throw an exception' {
+                    { Set-TargetResource @testParametersPresent } | Should Not Throw
+                }
+
+                It 'Should call expected mocks' {
                     Assert-MockCalled `
                         -CommandName Install-AdcsOnlineResponder `
-                        -Exactly 1
+                        -Exactly `
+                        -Times 1
+
                     Assert-MockCalled `
                         -CommandName Uninstall-AdcsOnlineResponder `
-                        -Exactly 0
+                        -Exactly `
+                        -Times 0
+                }
+            }
+
+            Context 'Online Responder is not installed but should be but an error is thrown installing it' {
+                Mock -CommandName Install-AdcsOnlineResponder `
+                    -MockWith { [PSObject] @{ ErrorString = 'Something went wrong' }}
+
+                Mock -CommandName Uninstall-AdcsOnlineResponder
+
+                It 'Should throw an exception' {
+                    $errorRecord = Get-InvalidOperationRecord -Message 'Something went wrong'
+
+                    { Set-TargetResource @testParametersPresent } | Should Throw $errorRecord
+                }
+
+                It 'Should call expected mocks' {
+                    Assert-MockCalled `
+                        -CommandName Install-AdcsOnlineResponder `
+                        -Exactly `
+                        -Times 1
+
+                    Assert-MockCalled `
+                        -CommandName Uninstall-AdcsOnlineResponder `
+                        -Exactly `
+                        -Times 0
                 }
             }
 
             Context 'Online Responder is installed but should not be' {
-                Set-TargetResource @TestParametersAbsent
+                Mock -CommandName Install-AdcsOnlineResponder
+                Mock -CommandName Uninstall-AdcsOnlineResponder
 
-                It 'should call expected mocks' {
+                It 'Should not throw an exception' {
+                    { Set-TargetResource @TestParametersAbsent } | Should Not Throw
+                }
+
+                It 'Should call expected mocks' {
                     Assert-MockCalled `
                         -CommandName Install-AdcsOnlineResponder `
-                        -Exactly 0
+                        -Exactly `
+                        -Times 0
+
                     Assert-MockCalled `
                         -CommandName Uninstall-AdcsOnlineResponder `
-                        -Exactly 1
+                        -Exactly `
+                        -Times 1
                 }
             }
         }
 
         Describe "$DSCResourceName\Test-TargetResource" {
+            Context 'Online Responder is installed' {
+                Context 'Online Responder should be installed' {
+                    Mock -CommandName Install-AdcsOnlineResponder `
+                        -MockWith { Throw (New-Object -TypeName 'Microsoft.CertificateServices.Deployment.Common.OCSP.OnlineResponderSetupException') } `
+                        -Verifiable
 
-            function Install-AdcsOnlineResponder {
-                [CmdletBinding()]
-                param(
-                    [PSCredential] $Credential,
+                    $result = Test-TargetResource @testParametersPresent
 
-                    [Switch] $Force,
+                    It 'Should return true' {
+                        $result | Should -Be $True
+                    }
 
-                    [Switch] $WhatIf
-                )
-            }
-
-            #region Mocks
-            Mock -CommandName Install-AdcsOnlineResponder `
-                -MockWith { Throw (New-Object -TypeName 'Microsoft.CertificateServices.Deployment.Common.OCSP.OnlineResponderSetupException') } `
-                -Verifiable
-            #endregion
-
-            Context 'Online Responder is installed and should be' {
-                $Result = Test-TargetResource @TestParametersPresent
-
-                It 'should return true' {
-                    $Result | Should be $True
+                    It 'Should call expected mocks' {
+                        Assert-VerifiableMocks
+                        Assert-MockCalled `
+                            -CommandName Install-AdcsOnlineResponder `
+                            -Exactly `
+                            -Times 1
+                    }
                 }
-                It 'should call expected mocks' {
-                    Assert-VerifiableMocks
-                    Assert-MockCalled `
-                        -CommandName Install-AdcsOnlineResponder `
-                        -Exactly 1
-                }
-            }
 
-            Context 'Online Responder is installed but should not be' {
-                $Result = Test-TargetResource @TestParametersAbsent
+                Context 'Online Responder should not be installed' {
+                    Mock -CommandName Install-AdcsOnlineResponder `
+                        -MockWith { Throw (New-Object -TypeName 'Microsoft.CertificateServices.Deployment.Common.OCSP.OnlineResponderSetupException') } `
+                        -Verifiable
 
-                It 'should return false' {
-                    $Result | Should be $False
-                }
-                It 'should call expected mocks' {
-                    Assert-VerifiableMocks
-                    Assert-MockCalled `
-                        -CommandName Install-AdcsOnlineResponder `
-                        -Exactly 1
+                    $result = Test-TargetResource @TestParametersAbsent
+
+                    It 'Should return false' {
+                        $result | Should -Be $False
+                    }
+
+                    It 'Should call expected mocks' {
+                        Assert-VerifiableMocks
+                        Assert-MockCalled `
+                            -CommandName Install-AdcsOnlineResponder `
+                            -Exactly `
+                            -Times 1
+                    }
                 }
             }
 
-            #region Mocks
-            Mock -CommandName Install-AdcsOnlineResponder `
-                -Verifiable
-            #endregion
+            Context 'Online Responder is not installed' {
+                Context 'Online Responder should be installed' {
+                    Mock -CommandName Install-AdcsOnlineResponder `
+                        -Verifiable
 
-            Context 'Online Responder is not installed but should be' {
-                $Result = Test-TargetResource @TestParametersPresent
+                    $result = Test-TargetResource @testParametersPresent
 
-                It 'should return false' {
-                    $Result | Should be $false
+                    It 'Should return false' {
+                        $result | Should -Be $false
+                    }
+
+                    It 'Should call expected mocks' {
+                        Assert-VerifiableMocks
+                        Assert-MockCalled `
+                            -CommandName Install-AdcsOnlineResponder `
+                            -Exactly `
+                            -Times 1
+                    }
                 }
-                It 'should call expected mocks' {
-                    Assert-VerifiableMocks
-                    Assert-MockCalled `
-                        -CommandName Install-AdcsOnlineResponder `
-                        -Exactly 1
-                }
-            }
 
-            Context 'Online Responder is not installed and should not be' {
-                $Result = Test-TargetResource @TestParametersAbsent
+                Context 'Online Responder should not be installed' {
+                    Mock -CommandName Install-AdcsOnlineResponder `
+                        -Verifiable
 
-                It 'should return true' {
-                    $Result | Should be $True
-                }
-                It 'should call expected mocks' {
-                    Assert-VerifiableMocks
-                    Assert-MockCalled `
-                        -CommandName Install-AdcsOnlineResponder `
-                        -Exactly 1
+                    $result = Test-TargetResource @TestParametersAbsent
+
+                    It 'Should return true' {
+                        $result | Should -Be $True
+                    }
+
+                    It 'Should call expected mocks' {
+                        Assert-VerifiableMocks
+                        Assert-MockCalled `
+                            -CommandName Install-AdcsOnlineResponder `
+                            -Exactly `
+                            -Times 1
+                    }
                 }
             }
         }

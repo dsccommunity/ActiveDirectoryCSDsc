@@ -1,13 +1,15 @@
-$script:DSCModuleName   = 'xAdcsDeployment'
+$script:DSCModuleName = 'xAdcsDeployment'
 $script:DSCResourceName = 'MSFT_xAdcsWebEnrollment'
+
+Import-Module -Name (Join-Path -Path (Join-Path -Path (Split-Path $PSScriptRoot -Parent) -ChildPath 'TestHelpers') -ChildPath 'CommonTestHelper.psm1') -Global
 
 #region HEADER
 # Integration Test Template Version: 1.1.0
 [String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
-     (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
+    (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
 {
-    & git @('clone','https://github.com/PowerShell/DscResource.Tests.git',(Join-Path -Path $script:moduleRoot -ChildPath '\DSCResource.Tests\'))
+    & git @('clone', 'https://github.com/PowerShell/DscResource.Tests.git', (Join-Path -Path $script:moduleRoot -ChildPath '\DSCResource.Tests\'))
 }
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
@@ -39,212 +41,252 @@ namespace Microsoft.CertificateServices.Deployment.Common.WEP {
 
         $DSCResourceName = 'MSFT_xAdcsWebEnrollment'
 
-        $DummyCredential = New-Object System.Management.Automation.PSCredential ("Administrator",(New-Object -Type SecureString))
+        $dummyCredential = New-Object System.Management.Automation.PSCredential ("Administrator", (New-Object -Type SecureString))
 
-        $TestParametersPresent = @{
+        $testParametersPresent = @{
             IsSingleInstance = 'Yes'
             Ensure           = 'Present'
             CAConfig         = 'CAConfig'
-            Credential       = $DummyCredential
+            Credential       = $dummyCredential
             Verbose          = $true
         }
 
-        $TestParametersAbsent = @{
+        $testParametersAbsent = @{
             IsSingleInstance = 'Yes'
             Ensure           = 'Absent'
-            Credential       = $DummyCredential
+            Credential       = $dummyCredential
             Verbose          = $true
+        }
+
+        function Install-AdcsWebEnrollment
+        {
+            [CmdletBinding()]
+            param
+            (
+                [Parameter()]
+                [String]
+                $CAConfig,
+
+                [Parameter()]
+                [System.Management.Automation.PSCredential]
+                $Credential,
+
+                [Parameter()]
+                [Switch]
+                $Force,
+
+                [Parameter()]
+                [Switch]
+                $WhatIf
+            )
+        }
+
+        function Uninstall-AdcsWebEnrollment
+        {
+            [CmdletBinding()]
+            param
+            (
+                [Parameter()]
+                [Switch]
+                $Force
+            )
         }
 
         Describe "$DSCResourceName\Get-TargetResource" {
-
-            function Install-AdcsWebEnrollment {
-                [CmdletBinding()]
-                param(
-                    [String] $CAConfig,
-
-                    [PSCredential] $Credential,
-
-                    [Switch] $Force,
-
-                    [Switch] $WhatIf
-                )
-            }
-
-            #region Mocks
-            Mock `
-                -CommandName Install-AdcsWebEnrollment `
-                -MockWith { Throw (New-Object -TypeName 'Microsoft.CertificateServices.Deployment.Common.WEP.WebEnrollmentSetupException') } `
-                -Verifiable
-            #endregion
-
             Context 'Web Enrollment is installed' {
-                $Result = Get-TargetResource @TestParametersPresent
+                Mock `
+                    -CommandName Install-AdcsWebEnrollment `
+                    -MockWith { Throw (New-Object -TypeName 'Microsoft.CertificateServices.Deployment.Common.WEP.WebEnrollmentSetupException') } `
+                    -Verifiable
 
-                It 'should return Ensure set to Present' {
-                    $Result.Ensure  | Should Be 'Present'
+                $result = Get-TargetResource @testParametersPresent
+
+                It 'Should return Ensure set to Present' {
+                    $result.Ensure | Should -Be 'Present'
                 }
 
-                It 'should call expected mocks' {
+                It 'Should call expected mocks' {
                     Assert-VerifiableMocks
+
                     Assert-MockCalled `
                         -CommandName Install-AdcsWebEnrollment `
-                        -Exactly 1
+                        -Exactly `
+                        -Times 1
                 }
             }
-
-            #region Mocks
-            Mock `
-                -CommandName Install-AdcsWebEnrollment
-            #endregion
 
             Context 'Web Enrollment is not installed' {
-                $Result = Get-TargetResource @TestParametersPresent
+                Mock `
+                    -CommandName Install-AdcsWebEnrollment
 
-                It 'should return Ensure set to Absent' {
-                    $Result.Ensure  | Should Be 'Absent'
+                $result = Get-TargetResource @testParametersPresent
+
+                It 'Should return Ensure set to Absent' {
+                    $result.Ensure | Should -Be 'Absent'
                 }
 
-                It 'should call expected mocks' {
+                It 'Should call expected mocks' {
                     Assert-MockCalled `
                         -CommandName Install-AdcsWebEnrollment `
-                        -Exactly 1
+                        -Exactly `
+                        -Times 1
                 }
             }
         }
 
         Describe "$DSCResourceName\Set-TargetResource" {
-
-            function Install-AdcsWebEnrollment {
-                [CmdletBinding()]
-                param(
-                    [String] $CAConfig,
-
-                    [PSCredential] $Credential,
-
-                    [Switch] $Force,
-
-                    [Switch] $WhatIf
-                )
-            }
-            function Uninstall-AdcsWebEnrollment {
-                [CmdletBinding()]
-                param(
-                    [Switch] $Force
-                )
-            }
-
-            #region Mocks
-            Mock -CommandName Install-AdcsWebEnrollment
-            Mock -CommandName Uninstall-AdcsWebEnrollment
-            #endregion
-
             Context 'Web Enrollment is not installed but should be' {
-                Set-TargetResource @TestParametersPresent
+                Mock -CommandName Install-AdcsWebEnrollment
+                Mock -CommandName Uninstall-AdcsWebEnrollment
 
-                It 'should call expected mocks' {
+                It 'Should not throw an exception' {
+                    { Set-TargetResource @testParametersPresent } | Should Not Throw
+                }
+
+                It 'Should call expected mocks' {
                     Assert-MockCalled `
                         -CommandName Install-AdcsWebEnrollment `
-                        -Exactly 1
+                        -Exactly `
+                        -Times 1
+
                     Assert-MockCalled `
                         -CommandName Uninstall-AdcsWebEnrollment `
-                        -Exactly 0
+                        -Exactly `
+                        -Times 0
+                }
+            }
+
+            Context 'Web Enrollment is not installed but should be but an error is thrown installing it' {
+                Mock -CommandName Install-AdcsWebEnrollment `
+                    -MockWith { [PSObject] @{ ErrorString = 'Something went wrong' }}
+
+                Mock -CommandName Uninstall-AdcsWebEnrollment
+
+                It 'Should not throw an exception' {
+                    $errorRecord = Get-InvalidOperationRecord -Message 'Something went wrong'
+
+                    { Set-TargetResource @testParametersPresent } | Should Throw $errorRecord
+                }
+
+                It 'Should call expected mocks' {
+                    Assert-MockCalled `
+                        -CommandName Install-AdcsWebEnrollment `
+                        -Exactly `
+                        -Times 1
+
+                    Assert-MockCalled `
+                        -CommandName Uninstall-AdcsWebEnrollment `
+                        -Exactly `
+                        -Times 0
                 }
             }
 
             Context 'Web Enrollment is installed but should not be' {
-                Set-TargetResource @TestParametersAbsent
+                Mock -CommandName Install-AdcsWebEnrollment
+                Mock -CommandName Uninstall-AdcsWebEnrollment
 
-                It 'should call expected mocks' {
+                It 'Should not throw an exception' {
+                    { Set-TargetResource @TestParametersAbsent } | Should Not Throw
+                }
+
+                It 'Should call expected mocks' {
                     Assert-MockCalled `
                         -CommandName Install-AdcsWebEnrollment `
-                        -Exactly 0
+                        -Exactly `
+                        -Times 0
+
                     Assert-MockCalled `
                         -CommandName Uninstall-AdcsWebEnrollment `
-                        -Exactly 1
+                        -Exactly `
+                        -Times 1
                 }
             }
         }
 
         Describe "$DSCResourceName\Test-TargetResource" {
-
-            function Install-AdcsWebEnrollment {
-                [CmdletBinding()]
-                param(
-                    [String] $CAConfig,
-
-                    [PSCredential] $Credential,
-
-                    [Switch] $Force,
-
-                    [Switch] $WhatIf
-                )
-            }
-
-            #region Mocks
-            Mock -CommandName Install-AdcsWebEnrollment `
-                -MockWith { Throw (New-Object -TypeName 'Microsoft.CertificateServices.Deployment.Common.WEP.WebEnrollmentSetupException') } `
-                -Verifiable
-            #endregion
-
-            Context 'Web Enrollment is installed and should be' {
-                $Result = Test-TargetResource @TestParametersPresent
-
-                It 'should return true' {
-                    $Result | Should be $True
-                }
-                It 'should call expected mocks' {
-                    Assert-VerifiableMocks
-                    Assert-MockCalled `
+            Context 'Web Enrollment is installed' {
+                Context 'Web Enrollment should be installed' {
+                    Mock `
                         -CommandName Install-AdcsWebEnrollment `
-                        -Exactly 1
-                }
-            }
+                        -MockWith { Throw (New-Object -TypeName 'Microsoft.CertificateServices.Deployment.Common.WEP.WebEnrollmentSetupException') } `
+                        -Verifiable
 
-            Context 'Web Enrollment is installed but should not be' {
-                $Result = Test-TargetResource @TestParametersAbsent
+                    $result = Test-TargetResource @testParametersPresent
 
-                It 'should return false' {
-                    $Result | Should be $False
+                    It 'Should return true' {
+                        $result | Should -Be $True
+                    }
+
+                    It 'Should call expected mocks' {
+                        Assert-VerifiableMocks
+
+                        Assert-MockCalled `
+                            -CommandName Install-AdcsWebEnrollment `
+                            -Exactly `
+                            -Times 1
+                    }
                 }
-                It 'should call expected mocks' {
-                    Assert-VerifiableMocks
-                    Assert-MockCalled `
+
+                Context 'Web Enrollment should not be installed' {
+                    Mock `
                         -CommandName Install-AdcsWebEnrollment `
-                        -Exactly 1
-                }
-            }
+                        -MockWith { Throw (New-Object -TypeName 'Microsoft.CertificateServices.Deployment.Common.WEP.WebEnrollmentSetupException') } `
+                        -Verifiable
 
-            #region Mocks
-            Mock -CommandName Install-AdcsWebEnrollment `
-                -Verifiable
-            #endregion
+                    $result = Test-TargetResource @testParametersAbsent
 
-            Context 'Web Enrollment is not installed but should be' {
-                $Result = Test-TargetResource @TestParametersPresent
+                    It 'Should return false' {
+                        $result | Should -Be $False
+                    }
 
-                It 'should return false' {
-                    $Result | Should be $false
-                }
-                It 'should call expected mocks' {
-                    Assert-VerifiableMocks
-                    Assert-MockCalled `
-                        -CommandName Install-AdcsWebEnrollment `
-                        -Exactly 1
+                    It 'Should call expected mocks' {
+                        Assert-VerifiableMocks
+
+                        Assert-MockCalled `
+                            -CommandName Install-AdcsWebEnrollment `
+                            -Exactly `
+                            -Times 1
+                    }
                 }
             }
 
-            Context 'Web Enrollment is not installed and should not be' {
-                $Result = Test-TargetResource @TestParametersAbsent
+            Context 'Web Enrollment is not installed' {
+                Context 'Web Enrollment should be installed' {
+                    Mock -CommandName Install-AdcsWebEnrollment -Verifiable
 
-                It 'should return true' {
-                    $Result | Should be $True
+                    $result = Test-TargetResource @testParametersPresent
+
+                    It 'Should return false' {
+                        $result | Should -Be $false
+                    }
+
+                    It 'Should call expected mocks' {
+                        Assert-VerifiableMocks
+
+                        Assert-MockCalled `
+                            -CommandName Install-AdcsWebEnrollment `
+                            -Exactly `
+                            -Times 1
+                    }
                 }
-                It 'should call expected mocks' {
-                    Assert-VerifiableMocks
-                    Assert-MockCalled `
-                        -CommandName Install-AdcsWebEnrollment `
-                        -Exactly 1
+
+                Context 'Web Enrollment should not be installed' {
+                    Mock -CommandName Install-AdcsWebEnrollment -Verifiable
+
+                    $result = Test-TargetResource @testParametersAbsent
+
+                    It 'Should return true' {
+                        $result | Should -Be $True
+                    }
+
+                    It 'Should call expected mocks' {
+                        Assert-VerifiableMocks
+
+                        Assert-MockCalled `
+                            -CommandName Install-AdcsWebEnrollment `
+                            -Exactly `
+                            -Times 1
+                    }
                 }
             }
         }

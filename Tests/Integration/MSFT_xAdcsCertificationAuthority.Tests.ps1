@@ -3,25 +3,29 @@
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
 param ()
 
-# IMPORTANT: To run these tests requires a local Administrator account to be
-# available on the machine running the tests that can be used to install the
-# ADCS component being tested. Please change the following values to the
-# credentials that are set up for this purpose.
-# When these tests are run on AppVeyor, ADCS-Cert-Authority will be installed
-# and a new Administrator account will be created that uses credentials that
-# match the ones following.
-$script:adminUsername   = 'AdcsAdmin'
-$script:adminPassword   = 'NotPass12!'
-$script:DSCModuleName   = 'xAdcsDeployment'
+<#
+    IMPORTANT: To run these tests requires a local Administrator account to be
+    available on the machine running the tests that can be used to install the
+    ADCS component being tested. Please change the following values to the
+    credentials that are set up for this purpose.
+    When these tests are run on AppVeyor, ADCS-Cert-Authority will be installed
+    and a new Administrator account will be created that uses credentials that
+    match the ones following.
+#>
+$script:adminUsername = 'AdcsAdmin'
+$script:adminPassword = 'NotPass12!'
+$script:DSCModuleName = 'xAdcsDeployment'
 $script:DSCResourceName = 'MSFT_xAdcsCertificationAuthority'
+
+Import-Module -Name (Join-Path -Path (Join-Path -Path (Split-Path $PSScriptRoot -Parent) -ChildPath 'TestHelpers') -ChildPath 'CommonTestHelper.psm1') -Global
 
 #region HEADER
 # Integration Test Template Version: 1.1.1
 [String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
-     (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
+    (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
 {
-    & git @('clone','https://github.com/PowerShell/DscResource.Tests.git',(Join-Path -Path $script:moduleRoot -ChildPath '\DSCResource.Tests\'))
+    & git @('clone', 'https://github.com/PowerShell/DscResource.Tests.git', (Join-Path -Path $script:moduleRoot -ChildPath '\DSCResource.Tests\'))
 }
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
@@ -34,11 +38,6 @@ $TestEnvironment = Initialize-TestEnvironment `
 # Using try/finally to always cleanup even if something awful happens.
 try
 {
-    # Import the common integration test functions
-    Import-Module -Name ( Join-Path `
-        -Path $PSScriptRoot `
-        -ChildPath 'IntegrationTestsCommon.psm1' )
-
     # Ensure that the tests can be performed on this computer
     if (-not (Test-WindowsFeature -Name 'ADCS-Cert-Authority'))
     {
@@ -52,11 +51,12 @@ try
     Describe "$($script:DSCResourceName)_Install_Integration" {
         Context 'Install ADCS Certification Authority' {
             #region DEFAULT TESTS
-            It 'Should compile without throwing' {
+            It 'Should compile and apply the MOF without throwing' {
                 {
                     $secureAdminPassword = ConvertTo-SecureString -String $script:adminPassword -AsPlainText -Force
                     $adminCred = New-Object -TypeName System.Management.Automation.PSCredential `
-                        -ArgumentList ($script:adminUsername,$secureAdminPassword)
+                        -ArgumentList ($script:adminUsername, $secureAdminPassword)
+
                     $ConfigData = @{
                         AllNodes = @(
                             @{
@@ -70,13 +70,19 @@ try
                     & "$($script:DSCResourceName)_Install_Config" `
                         -OutputPath $TestDrive `
                         -ConfigurationData $ConfigData
-                    Start-DscConfiguration -Path $TestDrive `
-                        -ComputerName localhost -Wait -Verbose -Force
-                } | Should not throw
+
+                    Start-DscConfiguration `
+                        -Path $TestDrive `
+                        -ComputerName localhost `
+                        -Wait `
+                        -Verbose `
+                        -Force `
+                        -ErrorAction Stop
+                } | Should -Not -Throw
             }
 
-            It 'should be able to call Get-DscConfiguration without throwing' {
-                { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should Not throw
+            It 'Should be able to call Get-DscConfiguration without throwing' {
+                { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
             }
             #endregion
 
@@ -84,7 +90,7 @@ try
                 $current = Get-DscConfiguration | Where-Object {
                     $_.ConfigurationName -eq "$($script:DSCResourceName)_Install_Config"
                 }
-                $current.Ensure           | Should Be 'Present'
+                $current.Ensure | Should -Be 'Present'
             }
         }
     }
@@ -95,11 +101,12 @@ try
     Describe "$($script:DSCResourceName)_Uninstall_Integration" {
         Context 'Uninstall ADCS Certification Authority' {
             #region DEFAULT TESTS
-            It 'Should compile without throwing' {
+            It 'Should compile and apply the MOF without throwing' {
                 {
                     $secureAdminPassword = ConvertTo-SecureString -String $script:adminPassword -AsPlainText -Force
                     $adminCred = New-Object -TypeName System.Management.Automation.PSCredential `
-                        -ArgumentList ($script:adminUsername,$secureAdminPassword)
+                        -ArgumentList ($script:adminUsername, $secureAdminPassword)
+
                     $ConfigData = @{
                         AllNodes = @(
                             @{
@@ -112,14 +119,21 @@ try
 
                     & "$($script:DSCResourceName)_Uninstall_Config" `
                         -OutputPath $TestDrive `
-                        -ConfigurationData $ConfigData
-                    Start-DscConfiguration -Path $TestDrive `
-                        -ComputerName localhost -Wait -Verbose -Force
-                } | Should not throw
+                        -ConfigurationData $ConfigData `
+                        -ErrorAction Stop
+
+                    Start-DscConfiguration `
+                        -Path $TestDrive `
+                        -ComputerName localhost `
+                        -Wait `
+                        -Verbose `
+                        -Force `
+                        -ErrorAction Stop
+                } | Should -Not -Throw
             }
 
-            It 'should be able to call Get-DscConfiguration without throwing' {
-                { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should Not throw
+            It 'Should be able to call Get-DscConfiguration without throwing' {
+                { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
             }
             #endregion
 
@@ -127,7 +141,7 @@ try
                 $current = Get-DscConfiguration | Where-Object {
                     $_.ConfigurationName -eq "$($script:DSCResourceName)_Uninstall_Config"
                 }
-                $current.Ensure           | Should Be 'Absent'
+                $current.Ensure | Should -Be 'Absent'
             }
         }
     }
