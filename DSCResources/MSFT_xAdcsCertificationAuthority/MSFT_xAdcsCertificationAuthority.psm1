@@ -202,7 +202,8 @@ Function Get-TargetResource
     $null = $adcsParameters.Remove('Debug')
     $null = $adcsParameters.Remove('ErrorAction')
     
-    if($CertFilePassword){
+    if($CertFilePassword)
+    {
         $adcsParameters['CertFilePassword'] = $CertFilePassword.Password
     }
     try
@@ -420,7 +421,8 @@ Function Set-TargetResource
 
     $errorMessage = ''
     
-    if($CertFilePassword){
+    if($CertFilePassword)
+    {
         $adcsParameters['CertFilePassword'] = $CertFilePassword.Password
     }
     switch ($Ensure)
@@ -644,7 +646,8 @@ Function Test-TargetResource
     $null = $adcsParameters.Remove('Debug')
     $null = $adcsParameters.Remove('ErrorAction')
     
-    if($CertFilePassword){
+    if($CertFilePassword)
+    {
         $adcsParameters['CertFilePassword'] = $CertFilePassword.Password
     }
     try
