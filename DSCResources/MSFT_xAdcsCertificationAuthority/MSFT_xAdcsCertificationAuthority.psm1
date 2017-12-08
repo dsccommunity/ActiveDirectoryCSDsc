@@ -202,10 +202,11 @@ Function Get-TargetResource
     $null = $adcsParameters.Remove('Debug')
     $null = $adcsParameters.Remove('ErrorAction')
     
-    if($CertFilePassword)
+    if ($CertFilePassword)
     {
         $adcsParameters['CertFilePassword'] = $CertFilePassword.Password
     }
+    
     try
     {
         $null = Install-AdcsCertificationAuthority @adcsParameters -WhatIf
@@ -421,10 +422,11 @@ Function Set-TargetResource
 
     $errorMessage = ''
     
-    if($CertFilePassword)
+    if ($CertFilePassword)
     {
         $adcsParameters['CertFilePassword'] = $CertFilePassword.Password
     }
+    
     switch ($Ensure)
     {
         'Present'
@@ -646,10 +648,11 @@ Function Test-TargetResource
     $null = $adcsParameters.Remove('Debug')
     $null = $adcsParameters.Remove('ErrorAction')
     
-    if($CertFilePassword)
+    if ($CertFilePassword)
     {
         $adcsParameters['CertFilePassword'] = $CertFilePassword.Password
     }
+    
     try
     {
         $null = Install-AdcsCertificationAuthority @adcsParameters -WhatIf
