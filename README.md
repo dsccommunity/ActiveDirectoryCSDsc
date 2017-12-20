@@ -174,6 +174,11 @@ For more information on Web Enrollment services, see [this article on TechNet](h
 
 ### Unreleased
 
+### 1.4.0.0
+
+- xAdcsCertificateAuthority: CertFilePassword invalid type - fixes
+  [issue #36](https://github.com/PowerShell/xAdcsDeployment/issues/36)
+
 ### 1.3.0.0
 
 - Updated to meet HQRM guidelines - fixes
