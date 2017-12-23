@@ -38,17 +38,17 @@
             Tags         = @('DesiredStateConfiguration', 'DSC', 'DSCResourceKit', 'DSCResource')
 
             # A URL to the license for this module.
-            LicenseUri   = 'https://github.com/PowerShell/xAdcsDeployment/blob/master/LICENSE'
+            LicenseUri   = 'https://github.com/PowerShell/AdcsDeploymentDsc/blob/master/LICENSE'
 
             # A URL to the main website for this project.
-            ProjectUri   = 'https://github.com/PowerShell/xAdcsDeployment'
+            ProjectUri   = 'https://github.com/PowerShell/AdcsDeploymentDsc'
 
             # A URL to an icon representing this module.
             # IconUri = ''
 
             # ReleaseNotes of this module
-        ReleaseNotes = '- xAdcsCertificateAuthority: CertFilePassword invalid type - fixes
-  [issue 36](https://github.com/PowerShell/xAdcsDeployment/issues/36)
+        ReleaseNotes = '- AdcsCertificateAuthority: CertFilePassword invalid type - fixes
+  [issue 36](https://github.com/PowerShell/AdcsDeploymentDsc/issues/36)
 
 '
         } # End of PSData hashtable

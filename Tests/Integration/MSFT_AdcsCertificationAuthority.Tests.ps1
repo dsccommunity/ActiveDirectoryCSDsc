@@ -14,8 +14,8 @@ param ()
 #>
 $script:adminUsername = 'AdcsAdmin'
 $script:adminPassword = 'NotPass12!'
-$script:DSCModuleName = 'xAdcsDeployment'
-$script:DSCResourceName = 'MSFT_xAdcsCertificationAuthority'
+$script:DSCModuleName = 'AdcsDeploymentDsc'
+$script:DSCResourceName = 'MSFT_AdcsCertificationAuthority'
 
 Import-Module -Name (Join-Path -Path (Join-Path -Path (Split-Path $PSScriptRoot -Parent) -ChildPath 'TestHelpers') -ChildPath 'CommonTestHelper.psm1') -Global
 

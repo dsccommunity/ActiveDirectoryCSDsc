@@ -1,6 +1,6 @@
-# xAdcsDeployment
+# AdcsDeploymentDsc
 
-The **xAdcsDeployment** DSC resources have been specifically tested as a method
+The **AdcsDeploymentDscDsc** DSC resources have been specifically tested as a method
 to populate a Certificate Services server role on Windows Server 2012 R2 and above
 after the Certificate Services role and the Web Enrollment feature have been enabled.
 Active Directory Certificate Services (AD CS) is used to create certification
@@ -25,16 +25,16 @@ additional questions or comments.
 
 ### master
 
-[![Build status](https://ci.appveyor.com/api/projects/status/2uua9s0qgmfmqqrh/branch/master?svg=true)](https://ci.appveyor.com/project/PowerShell/xAdcsDeployment/branch/master)
-[![codecov](https://codecov.io/gh/PowerShell/xAdcsDeployment/branch/master/graph/badge.svg)](https://codecov.io/gh/PowerShell/xAdcsDeployment/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/2uua9s0qgmfmqqrh/branch/master?svg=true)](https://ci.appveyor.com/project/PowerShell/AdcsDeploymentDsc/branch/master)
+[![codecov](https://codecov.io/gh/PowerShell/AdcsDeploymentDsc/branch/master/graph/badge.svg)](https://codecov.io/gh/PowerShell/AdcsDeploymentDsc/branch/master)
 
 This is the branch containing the latest release - no contributions should be made
 directly to this branch.
 
 ### dev
 
-[![Build status](https://ci.appveyor.com/api/projects/status/2uua9s0qgmfmqqrh/branch/dev?svg=true)](https://ci.appveyor.com/project/PowerShell/xAdcsDeployment/branch/dev)
-[![codecov](https://codecov.io/gh/PowerShell/xAdcsDeployment/branch/dev/graph/badge.svg)](https://codecov.io/gh/PowerShell/xAdcsDeployment/branch/dev)
+[![Build status](https://ci.appveyor.com/api/projects/status/2uua9s0qgmfmqqrh/branch/dev?svg=true)](https://ci.appveyor.com/project/PowerShell/AdcsDeploymentDsc/branch/dev)
+[![codecov](https://codecov.io/gh/PowerShell/AdcsDeploymentDsc/branch/dev/graph/badge.svg)](https://codecov.io/gh/PowerShell/AdcsDeploymentDsc/branch/dev)
 
 This is the development branch to which contributions should be proposed by contributors
 as pull requests. This development branch will periodically be merged to the master
@@ -46,14 +46,14 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 
 ## Resources
 
-- **xAdcsCertificationAuthority**: This resource can be used to install the ADCS
+- **AdcsCertificationAuthority**: This resource can be used to install the ADCS
   Certificate Authority after the feature has been installed on the server.
-- **xAdcsOnlineResponder**: This resource can be used to install an ADCS Online
+- **AdcsOnlineResponder**: This resource can be used to install an ADCS Online
   Responder after the feature has been installed on the server.
-- **xAdcsWebEnrollment**: This resource can be used to install the ADCS Web
+- **AdcsWebEnrollment**: This resource can be used to install the ADCS Web
   Enrollment service after the feature has been installed on the server.
 
-### xAdcsCertificationAuthority
+### AdcsCertificationAuthority
 
 This resource can be used to install the ADCS Certificate Authority after the
 feature has been installed on the server.
@@ -117,12 +117,12 @@ the `ADCS-Cert-Authority` feature has already been installed.
   authority certificate. If this is a subordinate CA, do not specify this parameter
     because the validity period is determined by the parent CA.
 
-#### xAdcsCertificationAuthority Examples
+#### AdcsCertificationAuthority Examples
 
-- [Install enterprise root certificate authority](/Examples/Resources/xAdcsCertificationAuthority/1-InstallCertificationAthority.ps1)
-- [Retire certificate authority](/Examples/Resources/xAdcsCertificationAuthority/2-RetireCertificationAthority.ps1)
+- [Install enterprise root certificate authority](/Examples/Resources/AdcsCertificationAuthority/1-InstallCertificationAthority.ps1)
+- [Retire certificate authority](/Examples/Resources/AdcsCertificationAuthority/2-RetireCertificationAthority.ps1)
 
-### xAdcsOnlineResponder
+### AdcsOnlineResponder
 
 This resource can be used to install an ADCS Online Responder after the feature
 has been installed on the server.
@@ -142,11 +142,11 @@ For more information on ADCS Online Responders, see [this article on TechNet](ht
 - **`[String]` Ensure** (_Write_): Specifies whether the Online Responder feature
   should be installed or uninstalled. { *Present* | Absent }
 
-#### xAdcsOnlineResponder Examples
+#### AdcsOnlineResponder Examples
 
-- [Install Online Certificate Status Protocol (OCSP) server](/Examples/Resources/xAdcsWebEnrollment/1-InstallOnlineResponder.ps1)
+- [Install Online Certificate Status Protocol (OCSP) server](/Examples/Resources/AdcsWebEnrollment/1-InstallOnlineResponder.ps1)
 
-### xAdcsWebEnrollment
+### AdcsWebEnrollment
 
 This resource can be used to install the ADCS Web Enrollment service after the
 feature has been installed on the server.
@@ -166,23 +166,25 @@ For more information on Web Enrollment services, see [this article on TechNet](h
 - **`[String]` Ensure** (_Write_): Specifies whether the Web Enrollment feature
   should be installed or uninstalled. { *Present* | Absent }
 
-#### xAdcsWebEnrollment Examples
+#### AdcsWebEnrollment Examples
 
-- [Install web enrollment server](/Examples/Resources/xAdcsWebEnrollment/1-InstallWebEnrollment.ps1)
+- [Install web enrollment server](/Examples/Resources/AdcsWebEnrollment/1-InstallWebEnrollment.ps1)
 
 ## Versions
 
 ### Unreleased
 
+- BREAKING CHANGE: Converted module name to AdcsDeploymentDsc.
+
 ### 1.4.0.0
 
-- xAdcsCertificateAuthority: CertFilePassword invalid type - fixes
-  [issue #36](https://github.com/PowerShell/xAdcsDeployment/issues/36)
+- AdcsCertificateAuthority: CertFilePassword invalid type - fixes
+  [issue #36](https://github.com/PowerShell/AdcsDeploymentDsc/issues/36)
 
 ### 1.3.0.0
 
 - Updated to meet HQRM guidelines - fixes
-  [issue #33](https://github.com/PowerShell/xAdcsDeployment/issues/33).
+  [issue #33](https://github.com/PowerShell/AdcsDeploymentDsc/issues/33).
 - Fixed markdown rule violations in README.MD.
 - Change examples to meet HQRM standards and optin to Example validation
   tests.
@@ -197,23 +199,23 @@ For more information on Web Enrollment services, see [this article on TechNet](h
   - PULL_REQUEST_TEMPLATE.md
 - Resolved all PSScriptAnalyzer warnings and style guide warnings.
 - Converted all tests to meet Pester V4 guidelines - fixes
-  [issue #32](https://github.com/PowerShell/xAdcsDeployment/issues/32).
+  [issue #32](https://github.com/PowerShell/AdcsDeploymentDsc/issues/32).
 - Fixed spelling mistakes in README.MD.
 - Fix to ensure exception thrown if failed to install or uninstall service - fixes
-  [issue #3](https://github.com/PowerShell/xAdcsDeployment/issues/3).
+  [issue #3](https://github.com/PowerShell/AdcsDeploymentDsc/issues/3).
 - Converted AppVeyor.yml to use shared AppVeyor module in DSCResource.Tests - fixes
-  [issue #29](https://github.com/PowerShell/xAdcsDeployment/issues/29).
+  [issue #29](https://github.com/PowerShell/AdcsDeploymentDsc/issues/29).
 
 ### 1.2.0.0
 
-- xAdcsWebEnrollment:
-  - xAdcsWebEnrollment.psm1 - Change reference and variable from CAType to CAConfig
+- AdcsWebEnrollment:
+  - AdcsWebEnrollment.psm1 - Change reference and variable from CAType to CAConfig
 
 ### 1.1.0.0
 
 - Converted AppVeyor.yml to pull Pester from PSGallery instead of Chocolatey.
 - Changed AppVeyor.yml to use default image.
-- xAdcsCertificateAuthority:
+- AdcsCertificateAuthority:
   - Change property format in Readme.md to be standard layout.
   - Converted style to meet HQRM guidelines.
   - Added verbose logging support.
@@ -222,13 +224,13 @@ For more information on Web Enrollment services, see [this article on TechNet](h
     or not CA is installed.
   - Added unit tests.
   - Updated parameter format to meet HQRM guidelines.
-- xAdcsOnlineResponder:
+- AdcsOnlineResponder:
   - Change property format in Readme.md to be standard layout.
   - Added unit test header to be latest version.
   - Added function help.
   - Updated parameter format to meet HQRM guidelines.
   - Updated resource to meet HQRM guidelines.
-- xAdcsWebEnrollment:
+- AdcsWebEnrollment:
   - Change property format in Readme.md to be standard layout.
   - Added unit test header to be latest version.
   - Added function help.
@@ -245,10 +247,10 @@ For more information on Web Enrollment services, see [this article on TechNet](h
 - Moved Examples folder into root.
 - Removed legacy xCertificateServices folder.
 - Prevented Unit tests from Violating PSSA rules.
-- MSFT_xAdcsWebEnrollment: Created unit tests based on v1.0 Test Template.
+- MSFT_AdcsWebEnrollment: Created unit tests based on v1.0 Test Template.
                            Update to meet Style Guidelines and ensure consistency.
                            Updated to IsSingleInstance model. **Breaking change**
-- MSFT_xAdcsOnlineResponder: Update Unit tests to use v1.0 Test Template.
+- MSFT_AdcsOnlineResponder: Update Unit tests to use v1.0 Test Template.
                              Unit tests can be run without AD CS installed.
                              Update to meet Style Guidelines and ensure consistency.
 - Usage of WinRm.exe replaced in Config-SetupActiveDirectory.ps1 example file
@@ -257,12 +259,12 @@ For more information on Web Enrollment services, see [this article on TechNet](h
 ### 0.2.0.0
 
 - Added the following resources:
-  - MSFT_xADCSOnlineResponder resource to install the Online Responder service.
-- Correction to xAdcsCertificationAuthority property title in Readme.md.
+  - MSFT_AdcsOnlineResponder resource to install the Online Responder service.
+- Correction to AdcsCertificationAuthority property title in Readme.md.
 - Addition of .gitignore to ensure DSCResource.Tests folder is committed.
 - Updated AppVeyor.yml to use WMF 5 build environment.
 
 ### 0.1.0.0
 
 - Initial release with the following resources
-  - xAdcsCertificationAuthority and xAdcsWebEnrollment.
+  - AdcsCertificationAuthority and AdcsWebEnrollment.

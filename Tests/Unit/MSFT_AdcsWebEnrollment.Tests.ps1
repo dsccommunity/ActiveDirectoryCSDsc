@@ -1,5 +1,5 @@
-$script:DSCModuleName   = 'xAdcsDeployment'
-$script:DSCResourceName = 'MSFT_xAdcsOnlineResponder'
+$script:DSCModuleName = 'AdcsDeploymentDsc'
+$script:DSCResourceName = 'MSFT_AdcsWebEnrollment'
 
 Import-Module -Name (Join-Path -Path (Join-Path -Path (Split-Path $PSScriptRoot -Parent) -ChildPath 'TestHelpers') -ChildPath 'CommonTestHelper.psm1') -Global
 
@@ -7,9 +7,9 @@ Import-Module -Name (Join-Path -Path (Join-Path -Path (Split-Path $PSScriptRoot 
 # Integration Test Template Version: 1.1.0
 [String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
-     (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
+    (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
 {
-    & git @('clone','https://github.com/PowerShell/DscResource.Tests.git',(Join-Path -Path $script:moduleRoot -ChildPath '\DSCResource.Tests\'))
+    & git @('clone', 'https://github.com/PowerShell/DscResource.Tests.git', (Join-Path -Path $script:moduleRoot -ChildPath '\DSCResource.Tests\'))
 }
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
@@ -24,43 +24,49 @@ try
 {
     #region Pester Tests
     InModuleScope $script:DSCResourceName {
-        $DSCResourceName = 'MSFT_xAdcsOnlineResponder'
-
-        if (-not ([System.Management.Automation.PSTypeName]'Microsoft.CertificateServices.Deployment.Common.OCSP.OnlineResponderSetupException').Type)
+        if (-not ([System.Management.Automation.PSTypeName]'Microsoft.CertificateServices.Deployment.Common.WEP.WebEnrollmentSetupException').Type)
         {
             # Define the exception class:
-            # Microsoft.CertificateServices.Deployment.Common.OCSP.OnlineResponderSetupException
+            # Microsoft.CertificateServices.Deployment.Common.WEP.WebEnrollmentSetupException
             # so that unit tests can be run without ADCS being installed.
 
             $ExceptionDefinition = @'
-namespace Microsoft.CertificateServices.Deployment.Common.OCSP {
-    public class OnlineResponderSetupException: System.Exception {
+namespace Microsoft.CertificateServices.Deployment.Common.WEP {
+    public class WebEnrollmentSetupException: System.Exception {
     }
 }
 '@
             Add-Type -TypeDefinition $ExceptionDefinition
         }
 
-        $DummyCredential = New-Object System.Management.Automation.PSCredential ("Administrator",(New-Object -Type SecureString))
+        $DSCResourceName = 'MSFT_AdcsWebEnrollment'
+
+        $dummyCredential = New-Object System.Management.Automation.PSCredential ("Administrator", (New-Object -Type SecureString))
 
         $testParametersPresent = @{
             IsSingleInstance = 'Yes'
             Ensure           = 'Present'
-            Credential       = $DummyCredential
+            CAConfig         = 'CAConfig'
+            Credential       = $dummyCredential
             Verbose          = $true
         }
 
-        $TestParametersAbsent = @{
+        $testParametersAbsent = @{
             IsSingleInstance = 'Yes'
             Ensure           = 'Absent'
-            Credential       = $DummyCredential
+            Credential       = $dummyCredential
             Verbose          = $true
         }
 
-        function Install-AdcsOnlineResponder {
+        function Install-AdcsWebEnrollment
+        {
             [CmdletBinding()]
             param
             (
+                [Parameter()]
+                [String]
+                $CAConfig,
+
                 [Parameter()]
                 [System.Management.Automation.PSCredential]
                 $Credential,
@@ -75,7 +81,8 @@ namespace Microsoft.CertificateServices.Deployment.Common.OCSP {
             )
         }
 
-        function Uninstall-AdcsOnlineResponder {
+        function Uninstall-AdcsWebEnrollment
+        {
             [CmdletBinding()]
             param
             (
@@ -86,39 +93,41 @@ namespace Microsoft.CertificateServices.Deployment.Common.OCSP {
         }
 
         Describe "$DSCResourceName\Get-TargetResource" {
-            Context 'Online Responder is installed' {
+            Context 'Web Enrollment is installed' {
                 Mock `
-                    -CommandName Install-AdcsOnlineResponder `
-                    -MockWith { Throw (New-Object -TypeName 'Microsoft.CertificateServices.Deployment.Common.OCSP.OnlineResponderSetupException') } `
+                    -CommandName Install-AdcsWebEnrollment `
+                    -MockWith { Throw (New-Object -TypeName 'Microsoft.CertificateServices.Deployment.Common.WEP.WebEnrollmentSetupException') } `
                     -Verifiable
 
                 $result = Get-TargetResource @testParametersPresent
 
                 It 'Should return Ensure set to Present' {
-                    $result.Ensure  | Should -Be 'Present'
+                    $result.Ensure | Should -Be 'Present'
                 }
 
                 It 'Should call expected mocks' {
                     Assert-VerifiableMocks
+
                     Assert-MockCalled `
-                        -CommandName Install-AdcsOnlineResponder `
+                        -CommandName Install-AdcsWebEnrollment `
                         -Exactly `
                         -Times 1
                 }
             }
 
-            Context 'Online Responder is not installed' {
-                Mock -CommandName Install-AdcsOnlineResponder
+            Context 'Web Enrollment is not installed' {
+                Mock `
+                    -CommandName Install-AdcsWebEnrollment
 
                 $result = Get-TargetResource @testParametersPresent
 
                 It 'Should return Ensure set to Absent' {
-                    $result.Ensure  | Should -Be 'Absent'
+                    $result.Ensure | Should -Be 'Absent'
                 }
 
                 It 'Should call expected mocks' {
                     Assert-MockCalled `
-                        -CommandName Install-AdcsOnlineResponder `
+                        -CommandName Install-AdcsWebEnrollment `
                         -Exactly `
                         -Times 1
                 }
@@ -126,9 +135,9 @@ namespace Microsoft.CertificateServices.Deployment.Common.OCSP {
         }
 
         Describe "$DSCResourceName\Set-TargetResource" {
-            Context 'Online Responder is not installed but should be' {
-                Mock -CommandName Install-AdcsOnlineResponder
-                Mock -CommandName Uninstall-AdcsOnlineResponder
+            Context 'Web Enrollment is not installed but should be' {
+                Mock -CommandName Install-AdcsWebEnrollment
+                Mock -CommandName Uninstall-AdcsWebEnrollment
 
                 It 'Should not throw an exception' {
                     { Set-TargetResource @testParametersPresent } | Should Not Throw
@@ -136,24 +145,24 @@ namespace Microsoft.CertificateServices.Deployment.Common.OCSP {
 
                 It 'Should call expected mocks' {
                     Assert-MockCalled `
-                        -CommandName Install-AdcsOnlineResponder `
+                        -CommandName Install-AdcsWebEnrollment `
                         -Exactly `
                         -Times 1
 
                     Assert-MockCalled `
-                        -CommandName Uninstall-AdcsOnlineResponder `
+                        -CommandName Uninstall-AdcsWebEnrollment `
                         -Exactly `
                         -Times 0
                 }
             }
 
-            Context 'Online Responder is not installed but should be but an error is thrown installing it' {
-                Mock -CommandName Install-AdcsOnlineResponder `
+            Context 'Web Enrollment is not installed but should be but an error is thrown installing it' {
+                Mock -CommandName Install-AdcsWebEnrollment `
                     -MockWith { [PSObject] @{ ErrorString = 'Something went wrong' }}
 
-                Mock -CommandName Uninstall-AdcsOnlineResponder
+                Mock -CommandName Uninstall-AdcsWebEnrollment
 
-                It 'Should throw an exception' {
+                It 'Should not throw an exception' {
                     $errorRecord = Get-InvalidOperationRecord -Message 'Something went wrong'
 
                     { Set-TargetResource @testParametersPresent } | Should Throw $errorRecord
@@ -161,20 +170,20 @@ namespace Microsoft.CertificateServices.Deployment.Common.OCSP {
 
                 It 'Should call expected mocks' {
                     Assert-MockCalled `
-                        -CommandName Install-AdcsOnlineResponder `
+                        -CommandName Install-AdcsWebEnrollment `
                         -Exactly `
                         -Times 1
 
                     Assert-MockCalled `
-                        -CommandName Uninstall-AdcsOnlineResponder `
+                        -CommandName Uninstall-AdcsWebEnrollment `
                         -Exactly `
                         -Times 0
                 }
             }
 
-            Context 'Online Responder is installed but should not be' {
-                Mock -CommandName Install-AdcsOnlineResponder
-                Mock -CommandName Uninstall-AdcsOnlineResponder
+            Context 'Web Enrollment is installed but should not be' {
+                Mock -CommandName Install-AdcsWebEnrollment
+                Mock -CommandName Uninstall-AdcsWebEnrollment
 
                 It 'Should not throw an exception' {
                     { Set-TargetResource @TestParametersAbsent } | Should Not Throw
@@ -182,12 +191,12 @@ namespace Microsoft.CertificateServices.Deployment.Common.OCSP {
 
                 It 'Should call expected mocks' {
                     Assert-MockCalled `
-                        -CommandName Install-AdcsOnlineResponder `
+                        -CommandName Install-AdcsWebEnrollment `
                         -Exactly `
                         -Times 0
 
                     Assert-MockCalled `
-                        -CommandName Uninstall-AdcsOnlineResponder `
+                        -CommandName Uninstall-AdcsWebEnrollment `
                         -Exactly `
                         -Times 1
                 }
@@ -195,10 +204,11 @@ namespace Microsoft.CertificateServices.Deployment.Common.OCSP {
         }
 
         Describe "$DSCResourceName\Test-TargetResource" {
-            Context 'Online Responder is installed' {
-                Context 'Online Responder should be installed' {
-                    Mock -CommandName Install-AdcsOnlineResponder `
-                        -MockWith { Throw (New-Object -TypeName 'Microsoft.CertificateServices.Deployment.Common.OCSP.OnlineResponderSetupException') } `
+            Context 'Web Enrollment is installed' {
+                Context 'Web Enrollment should be installed' {
+                    Mock `
+                        -CommandName Install-AdcsWebEnrollment `
+                        -MockWith { Throw (New-Object -TypeName 'Microsoft.CertificateServices.Deployment.Common.WEP.WebEnrollmentSetupException') } `
                         -Verifiable
 
                     $result = Test-TargetResource @testParametersPresent
@@ -209,19 +219,21 @@ namespace Microsoft.CertificateServices.Deployment.Common.OCSP {
 
                     It 'Should call expected mocks' {
                         Assert-VerifiableMocks
+
                         Assert-MockCalled `
-                            -CommandName Install-AdcsOnlineResponder `
+                            -CommandName Install-AdcsWebEnrollment `
                             -Exactly `
                             -Times 1
                     }
                 }
 
-                Context 'Online Responder should not be installed' {
-                    Mock -CommandName Install-AdcsOnlineResponder `
-                        -MockWith { Throw (New-Object -TypeName 'Microsoft.CertificateServices.Deployment.Common.OCSP.OnlineResponderSetupException') } `
+                Context 'Web Enrollment should not be installed' {
+                    Mock `
+                        -CommandName Install-AdcsWebEnrollment `
+                        -MockWith { Throw (New-Object -TypeName 'Microsoft.CertificateServices.Deployment.Common.WEP.WebEnrollmentSetupException') } `
                         -Verifiable
 
-                    $result = Test-TargetResource @TestParametersAbsent
+                    $result = Test-TargetResource @testParametersAbsent
 
                     It 'Should return false' {
                         $result | Should -Be $False
@@ -229,18 +241,18 @@ namespace Microsoft.CertificateServices.Deployment.Common.OCSP {
 
                     It 'Should call expected mocks' {
                         Assert-VerifiableMocks
+
                         Assert-MockCalled `
-                            -CommandName Install-AdcsOnlineResponder `
+                            -CommandName Install-AdcsWebEnrollment `
                             -Exactly `
                             -Times 1
                     }
                 }
             }
 
-            Context 'Online Responder is not installed' {
-                Context 'Online Responder should be installed' {
-                    Mock -CommandName Install-AdcsOnlineResponder `
-                        -Verifiable
+            Context 'Web Enrollment is not installed' {
+                Context 'Web Enrollment should be installed' {
+                    Mock -CommandName Install-AdcsWebEnrollment -Verifiable
 
                     $result = Test-TargetResource @testParametersPresent
 
@@ -250,18 +262,18 @@ namespace Microsoft.CertificateServices.Deployment.Common.OCSP {
 
                     It 'Should call expected mocks' {
                         Assert-VerifiableMocks
+
                         Assert-MockCalled `
-                            -CommandName Install-AdcsOnlineResponder `
+                            -CommandName Install-AdcsWebEnrollment `
                             -Exactly `
                             -Times 1
                     }
                 }
 
-                Context 'Online Responder should not be installed' {
-                    Mock -CommandName Install-AdcsOnlineResponder `
-                        -Verifiable
+                Context 'Web Enrollment should not be installed' {
+                    Mock -CommandName Install-AdcsWebEnrollment -Verifiable
 
-                    $result = Test-TargetResource @TestParametersAbsent
+                    $result = Test-TargetResource @testParametersAbsent
 
                     It 'Should return true' {
                         $result | Should -Be $True
@@ -269,8 +281,9 @@ namespace Microsoft.CertificateServices.Deployment.Common.OCSP {
 
                     It 'Should call expected mocks' {
                         Assert-VerifiableMocks
+
                         Assert-MockCalled `
-                            -CommandName Install-AdcsOnlineResponder `
+                            -CommandName Install-AdcsWebEnrollment `
                             -Exactly `
                             -Times 1
                     }
