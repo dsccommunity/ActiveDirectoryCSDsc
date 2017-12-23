@@ -174,7 +174,7 @@ For more information on Web Enrollment services, see [this article on TechNet](h
 
 ### Unreleased
 
-- BREAKING CHANGE: Converted module name to AdcsDeploymentDsc.
+- BREAKING CHANGE: Renamed module to AdcsDeploymentDsc.
 
 ### 1.4.0.0
 
