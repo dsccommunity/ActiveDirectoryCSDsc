@@ -179,12 +179,12 @@ For more information on Web Enrollment services, see [this article on TechNet](h
 ### 1.4.0.0
 
 - xAdcsCertificateAuthority: CertFilePassword invalid type - fixes
-  [issue #36](https://github.com/PowerShell/xAdcsDeploymentDsc/issues/36)
+  [issue #36](https://github.com/PowerShell/xAdcsDeployment/issues/36)
 
 ### 1.3.0.0
 
 - Updated to meet HQRM guidelines - fixes
-  [issue #33](https://github.com/PowerShell/xAdcsDeploymentDsc/issues/33).
+  [issue #33](https://github.com/PowerShell/xAdcsDeployment/issues/33).
 - Fixed markdown rule violations in README.MD.
 - Change examples to meet HQRM standards and optin to Example validation
   tests.
@@ -199,12 +199,12 @@ For more information on Web Enrollment services, see [this article on TechNet](h
   - PULL_REQUEST_TEMPLATE.md
 - Resolved all PSScriptAnalyzer warnings and style guide warnings.
 - Converted all tests to meet Pester V4 guidelines - fixes
-  [issue #32](https://github.com/PowerShell/xAdcsDeploymentDsc/issues/32).
+  [issue #32](https://github.com/PowerShell/xAdcsDeployment/issues/32).
 - Fixed spelling mistakes in README.MD.
 - Fix to ensure exception thrown if failed to install or uninstall service - fixes
-  [issue #3](https://github.com/PowerShell/xAdcsDeploymentDsc/issues/3).
+  [issue #3](https://github.com/PowerShell/xAdcsDeployment/issues/3).
 - Converted AppVeyor.yml to use shared AppVeyor module in DSCResource.Tests - fixes
-  [issue #29](https://github.com/PowerShell/xAdcsDeploymentDsc/issues/29).
+  [issue #29](https://github.com/PowerShell/xAdcsDeployment/issues/29).
 
 ### 1.2.0.0
 
@@ -259,7 +259,7 @@ For more information on Web Enrollment services, see [this article on TechNet](h
 ### 0.2.0.0
 
 - Added the following resources:
-  - MSFT_xAdcsOnlineResponder resource to install the Online Responder service.
+  - MSFT_xADCSOnlineResponder resource to install the Online Responder service.
 - Correction to xAdcsCertificationAuthority property title in Readme.md.
 - Addition of .gitignore to ensure DSCResource.Tests folder is committed.
 - Updated AppVeyor.yml to use WMF 5 build environment.
