@@ -48,7 +48,7 @@
 
             # ReleaseNotes of this module
         ReleaseNotes = '- xAdcsCertificateAuthority: CertFilePassword invalid type - fixes
-  [issue 36](https://github.com/PowerShell/xAdcsDeploymentDsc/issues/36)
+  [issue 36](https://github.com/PowerShell/xAdcsDeployment/issues/36)
 
 '
         } # End of PSData hashtable
