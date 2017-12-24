@@ -1,6 +1,6 @@
 @{
     # Version number of this module.
-    ModuleVersion = '2.0.0.0'
+    ModuleVersion = '1.4.0.0'
 
     # ID used to uniquely identify this module
     GUID              = 'f8ddd7fc-c6d6-469e-8a80-c96efabe2fcc'
@@ -47,8 +47,8 @@
             # IconUri = ''
 
             # ReleaseNotes of this module
-        ReleaseNotes = '- AdcsCertificateAuthority: CertFilePassword invalid type - fixes
-  [issue 36](https://github.com/PowerShell/AdcsDeploymentDsc/issues/36)
+        ReleaseNotes = '- xAdcsCertificateAuthority: CertFilePassword invalid type - fixes
+  [issue 36](https://github.com/PowerShell/xAdcsDeploymentDsc/issues/36)
 
 '
         } # End of PSData hashtable

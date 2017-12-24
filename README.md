@@ -178,13 +178,13 @@ For more information on Web Enrollment services, see [this article on TechNet](h
 
 ### 1.4.0.0
 
-- AdcsCertificateAuthority: CertFilePassword invalid type - fixes
-  [issue #36](https://github.com/PowerShell/AdcsDeploymentDsc/issues/36)
+- xAdcsCertificateAuthority: CertFilePassword invalid type - fixes
+  [issue #36](https://github.com/PowerShell/xAdcsDeploymentDsc/issues/36)
 
 ### 1.3.0.0
 
 - Updated to meet HQRM guidelines - fixes
-  [issue #33](https://github.com/PowerShell/AdcsDeploymentDsc/issues/33).
+  [issue #33](https://github.com/PowerShell/xAdcsDeploymentDsc/issues/33).
 - Fixed markdown rule violations in README.MD.
 - Change examples to meet HQRM standards and optin to Example validation
   tests.
@@ -199,23 +199,23 @@ For more information on Web Enrollment services, see [this article on TechNet](h
   - PULL_REQUEST_TEMPLATE.md
 - Resolved all PSScriptAnalyzer warnings and style guide warnings.
 - Converted all tests to meet Pester V4 guidelines - fixes
-  [issue #32](https://github.com/PowerShell/AdcsDeploymentDsc/issues/32).
+  [issue #32](https://github.com/PowerShell/xAdcsDeploymentDsc/issues/32).
 - Fixed spelling mistakes in README.MD.
 - Fix to ensure exception thrown if failed to install or uninstall service - fixes
-  [issue #3](https://github.com/PowerShell/AdcsDeploymentDsc/issues/3).
+  [issue #3](https://github.com/PowerShell/xAdcsDeploymentDsc/issues/3).
 - Converted AppVeyor.yml to use shared AppVeyor module in DSCResource.Tests - fixes
-  [issue #29](https://github.com/PowerShell/AdcsDeploymentDsc/issues/29).
+  [issue #29](https://github.com/PowerShell/xAdcsDeploymentDsc/issues/29).
 
 ### 1.2.0.0
 
-- AdcsWebEnrollment:
-  - AdcsWebEnrollment.psm1 - Change reference and variable from CAType to CAConfig
+- xAdcsWebEnrollment:
+  - xAdcsWebEnrollment.psm1 - Change reference and variable from CAType to CAConfig
 
 ### 1.1.0.0
 
 - Converted AppVeyor.yml to pull Pester from PSGallery instead of Chocolatey.
 - Changed AppVeyor.yml to use default image.
-- AdcsCertificateAuthority:
+- xAdcsCertificateAuthority:
   - Change property format in Readme.md to be standard layout.
   - Converted style to meet HQRM guidelines.
   - Added verbose logging support.
@@ -224,13 +224,13 @@ For more information on Web Enrollment services, see [this article on TechNet](h
     or not CA is installed.
   - Added unit tests.
   - Updated parameter format to meet HQRM guidelines.
-- AdcsOnlineResponder:
+- xAdcsOnlineResponder:
   - Change property format in Readme.md to be standard layout.
   - Added unit test header to be latest version.
   - Added function help.
   - Updated parameter format to meet HQRM guidelines.
   - Updated resource to meet HQRM guidelines.
-- AdcsWebEnrollment:
+- xAdcsWebEnrollment:
   - Change property format in Readme.md to be standard layout.
   - Added unit test header to be latest version.
   - Added function help.
@@ -247,10 +247,10 @@ For more information on Web Enrollment services, see [this article on TechNet](h
 - Moved Examples folder into root.
 - Removed legacy xCertificateServices folder.
 - Prevented Unit tests from Violating PSSA rules.
-- MSFT_AdcsWebEnrollment: Created unit tests based on v1.0 Test Template.
+- MSFT_xAdcsWebEnrollment: Created unit tests based on v1.0 Test Template.
                            Update to meet Style Guidelines and ensure consistency.
                            Updated to IsSingleInstance model. **Breaking change**
-- MSFT_AdcsOnlineResponder: Update Unit tests to use v1.0 Test Template.
+- MSFT_xAdcsOnlineResponder: Update Unit tests to use v1.0 Test Template.
                              Unit tests can be run without AD CS installed.
                              Update to meet Style Guidelines and ensure consistency.
 - Usage of WinRm.exe replaced in Config-SetupActiveDirectory.ps1 example file
@@ -259,12 +259,12 @@ For more information on Web Enrollment services, see [this article on TechNet](h
 ### 0.2.0.0
 
 - Added the following resources:
-  - MSFT_AdcsOnlineResponder resource to install the Online Responder service.
-- Correction to AdcsCertificationAuthority property title in Readme.md.
+  - MSFT_xAdcsOnlineResponder resource to install the Online Responder service.
+- Correction to xAdcsCertificationAuthority property title in Readme.md.
 - Addition of .gitignore to ensure DSCResource.Tests folder is committed.
 - Updated AppVeyor.yml to use WMF 5 build environment.
 
 ### 0.1.0.0
 
 - Initial release with the following resources
-  - AdcsCertificationAuthority and AdcsWebEnrollment.
+  - xAdcsCertificationAuthority and xAdcsWebEnrollment.
