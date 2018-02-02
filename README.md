@@ -174,7 +174,8 @@ For more information on Web Enrollment services, see [this article on TechNet](h
 
 ### Unreleased
 
-- BREAKING CHANGE: Renamed module to ActiveDirectoryCSDsc.
+- BREAKING CHANGE: Renamed module to ActiveDirectoryCSDsc - see
+  [issue #38](https://github.com/PowerShell/xAdcsDeployment/issues/38)
 
 ### 1.4.0.0
 
