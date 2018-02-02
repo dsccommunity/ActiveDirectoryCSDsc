@@ -2,8 +2,8 @@ $modulePath = Join-Path -Path (Split-Path -Path (Split-Path -Path $PSScriptRoot 
 
 # Import the ADCS Deployment Resource Helper Module.
 Import-Module -Name (Join-Path -Path $modulePath `
-        -ChildPath (Join-Path -Path 'AdcsDeploymentDsc.ResourceHelper' `
-            -ChildPath 'AdcsDeploymentDsc.ResourceHelper.psm1'))
+        -ChildPath (Join-Path -Path 'ActiveDirectoryCSDsc.ResourceHelper' `
+            -ChildPath 'ActiveDirectoryCSDsc.ResourceHelper.psm1'))
 
 # Import Localization Strings.
 $LocalizedData = Get-LocalizedData `

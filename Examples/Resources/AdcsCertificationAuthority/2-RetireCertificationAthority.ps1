@@ -22,7 +22,7 @@ Configuration Example
         $Credential
     )
 
-    Import-DscResource -Module AdcsDeploymentDsc
+    Import-DscResource -Module ActiveDirectoryCSDsc
 
     Node $AllNodes.NodeName
     {

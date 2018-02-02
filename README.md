@@ -1,6 +1,6 @@
-# AdcsDeploymentDsc
+# ActiveDirectoryCSDsc
 
-The **AdcsDeploymentDscDsc** DSC resources have been specifically tested as a method
+The **ActiveDirectoryCSDsc** DSC resources have been specifically tested as a method
 to populate a Certificate Services server role on Windows Server 2012 R2 and above
 after the Certificate Services role and the Web Enrollment feature have been enabled.
 Active Directory Certificate Services (AD CS) is used to create certification
@@ -25,16 +25,16 @@ additional questions or comments.
 
 ### master
 
-[![Build status](https://ci.appveyor.com/api/projects/status/2uua9s0qgmfmqqrh/branch/master?svg=true)](https://ci.appveyor.com/project/PowerShell/AdcsDeploymentDsc/branch/master)
-[![codecov](https://codecov.io/gh/PowerShell/AdcsDeploymentDsc/branch/master/graph/badge.svg)](https://codecov.io/gh/PowerShell/AdcsDeploymentDsc/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/2uua9s0qgmfmqqrh/branch/master?svg=true)](https://ci.appveyor.com/project/PowerShell/ActiveDirectoryCSDsc/branch/master)
+[![codecov](https://codecov.io/gh/PowerShell/ActiveDirectoryCSDsc/branch/master/graph/badge.svg)](https://codecov.io/gh/PowerShell/ActiveDirectoryCSDsc/branch/master)
 
 This is the branch containing the latest release - no contributions should be made
 directly to this branch.
 
 ### dev
 
-[![Build status](https://ci.appveyor.com/api/projects/status/2uua9s0qgmfmqqrh/branch/dev?svg=true)](https://ci.appveyor.com/project/PowerShell/AdcsDeploymentDsc/branch/dev)
-[![codecov](https://codecov.io/gh/PowerShell/AdcsDeploymentDsc/branch/dev/graph/badge.svg)](https://codecov.io/gh/PowerShell/AdcsDeploymentDsc/branch/dev)
+[![Build status](https://ci.appveyor.com/api/projects/status/2uua9s0qgmfmqqrh/branch/dev?svg=true)](https://ci.appveyor.com/project/PowerShell/ActiveDirectoryCSDsc/branch/dev)
+[![codecov](https://codecov.io/gh/PowerShell/ActiveDirectoryCSDsc/branch/dev/graph/badge.svg)](https://codecov.io/gh/PowerShell/ActiveDirectoryCSDsc/branch/dev)
 
 This is the development branch to which contributions should be proposed by contributors
 as pull requests. This development branch will periodically be merged to the master
@@ -174,7 +174,7 @@ For more information on Web Enrollment services, see [this article on TechNet](h
 
 ### Unreleased
 
-- BREAKING CHANGE: Renamed module to AdcsDeploymentDsc.
+- BREAKING CHANGE: Renamed module to ActiveDirectoryCSDsc.
 
 ### 1.4.0.0
 

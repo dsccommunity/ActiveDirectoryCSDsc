@@ -1,4 +1,4 @@
-$script:DSCModuleName   = 'AdcsDeploymentDsc'
+$script:DSCModuleName   = 'ActiveDirectoryCSDsc'
 $script:DSCResourceName = 'MSFT_AdcsCertificationAuthority'
 
 Import-Module -Name (Join-Path -Path (Join-Path -Path (Split-Path $PSScriptRoot -Parent) -ChildPath 'TestHelpers') -ChildPath 'CommonTestHelper.psm1') -Global
