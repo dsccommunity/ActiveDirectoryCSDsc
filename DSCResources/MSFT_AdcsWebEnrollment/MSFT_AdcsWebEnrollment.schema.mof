@@ -1,5 +1,5 @@
-[ClassVersion("0.1.0.0"), FriendlyName("xAdcsWebEnrollment")]
-class MSFT_xAdcsWebEnrollment : OMI_BaseResource
+[ClassVersion("0.1.0.0"), FriendlyName("AdcsWebEnrollment")]
+class MSFT_AdcsWebEnrollment : OMI_BaseResource
 {
     [Key, Description("Specifies the resource is a single instance, the value must be 'Yes'"), ValueMap{"Yes"}, Values{"Yes"}] String IsSingleInstance;
     [Write, Description("CAConfig parameter string. Do not specify this if there is a local CA installed.")] String CAConfig;

@@ -2,35 +2,32 @@ $modulePath = Join-Path -Path (Split-Path -Path (Split-Path -Path $PSScriptRoot 
 
 # Import the ADCS Deployment Resource Helper Module.
 Import-Module -Name (Join-Path -Path $modulePath `
-        -ChildPath (Join-Path -Path 'AdcsDeploymentDsc.ResourceHelper' `
-            -ChildPath 'AdcsDeploymentDsc.ResourceHelper.psm1'))
+        -ChildPath (Join-Path -Path 'ActiveDirectoryCSDsc.ResourceHelper' `
+            -ChildPath 'ActiveDirectoryCSDsc.ResourceHelper.psm1'))
 
 # Import Localization Strings.
 $LocalizedData = Get-LocalizedData `
-    -ResourceName 'MSFT_xAdcsWebEnrollment' `
+    -ResourceName 'MSFT_AdcsOnlineResponder' `
     -ResourcePath (Split-Path -Parent $script:MyInvocation.MyCommand.Path)
 
 <#
     .SYNOPSIS
-        Returns an object containing the current state information for the ADCS Web Enrollment.
+        Returns an object containing the current state information for the ADCS Online Responder.
 
     .PARAMETER IsSingleInstance
         Specifies the resource is a single instance, the value must be 'Yes'.
 
-    .PARAMETER CAConfig
-        CAConfig parameter string. Do not specify this if there is a local CA installed.
-
     .PARAMETER Credential
-        If the Web Enrollment service is configured to use Standalone certification authority, then
-        an account that is a member of the local Administrators on the CA is required. If the
-        Web Enrollment service is configured to use an Enterprise CA, then an account that is a
-        member of Domain Admins is required.
+        If the Online Responder service is configured to use Standalone certification authority,
+        then an account that is a member of the local Administrators on the CA is required. If
+        the Online Responder service is configured to use an Enterprise CA, then an account that
+        is a member of Domain Admins is required.
 
     .PARAMETER Ensure
-        Specifies whether the Web Enrollment feature should be installed or uninstalled.
+        Specifies whether the Online Responder feature should be installed or uninstalled.
 
     .OUTPUTS
-        Returns an object containing the ADCS Web Enrollment state information.
+        Returns an object containing the ADCS Online Responder state information.
 #>
 Function Get-TargetResource
 {
@@ -43,10 +40,6 @@ Function Get-TargetResource
         [System.String]
         $IsSingleInstance,
 
-        [Parameter()]
-        [System.String]
-        $CAConfig,
-
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
@@ -60,7 +53,7 @@ Function Get-TargetResource
 
     Write-Verbose -Message ( @(
             "$($MyInvocation.MyCommand): "
-            $($LocalizedData.GettingAdcsWebEnrollmentStatusMessage)
+            $($LocalizedData.GettingAdcsOnlineResponderStatusMessage)
         ) -join '' )
 
     $adcsParameters = @{} + $PSBoundParameters
@@ -71,11 +64,11 @@ Function Get-TargetResource
 
     try
     {
-        $null = Install-AdcsWebEnrollment @adcsParameters -WhatIf
+        $null = Install-AdcsOnlineResponder @adcsParameters -WhatIf
         # CA is not installed
         $Ensure = 'Absent'
     }
-    catch [Microsoft.CertificateServices.Deployment.Common.WEP.WebEnrollmentSetupException]
+    catch [Microsoft.CertificateServices.Deployment.Common.OCSP.OnlineResponderSetupException]
     {
         # CA is already installed
         $Ensure = 'Present'
@@ -88,29 +81,26 @@ Function Get-TargetResource
 
     return @{
         Ensure     = $Ensure
-        CAConfig   = $CAConfig
+        CAType     = $CAType
         Credential = $Credential
     }
 } # Function Get-TargetResource
 
 <#
     .SYNOPSIS
-        Installs or uinstalls the ADCS Web Enrollment from the server.
+        Installs or uinstalls the ADCS Online Responder from the server.
 
     .PARAMETER IsSingleInstance
         Specifies the resource is a single instance, the value must be 'Yes'.
 
-    .PARAMETER CAConfig
-        CAConfig parameter string. Do not specify this if there is a local CA installed.
-
     .PARAMETER Credential
-        If the Web Enrollment service is configured to use Standalone certification authority, then
-        an account that is a member of the local Administrators on the CA is required. If the
-        Web Enrollment service is configured to use an Enterprise CA, then an account that is a
-        member of Domain Admins is required.
+        If the Online Responder service is configured to use Standalone certification authority,
+        then an account that is a member of the local Administrators on the CA is required. If
+        the Online Responder service is configured to use an Enterprise CA, then an account that
+        is a member of Domain Admins is required.
 
     .PARAMETER Ensure
-        Specifies whether the Web Enrollment feature should be installed or uninstalled.
+        Specifies whether the Online Responder feature should be installed or uninstalled.
 #>
 Function Set-TargetResource
 {
@@ -121,10 +111,6 @@ Function Set-TargetResource
         [ValidateSet('Yes')]
         [System.String]
         $IsSingleInstance,
-
-        [Parameter()]
-        [System.String]
-        $CAConfig,
 
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
@@ -139,7 +125,7 @@ Function Set-TargetResource
 
     Write-Verbose -Message ( @(
             "$($MyInvocation.MyCommand): "
-            $($LocalizedData.SettingAdcsWebEnrollmentStatusMessage)
+            $($LocalizedData.SettingAdcsOnlineResponderStatusMessage)
         ) -join '' )
 
     $adcsParameters = @{} + $PSBoundParameters
@@ -156,20 +142,20 @@ Function Set-TargetResource
         {
             Write-Verbose -Message ( @(
                     "$($MyInvocation.MyCommand): "
-                    $($LocalizedData.InstallingAdcsWebEnrollmentMessage)
+                    $($LocalizedData.InstallingAdcsOnlineResponderMessage)
                 ) -join '' )
 
-            $errorMessage = (Install-AdcsWebEnrollment @adcsParameters -Force).ErrorString
+            $errorMessage = (Install-AdcsOnlineResponder @adcsParameters -Force).ErrorString
         }
 
         'Absent'
         {
             Write-Verbose -Message ( @(
                     "$($MyInvocation.MyCommand): "
-                    $($LocalizedData.UninstallingAdcsWebEnrollmentMessage)
+                    $($LocalizedData.UninstallingAdcsOnlineResponderMessage)
                 ) -join '' )
 
-            $errorMessage = (Uninstall-AdcsWebEnrollment -Force).ErrorString
+            $errorMessage = (Uninstall-AdcsOnlineResponder -Force).ErrorString
         }
     } # switch
 
@@ -181,25 +167,22 @@ Function Set-TargetResource
 
 <#
     .SYNOPSIS
-        Tests is the ADCS Web Enrollment is in the desired state.
+        Tests is the ADCS Online Responder is in the desired state.
 
     .PARAMETER IsSingleInstance
         Specifies the resource is a single instance, the value must be 'Yes'.
 
-    .PARAMETER CAConfig
-        CAConfig parameter string. Do not specify this if there is a local CA installed.
-
     .PARAMETER Credential
-        If the Web Enrollment service is configured to use Standalone certification authority, then
-        an account that is a member of the local Administrators on the CA is required. If the
-        Web Enrollment service is configured to use an Enterprise CA, then an account that is a
-        member of Domain Admins is required.
+        If the Online Responder service is configured to use Standalone certification authority,
+        then an account that is a member of the local Administrators on the CA is required. If
+        the Online Responder service is configured to use an Enterprise CA, then an account that
+        is a member of Domain Admins is required.
 
     .PARAMETER Ensure
-        Specifies whether the Web Enrollment feature should be installed or uninstalled.
+        Specifies whether the Online Responder feature should be installed or uninstalled.
 
     .OUTPUTS
-        Returns true if the ADCS Web Enrollment is in the desired state.
+        Returns true if the ADCS Online Responder is in the desired state.
 #>
 Function Test-TargetResource
 {
@@ -212,10 +195,6 @@ Function Test-TargetResource
         [System.String]
         $IsSingleInstance,
 
-        [Parameter()]
-        [System.String]
-        $CAConfig,
-
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
@@ -227,10 +206,9 @@ Function Test-TargetResource
         $Ensure = 'Present'
     )
 
-
     Write-Verbose -Message ( @(
             "$($MyInvocation.MyCommand): "
-            $($LocalizedData.TestingAdcsWebEnrollmentStatusMessage -f $CAConfig)
+            $($LocalizedData.TestingAdcsOnlineResponderStatusMessage -f $CAType)
         ) -join '' )
 
     $adcsParameters = @{} + $PSBoundParameters
@@ -241,16 +219,16 @@ Function Test-TargetResource
 
     try
     {
-        $null = Install-AdcsWebEnrollment @adcsParameters -WhatIf
-        # Web Enrollment is not installed
+        $null = Install-AdcsOnlineResponder @adcsParameters -WhatIf
+        # Online Responder is not installed
         switch ($Ensure)
         {
             'Present'
             {
-                # Web Enrollment is not installed but should be - change required
+                # Online Responder is not installed but should be - change required
                 Write-Verbose -Message ( @(
                         "$($MyInvocation.MyCommand): "
-                        $($LocalizedData.AdcsWebEnrollmentNotInstalledButShouldBeMessage)
+                        $($LocalizedData.AdcsOnlineResponderNotInstalledButShouldBeMessage)
                     ) -join '' )
 
                 return $false
@@ -258,27 +236,27 @@ Function Test-TargetResource
 
             'Absent'
             {
-                # Web Enrollment is not installed and should not be - change not required
+                # Online Responder is not installed and should not be - change not required
                 Write-Verbose -Message ( @(
                         "$($MyInvocation.MyCommand): "
-                        $($LocalizedData.AdcsWebEnrollmentNotInstalledAndShouldNotBeMessage)
+                        $($LocalizedData.AdcsOnlineResponderNotInstalledAndShouldNotBeMessage)
                     ) -join '' )
 
                 return $true
             }
         } # switch
     }
-    catch [Microsoft.CertificateServices.Deployment.Common.WEP.WebEnrollmentSetupException]
+    catch [Microsoft.CertificateServices.Deployment.Common.OCSP.OnlineResponderSetupException]
     {
-        # Web Enrollment is already installed
+        # Online Responder is already installed
         switch ($Ensure)
         {
             'Present'
             {
-                # Web Enrollment is installed and should be - change not required
+                # Online Responder is installed and should be - change not required
                 Write-Verbose -Message ( @(
                         "$($MyInvocation.MyCommand): "
-                        $($LocalizedData.AdcsWebEnrollmentInstalledAndShouldBeMessage)
+                        $($LocalizedData.AdcsOnlineResponderInstalledAndShouldBeMessage)
                     ) -join '' )
 
                 return $true
@@ -286,10 +264,10 @@ Function Test-TargetResource
 
             'Absent'
             {
-                # Web Enrollment is installed and should not be - change required
+                # Online Responder is installed and should not be - change required
                 Write-Verbose -Message ( @(
                         "$($MyInvocation.MyCommand): "
-                        $($LocalizedData.AdcsWebEnrollmentInstalledButShouldNotBeMessage)
+                        $($LocalizedData.AdcsOnlineResponderInstalledButShouldNotBeMessage)
                     ) -join '' )
 
                 return $false
