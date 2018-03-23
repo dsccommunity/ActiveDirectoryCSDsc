@@ -1,4 +1,4 @@
-# Localized resources for MSFT_xAdcsWebEnrollment
+# Localized resources for MSFT_AdcsWebEnrollment
 
 ConvertFrom-StringData @'
     GettingAdcsWebEnrollmentStatusMessage = Getting ADCS Web Enrollment Status.

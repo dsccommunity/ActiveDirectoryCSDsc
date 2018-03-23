@@ -22,11 +22,11 @@ Configuration Example
         $Credential
     )
 
-    Import-DscResource -Module xAdcsDeployment
+    Import-DscResource -Module ActiveDirectoryCSDsc
 
     Node $AllNodes.NodeName
     {
-        xAdcsCertificationAuthority CertificateAuthority
+        AdcsCertificationAuthority CertificateAuthority
         {
             Ensure                    = 'Absent'
             Credential                = $Credential
@@ -40,7 +40,7 @@ Configuration Example
         {
             Ensure    = 'Absent'
             Name      = 'ADCS-Cert-Authority'
-            DependsOn = '[xADCSCertificationAuthority]CertificateAuthority'
+            DependsOn = '[AdcsCertificationAuthority]CertificateAuthority'
         }
     }
 }

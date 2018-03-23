@@ -1,4 +1,4 @@
-# Localized resources for MSFT_xAdcsOnlineResponder
+# Localized resources for MSFT_AdcsOnlineResponder
 
 ConvertFrom-StringData @'
     GettingAdcsOnlineResponderStatusMessage = Getting ADCS Online Responder Status.

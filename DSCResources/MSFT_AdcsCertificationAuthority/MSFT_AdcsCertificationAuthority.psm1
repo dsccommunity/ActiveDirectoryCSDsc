@@ -2,12 +2,12 @@ $modulePath = Join-Path -Path (Split-Path -Path (Split-Path -Path $PSScriptRoot 
 
 # Import the ADCS Deployment Resource Helper Module.
 Import-Module -Name (Join-Path -Path $modulePath `
-        -ChildPath (Join-Path -Path 'AdcsDeploymentDsc.ResourceHelper' `
-            -ChildPath 'AdcsDeploymentDsc.ResourceHelper.psm1'))
+        -ChildPath (Join-Path -Path 'ActiveDirectoryCSDsc.ResourceHelper' `
+            -ChildPath 'ActiveDirectoryCSDsc.ResourceHelper.psm1'))
 
 # Import Localization Strings.
 $LocalizedData = Get-LocalizedData `
-    -ResourceName 'MSFT_xAdcsCertificationAuthority' `
+    -ResourceName 'MSFT_AdcsCertificationAuthority' `
     -ResourcePath (Split-Path -Parent $script:MyInvocation.MyCommand.Path)
 
 <#
@@ -201,12 +201,12 @@ Function Get-TargetResource
     $null = $adcsParameters.Remove('Ensure')
     $null = $adcsParameters.Remove('Debug')
     $null = $adcsParameters.Remove('ErrorAction')
-    
+
     if ($CertFilePassword)
     {
         $adcsParameters['CertFilePassword'] = $CertFilePassword.Password
     }
-    
+
     try
     {
         $null = Install-AdcsCertificationAuthority @adcsParameters -WhatIf
@@ -421,12 +421,12 @@ Function Set-TargetResource
     $null = $adcsParameters.Remove('ErrorAction')
 
     $errorMessage = ''
-    
+
     if ($CertFilePassword)
     {
         $adcsParameters['CertFilePassword'] = $CertFilePassword.Password
     }
-    
+
     switch ($Ensure)
     {
         'Present'
@@ -647,12 +647,12 @@ Function Test-TargetResource
     $null = $adcsParameters.Remove('Ensure')
     $null = $adcsParameters.Remove('Debug')
     $null = $adcsParameters.Remove('ErrorAction')
-    
+
     if ($CertFilePassword)
     {
         $adcsParameters['CertFilePassword'] = $CertFilePassword.Password
     }
-    
+
     try
     {
         $null = Install-AdcsCertificationAuthority @adcsParameters -WhatIf

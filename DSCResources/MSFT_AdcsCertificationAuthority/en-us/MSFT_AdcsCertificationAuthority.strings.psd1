@@ -1,4 +1,4 @@
-# Localized resources for MSFT_xAdcsCertificationAuthority
+# Localized resources for MSFT_AdcsCertificationAuthority
 
 ConvertFrom-StringData @'
     GettingAdcsCAStatusMessage = Getting ADCS {0} Status.

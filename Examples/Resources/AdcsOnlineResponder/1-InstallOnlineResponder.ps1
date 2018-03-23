@@ -18,7 +18,7 @@ Configuration Example
         $Credential
     )
 
-    Import-DscResource -Module xAdcsDeployment
+    Import-DscResource -Module ActiveDirectoryCSDsc
 
     Node $AllNodes.NodeName
     {
@@ -28,7 +28,7 @@ Configuration Example
             Name   = 'ADCS-Online-Cert'
         }
 
-        xAdcsOnlineResponder OnlineResponder
+        AdcsOnlineResponder OnlineResponder
         {
             Ensure           = 'Present'
             IsSingleInstance = 'Yes'
