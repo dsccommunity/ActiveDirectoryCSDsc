@@ -176,6 +176,7 @@ For more information on Web Enrollment services, see [this article on TechNet](h
 
 - BREAKING CHANGE: Renamed module to ActiveDirectoryCSDsc - see
   [issue #38](https://github.com/PowerShell/xAdcsDeployment/issues/38)
+- Enabled PSSA rule violations to fail build - Fixes [Issue #44](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/44).
 
 ### 1.4.0.0
 
