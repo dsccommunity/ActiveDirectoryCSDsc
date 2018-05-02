@@ -1,6 +1,6 @@
 @{
     # Version number of this module.
-    ModuleVersion = '1.4.0.0'
+    moduleVersion = '2.0.0.0'
 
     # ID used to uniquely identify this module
     GUID              = 'f8ddd7fc-c6d6-469e-8a80-c96efabe2fcc'
@@ -38,21 +38,23 @@
             Tags         = @('DesiredStateConfiguration', 'DSC', 'DSCResourceKit', 'DSCResource')
 
             # A URL to the license for this module.
-            LicenseUri   = 'https://github.com/PowerShell/xAdcsDeployment/blob/master/LICENSE'
+            LicenseUri   = 'https://github.com/PowerShell/ActiveDirectoryCSDsc/blob/master/LICENSE'
 
             # A URL to the main website for this project.
-            ProjectUri   = 'https://github.com/PowerShell/xAdcsDeployment'
+            ProjectUri   = 'https://github.com/PowerShell/ActiveDirectoryCSDsc'
 
             # A URL to an icon representing this module.
             # IconUri = ''
 
             # ReleaseNotes of this module
-        ReleaseNotes = '- xAdcsCertificateAuthority: CertFilePassword invalid type - fixes
-  [issue 36](https://github.com/PowerShell/xAdcsDeployment/issues/36)
+        ReleaseNotes = '- BREAKING CHANGE: Renamed module to ActiveDirectoryCSDsc - see
+  [issue 38](https://github.com/PowerShell/xAdcsDeployment/issues/38)
+- Enabled PSSA rule violations to fail build - Fixes [Issue 44](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/44).
 
 '
         } # End of PSData hashtable
     } # End of PrivateData hashtable
 }
+
 
 

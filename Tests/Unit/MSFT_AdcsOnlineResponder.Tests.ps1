@@ -1,5 +1,5 @@
-$script:DSCModuleName   = 'xAdcsDeployment'
-$script:DSCResourceName = 'MSFT_xAdcsOnlineResponder'
+$script:DSCModuleName   = 'ActiveDirectoryCSDsc'
+$script:DSCResourceName = 'MSFT_AdcsOnlineResponder'
 
 Import-Module -Name (Join-Path -Path (Join-Path -Path (Split-Path $PSScriptRoot -Parent) -ChildPath 'TestHelpers') -ChildPath 'CommonTestHelper.psm1') -Global
 
@@ -24,7 +24,7 @@ try
 {
     #region Pester Tests
     InModuleScope $script:DSCResourceName {
-        $DSCResourceName = 'MSFT_xAdcsOnlineResponder'
+        $DSCResourceName = 'MSFT_AdcsOnlineResponder'
 
         if (-not ([System.Management.Automation.PSTypeName]'Microsoft.CertificateServices.Deployment.Common.OCSP.OnlineResponderSetupException').Type)
         {

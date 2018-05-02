@@ -1,5 +1,5 @@
-$script:DSCModuleName = 'xAdcsDeployment'
-$script:DSCResourceName = 'MSFT_xAdcsWebEnrollment'
+$script:DSCModuleName = 'ActiveDirectoryCSDsc'
+$script:DSCResourceName = 'MSFT_AdcsWebEnrollment'
 
 Import-Module -Name (Join-Path -Path (Join-Path -Path (Split-Path $PSScriptRoot -Parent) -ChildPath 'TestHelpers') -ChildPath 'CommonTestHelper.psm1') -Global
 
@@ -39,7 +39,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.WEP {
             Add-Type -TypeDefinition $ExceptionDefinition
         }
 
-        $DSCResourceName = 'MSFT_xAdcsWebEnrollment'
+        $DSCResourceName = 'MSFT_AdcsWebEnrollment'
 
         $dummyCredential = New-Object System.Management.Automation.PSCredential ("Administrator", (New-Object -Type SecureString))
 

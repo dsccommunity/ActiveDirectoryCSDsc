@@ -1,6 +1,6 @@
-# xAdcsDeployment
+# ActiveDirectoryCSDsc
 
-The **xAdcsDeployment** DSC resources have been specifically tested as a method
+The **ActiveDirectoryCSDsc** DSC resources have been specifically tested as a method
 to populate a Certificate Services server role on Windows Server 2012 R2 and above
 after the Certificate Services role and the Web Enrollment feature have been enabled.
 Active Directory Certificate Services (AD CS) is used to create certification
@@ -25,16 +25,16 @@ additional questions or comments.
 
 ### master
 
-[![Build status](https://ci.appveyor.com/api/projects/status/2uua9s0qgmfmqqrh/branch/master?svg=true)](https://ci.appveyor.com/project/PowerShell/xAdcsDeployment/branch/master)
-[![codecov](https://codecov.io/gh/PowerShell/xAdcsDeployment/branch/master/graph/badge.svg)](https://codecov.io/gh/PowerShell/xAdcsDeployment/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/2uua9s0qgmfmqqrh/branch/master?svg=true)](https://ci.appveyor.com/project/PowerShell/ActiveDirectoryCSDsc/branch/master)
+[![codecov](https://codecov.io/gh/PowerShell/ActiveDirectoryCSDsc/branch/master/graph/badge.svg)](https://codecov.io/gh/PowerShell/ActiveDirectoryCSDsc/branch/master)
 
 This is the branch containing the latest release - no contributions should be made
 directly to this branch.
 
 ### dev
 
-[![Build status](https://ci.appveyor.com/api/projects/status/2uua9s0qgmfmqqrh/branch/dev?svg=true)](https://ci.appveyor.com/project/PowerShell/xAdcsDeployment/branch/dev)
-[![codecov](https://codecov.io/gh/PowerShell/xAdcsDeployment/branch/dev/graph/badge.svg)](https://codecov.io/gh/PowerShell/xAdcsDeployment/branch/dev)
+[![Build status](https://ci.appveyor.com/api/projects/status/2uua9s0qgmfmqqrh/branch/dev?svg=true)](https://ci.appveyor.com/project/PowerShell/ActiveDirectoryCSDsc/branch/dev)
+[![codecov](https://codecov.io/gh/PowerShell/ActiveDirectoryCSDsc/branch/dev/graph/badge.svg)](https://codecov.io/gh/PowerShell/ActiveDirectoryCSDsc/branch/dev)
 
 This is the development branch to which contributions should be proposed by contributors
 as pull requests. This development branch will periodically be merged to the master
@@ -46,14 +46,14 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 
 ## Resources
 
-- **xAdcsCertificationAuthority**: This resource can be used to install the ADCS
+- **AdcsCertificationAuthority**: This resource can be used to install the ADCS
   Certificate Authority after the feature has been installed on the server.
-- **xAdcsOnlineResponder**: This resource can be used to install an ADCS Online
+- **AdcsOnlineResponder**: This resource can be used to install an ADCS Online
   Responder after the feature has been installed on the server.
-- **xAdcsWebEnrollment**: This resource can be used to install the ADCS Web
+- **AdcsWebEnrollment**: This resource can be used to install the ADCS Web
   Enrollment service after the feature has been installed on the server.
 
-### xAdcsCertificationAuthority
+### AdcsCertificationAuthority
 
 This resource can be used to install the ADCS Certificate Authority after the
 feature has been installed on the server.
@@ -117,12 +117,12 @@ the `ADCS-Cert-Authority` feature has already been installed.
   authority certificate. If this is a subordinate CA, do not specify this parameter
     because the validity period is determined by the parent CA.
 
-#### xAdcsCertificationAuthority Examples
+#### AdcsCertificationAuthority Examples
 
-- [Install enterprise root certificate authority](/Examples/Resources/xAdcsCertificationAuthority/1-InstallCertificationAthority.ps1)
-- [Retire certificate authority](/Examples/Resources/xAdcsCertificationAuthority/2-RetireCertificationAthority.ps1)
+- [Install enterprise root certificate authority](/Examples/Resources/AdcsCertificationAuthority/1-InstallCertificationAthority.ps1)
+- [Retire certificate authority](/Examples/Resources/AdcsCertificationAuthority/2-RetireCertificationAthority.ps1)
 
-### xAdcsOnlineResponder
+### AdcsOnlineResponder
 
 This resource can be used to install an ADCS Online Responder after the feature
 has been installed on the server.
@@ -142,11 +142,11 @@ For more information on ADCS Online Responders, see [this article on TechNet](ht
 - **`[String]` Ensure** (_Write_): Specifies whether the Online Responder feature
   should be installed or uninstalled. { *Present* | Absent }
 
-#### xAdcsOnlineResponder Examples
+#### AdcsOnlineResponder Examples
 
-- [Install Online Certificate Status Protocol (OCSP) server](/Examples/Resources/xAdcsWebEnrollment/1-InstallOnlineResponder.ps1)
+- [Install Online Certificate Status Protocol (OCSP) server](/Examples/Resources/AdcsWebEnrollment/1-InstallOnlineResponder.ps1)
 
-### xAdcsWebEnrollment
+### AdcsWebEnrollment
 
 This resource can be used to install the ADCS Web Enrollment service after the
 feature has been installed on the server.
@@ -166,13 +166,19 @@ For more information on Web Enrollment services, see [this article on TechNet](h
 - **`[String]` Ensure** (_Write_): Specifies whether the Web Enrollment feature
   should be installed or uninstalled. { *Present* | Absent }
 
-#### xAdcsWebEnrollment Examples
+#### AdcsWebEnrollment Examples
 
-- [Install web enrollment server](/Examples/Resources/xAdcsWebEnrollment/1-InstallWebEnrollment.ps1)
+- [Install web enrollment server](/Examples/Resources/AdcsWebEnrollment/1-InstallWebEnrollment.ps1)
 
 ## Versions
 
 ### Unreleased
+
+### 2.0.0.0
+
+- BREAKING CHANGE: Renamed module to ActiveDirectoryCSDsc - see
+  [issue #38](https://github.com/PowerShell/xAdcsDeployment/issues/38)
+- Enabled PSSA rule violations to fail build - Fixes [Issue #44](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/44).
 
 ### 1.4.0.0
 
