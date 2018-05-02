@@ -1,6 +1,6 @@
 @{
     # Version number of this module.
-    ModuleVersion = '1.4.0.0'
+    moduleVersion = '2.0.0.0'
 
     # ID used to uniquely identify this module
     GUID              = 'f8ddd7fc-c6d6-469e-8a80-c96efabe2fcc'
@@ -47,12 +47,14 @@
             # IconUri = ''
 
             # ReleaseNotes of this module
-        ReleaseNotes = '- xAdcsCertificateAuthority: CertFilePassword invalid type - fixes
-  [issue 36](https://github.com/PowerShell/xAdcsDeployment/issues/36)
+        ReleaseNotes = '- BREAKING CHANGE: Renamed module to ActiveDirectoryCSDsc - see
+  [issue 38](https://github.com/PowerShell/xAdcsDeployment/issues/38)
+- Enabled PSSA rule violations to fail build - Fixes [Issue 44](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/44).
 
 '
         } # End of PSData hashtable
     } # End of PrivateData hashtable
 }
+
 
 
