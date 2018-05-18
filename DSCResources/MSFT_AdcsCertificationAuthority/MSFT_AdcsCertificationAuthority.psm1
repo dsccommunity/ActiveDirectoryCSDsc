@@ -13,6 +13,10 @@ $LocalizedData = Get-LocalizedData `
 <#
     .SYNOPSIS
         Returns an object containing the current state information for the ADCS CA on the server.
+
+    .PARAMETER IsSingleInstance
+        Specifies the resource is a single instance, the value must be 'Yes'.
+
     .PARAMETER CAType
         Specifies the type of certification authority to install.
 
@@ -99,6 +103,11 @@ Function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('Yes')]
+        [System.String]
+        $IsSingleInstance,
+
         [Parameter(Mandatory = $true)]
         [ValidateSet('EnterpriseRootCA', 'EnterpriseSubordinateCA', 'StandaloneRootCA', 'StandaloneSubordinateCA')]
         [System.String]
@@ -198,6 +207,7 @@ Function Get-TargetResource
         ) -join '' )
 
     $adcsParameters = @{} + $PSBoundParameters
+    $null = $adcsParameters.Remove('IsSingleInstance')
     $null = $adcsParameters.Remove('Ensure')
     $null = $adcsParameters.Remove('Debug')
     $null = $adcsParameters.Remove('ErrorAction')
@@ -225,15 +235,19 @@ Function Get-TargetResource
     }
 
     return @{
-        Ensure     = $Ensure
-        CAType     = $CAType
-        Credential = $Credential
+        IsSingleInstance = 'Yes'
+        Ensure           = $Ensure
+        CAType           = $CAType
+        Credential       = $Credential
     }
 } # Function Get-TargetResource
 
 <#
     .SYNOPSIS
         Installs or uinstalls the ADCS CA from the server.
+
+    .PARAMETER IsSingleInstance
+        Specifies the resource is a single instance, the value must be 'Yes'.
 
     .PARAMETER CAType
         Specifies the type of certification authority to install.
@@ -317,6 +331,11 @@ Function Set-TargetResource
     [CmdletBinding()]
     param
     (
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('Yes')]
+        [System.String]
+        $IsSingleInstance,
+
         [Parameter(Mandatory = $true)]
         [ValidateSet('EnterpriseRootCA', 'EnterpriseSubordinateCA', 'StandaloneRootCA', 'StandaloneSubordinateCA')]
         [System.String]
@@ -416,6 +435,7 @@ Function Set-TargetResource
         ) -join '' )
 
     $adcsParameters = @{} + $PSBoundParameters
+    $null = $adcsParameters.Remove('IsSingleInstance')
     $null = $adcsParameters.Remove('Ensure')
     $null = $adcsParameters.Remove('Debug')
     $null = $adcsParameters.Remove('ErrorAction')
@@ -459,6 +479,10 @@ Function Set-TargetResource
 <#
     .SYNOPSIS
         Tests is the ADCS CA is in the desired state.
+
+    .PARAMETER IsSingleInstance
+        Specifies the resource is a single instance, the value must be 'Yes'.
+
     .PARAMETER CAType
         Specifies the type of certification authority to install.
 
@@ -545,6 +569,11 @@ Function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('Yes')]
+        [System.String]
+        $IsSingleInstance,
+
         [Parameter(Mandatory = $true)]
         [ValidateSet('EnterpriseRootCA', 'EnterpriseSubordinateCA', 'StandaloneRootCA', 'StandaloneSubordinateCA')]
         [System.String]
@@ -644,6 +673,7 @@ Function Test-TargetResource
         ) -join '' )
 
     $adcsParameters = @{} + $PSBoundParameters
+    $null = $adcsParameters.Remove('IsSingleInstance')
     $null = $adcsParameters.Remove('Ensure')
     $null = $adcsParameters.Remove('Debug')
     $null = $adcsParameters.Remove('ErrorAction')

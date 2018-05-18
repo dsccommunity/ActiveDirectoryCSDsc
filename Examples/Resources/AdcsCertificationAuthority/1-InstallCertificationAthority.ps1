@@ -29,10 +29,11 @@ Configuration Example
 
         AdcsCertificationAuthority CertificateAuthority
         {
-            Ensure     = 'Present'
-            Credential = $Credential
-            CAType     = 'EnterpriseRootCA'
-            DependsOn  = '[WindowsFeature]ADCS-Cert-Authority'
+            IsSingleInstance = 'Yes'
+            Ensure           = 'Present'
+            Credential       = $Credential
+            CAType           = 'EnterpriseRootCA'
+            DependsOn        = '[WindowsFeature]ADCS-Cert-Authority'
         }
     }
 }

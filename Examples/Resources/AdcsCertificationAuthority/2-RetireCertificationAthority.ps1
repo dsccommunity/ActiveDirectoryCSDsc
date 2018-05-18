@@ -28,6 +28,7 @@ Configuration Example
     {
         AdcsCertificationAuthority CertificateAuthority
         {
+            IsSingleInstance          = 'Yes'
             Ensure                    = 'Absent'
             Credential                = $Credential
             CAType                    = 'EnterpriseRootCA'

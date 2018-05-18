@@ -60,9 +60,11 @@ feature has been installed on the server.
 Using this DSC Resource to configure an ADCS Certificate Authority assumes that
 the `ADCS-Cert-Authority` feature has already been installed.
 
-- **`[String]` CAType** (_Key_): Specifies the type of certification authority to
-  install. { EnterpriseRootCA | EnterpriseSubordinateCA | StandaloneRootCA |
-  StandaloneSubordinateCA }
+- **`[String]` IsSingleInstance** (_Key_): Specifies the resource is a single
+  instance, the value must be 'Yes'.
+- **`[String]` CAType** (_Required_): Specifies the type of certification
+  authority to install. { EnterpriseRootCA | EnterpriseSubordinateCA |
+  StandaloneRootCA | StandaloneSubordinateCA }
 - **`[PSCredential]` Credential** (_Required_): To
   install an enterprise certification authority, the computer must be joined to
   an Active Directory Domain Services domain and a user account that is a member
@@ -173,6 +175,9 @@ For more information on Web Enrollment services, see [this article on TechNet](h
 ## Versions
 
 ### Unreleased
+
+- BREAKING CHANGE: New Key for AdcsCertificationAuthority, IsSingleInstance - see
+  [issue #47](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/47)
 
 ### 2.0.0.0
 
