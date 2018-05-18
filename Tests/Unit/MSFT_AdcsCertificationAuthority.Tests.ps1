@@ -44,17 +44,19 @@ namespace Microsoft.CertificateServices.Deployment.Common.CA {
         $dummyCredential = New-Object System.Management.Automation.PSCredential ("Administrator",(New-Object -Type SecureString))
 
         $testParametersPresent = @{
-            Ensure     = 'Present'
-            CAType     = 'StandaloneRootCA'
-            Credential = $dummyCredential
-            Verbose    = $true
+            IsSingleInstance = 'Yes'
+            Ensure           = 'Present'
+            CAType           = 'StandaloneRootCA'
+            Credential       = $dummyCredential
+            Verbose          = $true
         }
 
         $testParametersAbsent = @{
-            Ensure     = 'Absent'
-            CAType     = 'StandaloneRootCA'
-            Credential = $dummyCredential
-            Verbose    = $true
+            IsSingleInstance = 'Yes'
+            Ensure           = 'Absent'
+            CAType           = 'StandaloneRootCA'
+            Credential       = $dummyCredential
+            Verbose          = $true
         }
 
         function Install-AdcsCertificationAuthority {
