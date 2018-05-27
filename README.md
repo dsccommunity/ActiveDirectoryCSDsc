@@ -212,8 +212,10 @@ For more information on Web Enrollment services, see [this article on TechNet](h
   Pester standards.
 - Updated license year in LICENSE.MD and module manifest to 2018.
 - Removed requirement for Pester maximum version 4.0.8.
+- Added new resource EnrollmentPolicyWebService - see
+  [issue #43](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/43).
 - BREAKING CHANGE: New Key for AdcsCertificationAuthority, IsSingleInstance - see
-  [issue #47](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/47)
+  [issue #47](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/47).
 - Added:
   - MSFT_xADCSOnlineResponder resource to install the Online Responder service.
 
