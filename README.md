@@ -48,6 +48,9 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 
 - **AdcsCertificationAuthority**: This resource can be used to install the ADCS
   Certificate Authority after the feature has been installed on the server.
+- **AdcsEnrollmentPolicyWebService**: This resource can be used to
+  install an ADCS Certificate Enrollment Policy Web Service on the server after
+  the feature has been installed on the server.
 - **AdcsOnlineResponder**: This resource can be used to install an ADCS Online
   Responder after the feature has been installed on the server.
 - **AdcsWebEnrollment**: This resource can be used to install the ADCS Web
@@ -124,6 +127,35 @@ the `ADCS-Cert-Authority` feature has already been installed.
 - [Install enterprise root certificate authority](/Examples/Resources/AdcsCertificationAuthority/1-InstallCertificationAthority.ps1)
 - [Retire certificate authority](/Examples/Resources/AdcsCertificationAuthority/2-RetireCertificationAthority.ps1)
 
+### AdcsEnrollmentPolicyWebService
+
+This resource can be used to install an ADCS Certificate Enrollment Policy Web
+Service on the server after the feature has been installed on the server.
+Using this DSC Resource to configure an ADCS Certificate Authority assumes that
+the `ADCS-Enroll-Web-Pol` feature has already been installed.
+
+- **`[String]` AuthenticationType** (_Key_): Specifies the authentication
+  type used by the Certificate Enrollment Policy Web Service.
+  { Certificate | Kerberos | UserName }
+- **`[String]` SSLCertThumbprint** (_Required_): Specifies the thumbprint of
+  the certificate used by Internet Information Service (IIS) to enable support
+  for required Secure Sockets Layer (SSL).
+- **`[PSCredential]` Credential** (_Required_): If the Certificate Enrollment
+  Policy Web service is configured to use Standalone certification authority,
+  then an account that is a member of the local Administrators on the CA is
+  required. If the Certificate Enrollment Policy Web service is configured to
+  use an Enterprise CA, then an account that is a member of Domain Admins is
+  required.
+- **`[String]` Ensure** (_Write_): Specifies whether the Certificate Enrollment
+  Policy Web feature should be installed or uninstalled. { *Present* | Absent }
+- **`[Boolean]` KeyBasedRenewal** (_Write_): Configures the Certificate Enrollment
+  Policy Web Service to operate in key-based renewal mode. Defaults to False.
+
+#### AdcsEnrollmentPolicyWebService Examples
+
+- [Install certificate enrollment policy web service](/Examples/Resources/AdcsEnrollmentPolicyWebService/1-InstallCertificateEnrollmentPolicyWebService.ps1)
+- [Retire certificate enrollment policy web service](/Examples/Resources/AdcsEnrollmentPolicyWebService/2-RetireCertificateEnrollmentPolicyWebService.ps1)
+
 ### AdcsOnlineResponder
 
 This resource can be used to install an ADCS Online Responder after the feature
@@ -176,8 +208,14 @@ For more information on Web Enrollment services, see [this article on TechNet](h
 
 ### Unreleased
 
+- Changed `Assert-VerifiableMocks` to be `Assert-VerifiableMock` to meet
+  Pester standards.
+- Updated license year in LICENSE.MD and module manifest to 2018.
+- Removed requirement for Pester maximum version 4.0.8.
 - BREAKING CHANGE: New Key for AdcsCertificationAuthority, IsSingleInstance - see
   [issue #47](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/47)
+- Added:
+  - MSFT_xADCSOnlineResponder resource to install the Online Responder service.
 
 ### 2.0.0.0
 

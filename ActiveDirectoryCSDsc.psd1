@@ -12,7 +12,7 @@
     CompanyName       = 'Microsoft Corporation'
 
     # Copyright statement for this module
-    Copyright         = '(c) 2017 Microsoft Corporation. All rights reserved.'
+    Copyright         = '(c) 2018 Microsoft Corporation. All rights reserved.'
 
     # Description of the functionality provided by this module
     Description       = 'This DSC Resource module can be used to install or uninstall Certificate Services components in Windows Server.'

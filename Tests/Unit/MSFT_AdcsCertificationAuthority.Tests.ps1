@@ -183,7 +183,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.CA {
                 }
 
                 It 'Should call expected mocks' {
-                    Assert-VerifiableMocks
+                    Assert-VerifiableMock
 
                     Assert-MockCalled `
                         -CommandName Install-AdcsCertificationAuthority `
@@ -293,7 +293,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.CA {
                 }
 
                 It 'Should call expected mocks' {
-                    Assert-VerifiableMocks
+                    Assert-VerifiableMock
                     Assert-MockCalled `
                         -CommandName Install-AdcsCertificationAuthority `
                         -Exactly `
@@ -313,7 +313,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.CA {
                 }
 
                 It 'Should call expected mocks' {
-                    Assert-VerifiableMocks
+                    Assert-VerifiableMock
                     Assert-MockCalled `
                         -CommandName Install-AdcsCertificationAuthority `
                         -Exactly `
@@ -332,7 +332,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.CA {
                 }
 
                 It 'Should call expected mocks' {
-                    Assert-VerifiableMocks
+                    Assert-VerifiableMock
                     Assert-MockCalled `
                         -CommandName Install-AdcsCertificationAuthority `
                         -Exactly `
@@ -351,7 +351,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.CA {
                 }
 
                 It 'Should call expected mocks' {
-                    Assert-VerifiableMocks
+                    Assert-VerifiableMock
                     Assert-MockCalled `
                         -CommandName Install-AdcsCertificationAuthority `
                         -Exactly `
