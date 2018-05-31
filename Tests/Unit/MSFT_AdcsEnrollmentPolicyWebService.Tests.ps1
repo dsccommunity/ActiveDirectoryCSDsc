@@ -54,12 +54,14 @@ namespace Microsoft.CertificateServices.Deployment.Commands.CEP {
             Verbose            = $true
         }
 
-        $testParametersAbsent = @{
+        $testParametersAbsent = $testParametersPresent.Clone()
+        $testParametersAbsent.Ensure = 'Absent'
+
+        $testParametersGet = @{
             AuthenticationType = 'Certificate'
             SslCertThumbprint  = 'B2E43FF3E02D1EE767C06BD905F292E33BD14C1A'
             Credential         = $dummyCredential
             KeyBasedRenewal    = $true
-            Ensure             = 'Absent'
             Verbose            = $true
         }
 
@@ -146,7 +148,7 @@ namespace Microsoft.CertificateServices.Deployment.Commands.CEP {
                     -CommandName Test-AdcsEnrollmentPolicyWebServiceInstallState `
                     -MockWith { $true }
 
-                $result = Get-TargetResource @testParametersPresent
+                $result = Get-TargetResource @testParametersGet
 
                 It 'Should return Ensure set to Present' {
                     $result.Ensure | Should -Be 'Present'
@@ -167,7 +169,7 @@ namespace Microsoft.CertificateServices.Deployment.Commands.CEP {
                     -CommandName Test-AdcsEnrollmentPolicyWebServiceInstallState `
                     -MockWith { $false }
 
-                $result = Get-TargetResource @testParametersPresent
+                $result = Get-TargetResource @testParametersGet
 
                 It 'Should return Ensure set to Absent' {
                     $result.Ensure | Should -Be 'Absent'
