@@ -37,15 +37,22 @@ $TestEnvironment = Initialize-TestEnvironment `
 try
 {
     # Ensure that the tests can be performed on this computer
+    $skipIntegrationTests = $false
     if (-not (Test-WindowsFeature -Name 'ADCS-Enroll-Web-Pol'))
     {
         Write-Warning -Message 'Skipping integration tests for AdcsEnrollmentPolicyWebService because the feature ADCS-Enroll-Web-Pol is not installed.'
-        return
+        $skipIntegrationTests = $true
     }
 
     if ([System.String]::IsNullOrEmpty($ENV:USERDNSDOMAIN))
     {
         Write-Warning -Message 'Skipping integration tests for AdcsEnrollmentPolicyWebService because it must be run on a domain joined server.'
+        $skipIntegrationTests = $true
+    }
+
+    # Integration tests can't be performed on this computer
+    if ($skipIntegrationTests)
+    {
         return
     }
 
@@ -100,7 +107,7 @@ try
                                 @{
                                     NodeName                    = 'localhost'
                                     AuthenticationType          = $authenticationType
-                                    SSLCertThumbprint           = $certificate.Thumbprint
+                                    SslCertThumbprint           = $certificate.Thumbprint
                                     Credential                  = $adminCred
                                     KeyBasedRenewal             = $keyBasedRenewal
                                     Ensure                      = 'Present'
@@ -143,7 +150,7 @@ try
                                 @{
                                     NodeName                    = 'localhost'
                                     AuthenticationType          = $authenticationType
-                                    SSLCertThumbprint           = $certificate.Thumbprint
+                                    SslCertThumbprint           = $certificate.Thumbprint
                                     Credential                  = $adminCred
                                     KeyBasedRenewal             = $keyBasedRenewal
                                     Ensure                      = 'Absent'

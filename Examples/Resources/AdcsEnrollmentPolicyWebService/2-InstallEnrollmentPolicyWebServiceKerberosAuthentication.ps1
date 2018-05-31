@@ -35,7 +35,7 @@ Configuration Example
         AdcsEnrollmentPolicyWebService EnrollmentPolicyWebService
         {
             AuthenticationType = 'Kerberos'
-            SSLCertThumbprint  = 'f0262dcf287f3e250d1760508c4ca87946006e1e'
+            SslCertThumbprint  = 'f0262dcf287f3e250d1760508c4ca87946006e1e'
             Credential         = $Credential
             KeyBasedRenewal    = $false
             Ensure             = 'Present'

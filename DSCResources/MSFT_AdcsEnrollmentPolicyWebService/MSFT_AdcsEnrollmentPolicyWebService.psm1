@@ -18,7 +18,7 @@ $LocalizedData = Get-LocalizedData `
     .PARAMETER AuthenticationType
         Specifies the authentication type used by the Certificate Enrollment Policy Web Service.
 
-    .PARAMETER SSLCertThumbprint
+    .PARAMETER SslCertThumbprint
         Specifies the thumbprint of the certificate used by Internet Information Service (IIS)
         to enable support for required Secure Sockets Layer (SSL).
 
@@ -55,7 +55,7 @@ Function Get-TargetResource
         [Parameter(Mandatory = $true)]
         [ValidateScript( { $_ | Test-Thumbprint } )]
         [System.String]
-        $SSLCertThumbprint,
+        $SslCertThumbprint,
 
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
@@ -64,12 +64,7 @@ Function Get-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $KeyBasedRenewal = $false,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present'
+        $KeyBasedRenewal = $false
     )
 
     Write-Verbose -Message ( @(
@@ -84,12 +79,16 @@ Function Get-TargetResource
     {
         $Ensure = 'Absent'
     }
+    else
+    {
+        $Ensure = 'Present'
+    }
 
     return @{
         AuthenticationType = $AuthenticationType
-        SSLCertThumbprint  = $SSLCertThumbprint
+        SslCertThumbprint  = $SslCertThumbprint
         Credential         = $Credential
-        KeyBasedRenewal    = $null
+        KeyBasedRenewal    = $KeyBasedRenewal
         Ensure             = $Ensure
     }
 } # Function Get-TargetResource
@@ -101,7 +100,7 @@ Function Get-TargetResource
     .PARAMETER AuthenticationType
         Specifies the authentication type used by the Certificate Enrollment Policy Web Service.
 
-    .PARAMETER SSLCertThumbprint
+    .PARAMETER SslCertThumbprint
         Specifies the thumbprint of the certificate used by Internet Information Service (IIS)
         to enable support for required Secure Sockets Layer (SSL).
 
@@ -133,7 +132,7 @@ Function Set-TargetResource
         [Parameter(Mandatory = $true)]
         [ValidateScript( { $_ | Test-Thumbprint } )]
         [System.String]
-        $SSLCertThumbprint,
+        $SslCertThumbprint,
 
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
@@ -178,7 +177,7 @@ Function Set-TargetResource
 
             'Absent'
             {
-                $null = $adcsEnrollmentPolicyWebServiceParameters.Remove('SSLCertThumbprint')
+                $null = $adcsEnrollmentPolicyWebServiceParameters.Remove('SslCertThumbprint')
                 $null = $adcsEnrollmentPolicyWebServiceParameters.Remove('Credential')
 
                 Write-Verbose -Message ( @(
@@ -212,7 +211,7 @@ Function Set-TargetResource
     .PARAMETER AuthenticationType
         Specifies the authentication type used by the Certificate Enrollment Policy Web Service.
 
-    .PARAMETER SSLCertThumbprint
+    .PARAMETER SslCertThumbprint
         Specifies the thumbprint of the certificate used by Internet Information Service (IIS)
         to enable support for required Secure Sockets Layer (SSL).
 
@@ -248,7 +247,7 @@ Function Test-TargetResource
         [Parameter(Mandatory = $true)]
         [ValidateScript( { $_ | Test-Thumbprint } )]
         [System.String]
-        $SSLCertThumbprint,
+        $SslCertThumbprint,
 
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
@@ -392,7 +391,7 @@ Function Test-AdcsEnrollmentPolicyWebServiceInstallState
     # Does the Web Application exist for the Enrollment Policy Web Service
     $enrollmentPolicyWebServiceWebApp = Get-WebApplication | Where-Object -FilterScript {
         $_.Applicationpool -eq 'WSEnrollmentPolicyServer' -and
-        ($_.PhysicalPath -split '\\')[-1] -eq $enrollmentPolicyWebServiceWebAppName
+        (Split-Path -Path $_.PhysicalPath -Leaf) -eq $enrollmentPolicyWebServiceWebAppName
     }
 
     if ($null -eq $enrollmentPolicyWebServiceWebApp)

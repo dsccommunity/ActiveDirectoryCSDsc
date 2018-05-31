@@ -43,11 +43,11 @@ namespace Microsoft.CertificateServices.Deployment.Commands.CEP {
 
         $dummyCredential = New-Object `
             -TypeName System.Management.Automation.PSCredential `
-            -ArgumentList ("Administrator", (New-Object -TypeName SecureString))
+            -ArgumentList ('Administrator', (New-Object -TypeName SecureString))
 
         $testParametersPresent = @{
             AuthenticationType = 'Certificate'
-            SSLCertThumbprint  = 'B2E43FF3E02D1EE767C06BD905F292E33BD14C1A'
+            SslCertThumbprint  = 'B2E43FF3E02D1EE767C06BD905F292E33BD14C1A'
             Credential         = $dummyCredential
             KeyBasedRenewal    = $true
             Ensure             = 'Present'
@@ -56,7 +56,7 @@ namespace Microsoft.CertificateServices.Deployment.Commands.CEP {
 
         $testParametersAbsent = @{
             AuthenticationType = 'Certificate'
-            SSLCertThumbprint  = 'B2E43FF3E02D1EE767C06BD905F292E33BD14C1A'
+            SslCertThumbprint  = 'B2E43FF3E02D1EE767C06BD905F292E33BD14C1A'
             Credential         = $dummyCredential
             KeyBasedRenewal    = $true
             Ensure             = 'Absent'
@@ -101,7 +101,7 @@ namespace Microsoft.CertificateServices.Deployment.Commands.CEP {
 
                 [Parameter()]
                 [System.String]
-                $SSLCertThumbprint,
+                $SslCertThumbprint,
 
                 [Parameter()]
                 [System.Management.Automation.PSCredential]

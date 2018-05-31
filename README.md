@@ -137,7 +137,7 @@ the `ADCS-Enroll-Web-Pol` feature has already been installed.
 - **`[String]` AuthenticationType** (_Key_): Specifies the authentication
   type used by the Certificate Enrollment Policy Web Service.
   { Certificate | Kerberos | UserName }
-- **`[String]` SSLCertThumbprint** (_Required_): Specifies the thumbprint of
+- **`[String]` SslCertThumbprint** (_Required_): Specifies the thumbprint of
   the certificate used by Internet Information Service (IIS) to enable support
   for required Secure Sockets Layer (SSL).
 - **`[PSCredential]` Credential** (_Required_): If the Certificate Enrollment
@@ -218,6 +218,7 @@ For more information on Web Enrollment services, see [this article on TechNet](h
   [issue #47](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/47).
 - Added:
   - MSFT_xADCSOnlineResponder resource to install the Online Responder service.
+- Corrected filename of MSFT_AdcsCertificationAuthority integration test file.
 
 ### 2.0.0.0
 

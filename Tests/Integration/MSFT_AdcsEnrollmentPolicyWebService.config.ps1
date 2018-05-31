@@ -4,7 +4,7 @@ configuration MSFT_AdcsEnrollmentPolicyWebService_Config {
     node localhost {
         AdcsEnrollmentPolicyWebService Integration_Test {
             AuthenticationType = $Node.AuthenticationType
-            SSLCertThumbprint  = $Node.SSLCertThumbprint
+            SslCertThumbprint  = $Node.SslCertThumbprint
             Credential         = $Node.Credential
             KeyBasedRenewal    = $Node.KeyBasedRenewal
             Ensure             = $Node.Ensure
