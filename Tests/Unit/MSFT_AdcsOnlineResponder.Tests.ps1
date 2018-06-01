@@ -99,7 +99,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.OCSP {
                 }
 
                 It 'Should call expected mocks' {
-                    Assert-VerifiableMocks
+                    Assert-VerifiableMock
                     Assert-MockCalled `
                         -CommandName Install-AdcsOnlineResponder `
                         -Exactly `
@@ -208,7 +208,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.OCSP {
                     }
 
                     It 'Should call expected mocks' {
-                        Assert-VerifiableMocks
+                        Assert-VerifiableMock
                         Assert-MockCalled `
                             -CommandName Install-AdcsOnlineResponder `
                             -Exactly `
@@ -228,7 +228,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.OCSP {
                     }
 
                     It 'Should call expected mocks' {
-                        Assert-VerifiableMocks
+                        Assert-VerifiableMock
                         Assert-MockCalled `
                             -CommandName Install-AdcsOnlineResponder `
                             -Exactly `
@@ -249,7 +249,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.OCSP {
                     }
 
                     It 'Should call expected mocks' {
-                        Assert-VerifiableMocks
+                        Assert-VerifiableMock
                         Assert-MockCalled `
                             -CommandName Install-AdcsOnlineResponder `
                             -Exactly `
@@ -268,7 +268,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.OCSP {
                     }
 
                     It 'Should call expected mocks' {
-                        Assert-VerifiableMocks
+                        Assert-VerifiableMock
                         Assert-MockCalled `
                             -CommandName Install-AdcsOnlineResponder `
                             -Exactly `
