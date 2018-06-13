@@ -208,6 +208,8 @@ For more information on Web Enrollment services, see [this article on TechNet](h
 
 ### Unreleased
 
+### 3.0.0.0
+
 - Changed `Assert-VerifiableMocks` to be `Assert-VerifiableMock` to meet
   Pester standards.
 - Updated license year in LICENSE.MD and module manifest to 2018.
