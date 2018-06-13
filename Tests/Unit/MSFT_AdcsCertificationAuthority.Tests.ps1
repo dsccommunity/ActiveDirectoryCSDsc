@@ -44,17 +44,19 @@ namespace Microsoft.CertificateServices.Deployment.Common.CA {
         $dummyCredential = New-Object System.Management.Automation.PSCredential ("Administrator",(New-Object -Type SecureString))
 
         $testParametersPresent = @{
-            Ensure     = 'Present'
-            CAType     = 'StandaloneRootCA'
-            Credential = $dummyCredential
-            Verbose    = $true
+            IsSingleInstance = 'Yes'
+            Ensure           = 'Present'
+            CAType           = 'StandaloneRootCA'
+            Credential       = $dummyCredential
+            Verbose          = $true
         }
 
         $testParametersAbsent = @{
-            Ensure     = 'Absent'
-            CAType     = 'StandaloneRootCA'
-            Credential = $dummyCredential
-            Verbose    = $true
+            IsSingleInstance = 'Yes'
+            Ensure           = 'Absent'
+            CAType           = 'StandaloneRootCA'
+            Credential       = $dummyCredential
+            Verbose          = $true
         }
 
         function Install-AdcsCertificationAuthority {
@@ -181,7 +183,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.CA {
                 }
 
                 It 'Should call expected mocks' {
-                    Assert-VerifiableMocks
+                    Assert-VerifiableMock
 
                     Assert-MockCalled `
                         -CommandName Install-AdcsCertificationAuthority `
@@ -291,7 +293,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.CA {
                 }
 
                 It 'Should call expected mocks' {
-                    Assert-VerifiableMocks
+                    Assert-VerifiableMock
                     Assert-MockCalled `
                         -CommandName Install-AdcsCertificationAuthority `
                         -Exactly `
@@ -311,7 +313,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.CA {
                 }
 
                 It 'Should call expected mocks' {
-                    Assert-VerifiableMocks
+                    Assert-VerifiableMock
                     Assert-MockCalled `
                         -CommandName Install-AdcsCertificationAuthority `
                         -Exactly `
@@ -330,7 +332,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.CA {
                 }
 
                 It 'Should call expected mocks' {
-                    Assert-VerifiableMocks
+                    Assert-VerifiableMock
                     Assert-MockCalled `
                         -CommandName Install-AdcsCertificationAuthority `
                         -Exactly `
@@ -349,7 +351,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.CA {
                 }
 
                 It 'Should call expected mocks' {
-                    Assert-VerifiableMocks
+                    Assert-VerifiableMock
                     Assert-MockCalled `
                         -CommandName Install-AdcsCertificationAuthority `
                         -Exactly `

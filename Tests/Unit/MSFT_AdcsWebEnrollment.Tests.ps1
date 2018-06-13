@@ -106,7 +106,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.WEP {
                 }
 
                 It 'Should call expected mocks' {
-                    Assert-VerifiableMocks
+                    Assert-VerifiableMock
 
                     Assert-MockCalled `
                         -CommandName Install-AdcsWebEnrollment `
@@ -218,7 +218,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.WEP {
                     }
 
                     It 'Should call expected mocks' {
-                        Assert-VerifiableMocks
+                        Assert-VerifiableMock
 
                         Assert-MockCalled `
                             -CommandName Install-AdcsWebEnrollment `
@@ -240,7 +240,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.WEP {
                     }
 
                     It 'Should call expected mocks' {
-                        Assert-VerifiableMocks
+                        Assert-VerifiableMock
 
                         Assert-MockCalled `
                             -CommandName Install-AdcsWebEnrollment `
@@ -261,7 +261,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.WEP {
                     }
 
                     It 'Should call expected mocks' {
-                        Assert-VerifiableMocks
+                        Assert-VerifiableMock
 
                         Assert-MockCalled `
                             -CommandName Install-AdcsWebEnrollment `
@@ -280,7 +280,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.WEP {
                     }
 
                     It 'Should call expected mocks' {
-                        Assert-VerifiableMocks
+                        Assert-VerifiableMock
 
                         Assert-MockCalled `
                             -CommandName Install-AdcsWebEnrollment `

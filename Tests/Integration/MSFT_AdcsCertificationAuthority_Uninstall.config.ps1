@@ -3,9 +3,10 @@ configuration MSFT_AdcsCertificationAuthority_Uninstall_Config {
 
     node localhost {
         AdcsCertificationAuthority Integration_Test {
-            CAType     = 'StandaloneRootCA'
-            Credential = $Node.AdminCred
-            Ensure     = 'Absent'
+            IsSingleInstance = 'Yes'
+            CAType           = 'StandaloneRootCA'
+            Credential       = $Node.AdminCred
+            Ensure           = 'Absent'
         }
     }
 }

@@ -41,7 +41,8 @@ try
     # Ensure that the tests can be performed on this computer
     if (-not (Test-WindowsFeature -Name 'ADCS-Cert-Authority'))
     {
-        Return
+        Write-Warning -Message 'Skipping integration tests for AdcsCertificationAuthority because the feature ADCS-Cert-Authority is not installed.'
+        return
     }
 
     #region Integration Tests
