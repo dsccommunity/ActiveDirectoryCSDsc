@@ -26,8 +26,9 @@ build: false
 
 test_script:
     - ps: |
-          Import-Module "$env:APPVEYOR_BUILD_FOLDER\DscResource.Tests\AppVeyor.psm1"
-          Invoke-AppveyorTestScriptTask `
+        Import-Module "$env:APPVEYOR_BUILD_FOLDER\DscResource.Tests\AppVeyor.psm1"
+        Invoke-AppveyorTestScriptTask `
+            -ExcludeTag @() `
             -CodeCoverage `
             -CodeCovIo
 
@@ -38,7 +39,7 @@ test_script:
 # scripts to run before deployment
 deploy_script:
     - ps: |
-          Invoke-AppveyorAfterTestTask
+        Invoke-AppveyorAfterTestTask
 
-          Invoke-AppVeyorDeployTask `
-              -OptIn @()
+        Invoke-AppVeyorDeployTask `
+            -OptIn @()
