@@ -39,3 +39,6 @@ test_script:
 deploy_script:
     - ps: |
           Invoke-AppveyorAfterTestTask
+
+          Invoke-AppVeyorDeployTask `
+              -OptIn @()

@@ -1,5 +1,7 @@
+#Requires -module ActiveDirectoryCSDsc
+
 <#
-    .EXAMPLE
+    .DESCRIPTION
         This example will add the Active Directory Certificate Services Certification
         Authority Web Enrollment feature to a server and configure it as a web
         enrollment server.
@@ -8,10 +10,6 @@ Configuration Example
 {
     param
     (
-        [Parameter()]
-        [System.String[]]
-        $NodeName = 'localhost',
-
         [Parameter(Mandatory = $true)]
         [ValidateNotNullorEmpty()]
         [System.Management.Automation.PSCredential]
@@ -20,7 +18,7 @@ Configuration Example
 
     Import-DscResource -Module ActiveDirectoryCSDsc
 
-    Node $AllNodes.NodeName
+    Node localhost
     {
         WindowsFeature ADCS-Web-Enrollment
         {

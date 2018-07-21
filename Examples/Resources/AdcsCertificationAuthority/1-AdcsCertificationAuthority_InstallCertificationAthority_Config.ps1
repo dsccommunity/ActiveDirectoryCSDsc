@@ -1,5 +1,7 @@
+#Requires -module ActiveDirectoryCSDsc
+
 <#
-    .EXAMPLE
+    .DESCRIPTION
         This example will add the Active Directory Certificate Services Certificate Authority
         feature to a server and configure it as a certificate authority enterprise root CA.
 #>
@@ -7,10 +9,6 @@ Configuration Example
 {
     param
     (
-        [Parameter()]
-        [System.String[]]
-        $NodeName = 'localhost',
-
         [Parameter(Mandatory = $true)]
         [ValidateNotNullorEmpty()]
         [System.Management.Automation.PSCredential]
@@ -19,7 +17,7 @@ Configuration Example
 
     Import-DscResource -Module ActiveDirectoryCSDsc
 
-    Node $AllNodes.NodeName
+    Node localhost
     {
         WindowsFeature ADCS-Cert-Authority
         {

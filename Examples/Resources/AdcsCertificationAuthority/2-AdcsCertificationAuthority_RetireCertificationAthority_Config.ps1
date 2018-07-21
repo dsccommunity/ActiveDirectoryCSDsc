@@ -1,5 +1,7 @@
+#Requires -module ActiveDirectoryCSDsc
+
 <#
-    .EXAMPLE
+    .DESCRIPTION
         This example will add the retire an Active Directory Certificate Services
         certificate authority from a node and uninstall the Active Directory Certificate
         Services certification authority feature.
@@ -12,10 +14,6 @@ Configuration Example
 {
     param
     (
-        [Parameter()]
-        [System.String[]]
-        $NodeName = 'localhost',
-
         [Parameter(Mandatory = $true)]
         [ValidateNotNullorEmpty()]
         [System.Management.Automation.PSCredential]
@@ -24,7 +22,7 @@ Configuration Example
 
     Import-DscResource -Module ActiveDirectoryCSDsc
 
-    Node $AllNodes.NodeName
+    Node localhost
     {
         AdcsCertificationAuthority CertificateAuthority
         {
