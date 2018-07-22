@@ -1,3 +1,20 @@
+<#PSScriptInfo
+.VERSION 1.0.0
+.GUID d0e64a0f-c86a-4b7f-b1db-aee24df4b63f
+.AUTHOR Microsoft Corporation
+.COMPANYNAME Microsoft Corporation
+.COPYRIGHT
+.TAGS DSCConfiguration
+.LICENSEURI https://github.com/PowerShell/ActiveDirectoryCSDsc/blob/master/LICENSE
+.PROJECTURI https://github.com/PowerShell/ActiveDirectoryCSDsc
+.ICONURI
+.EXTERNALMODULEDEPENDENCIES
+.REQUIREDSCRIPTS
+.EXTERNALSCRIPTDEPENDENCIES
+.RELEASENOTES First version.
+.PRIVATEDATA 2016-Datacenter,2016-Datacenter-Server-Core
+#>
+
 #Requires -module ActiveDirectoryCSDsc
 
 <#
