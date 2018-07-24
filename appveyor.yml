@@ -6,6 +6,9 @@ install:
     - git clone https://github.com/PowerShell/DscResource.Tests
 
     - ps: |
+        Import-Module "$env:APPVEYOR_BUILD_FOLDER\DscResource.Tests\AppVeyor.psm1"
+        Invoke-AppveyorInstallTask
+
         Install-WindowsFeature -Name ADCS-Cert-Authority, RSAT-ADCS
         & net @('user','AdcsAdmin','NotPass12!','/ADD')
         & net @('localgroup','administrators','AdcsAdmin','/ADD')
@@ -24,7 +27,6 @@ build: false
 test_script:
     - ps: |
         Import-Module "$env:APPVEYOR_BUILD_FOLDER\DscResource.Tests\AppVeyor.psm1"
-        Invoke-AppveyorInstallTask
         Invoke-AppveyorTestScriptTask `
             -ExcludeTag @() `
             -CodeCoverage `
