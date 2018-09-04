@@ -28,7 +28,6 @@ test_script:
     - ps: |
           Import-Module "$env:APPVEYOR_BUILD_FOLDER\DscResource.Tests\AppVeyor.psm1"
           Invoke-AppveyorTestScriptTask `
-            -ExcludeTag @() `
             -CodeCoverage `
             -CodeCovIo
 
