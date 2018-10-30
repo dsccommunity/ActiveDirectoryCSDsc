@@ -208,6 +208,8 @@ For more information on Web Enrollment services, see [this article on TechNet](h
 
 ### Unreleased
 
+- Updated LICENSE file to match the Microsoft Open Source Team standard.
+
 ### 3.0.0.0
 
 - Changed `Assert-VerifiableMocks` to be `Assert-VerifiableMock` to meet
