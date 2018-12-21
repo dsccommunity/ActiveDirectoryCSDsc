@@ -457,6 +457,11 @@ Function Set-TargetResource
                 ) -join '' )
 
             $errorMessage = (Install-AdcsCertificationAuthority @adcsParameters -Force).ErrorString
+            if($errorMessage -like "*To complete the installation, use the request file*")
+            {
+                Write-Warning -Message $errorMessage
+                $errorMessage = ''
+            }
         }
 
         'Absent'
