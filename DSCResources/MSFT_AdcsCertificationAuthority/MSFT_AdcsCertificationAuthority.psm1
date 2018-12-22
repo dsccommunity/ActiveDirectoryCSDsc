@@ -456,7 +456,7 @@ Function Set-TargetResource
                     $($LocalizedData.InstallingAdcsCAMessage -f $CAType)
                 ) -join '' )
 
-            $errorObject = Install-AdcsCertificationAuthority @adcsParameters -Force | Select-Object -Property ErrorId, ErrorString
+            $errorObject = Install-AdcsCertificationAuthority @adcsParameters -Force
 
             if (($errorObject.ErrorId -eq 398) -or ($errorObject.ErrorString -like "*The Active Directory Certificate Services installation is incomplete*"))
             {
@@ -472,7 +472,7 @@ Function Set-TargetResource
                     $($LocalizedData.UninstallingAdcsCAMessage -f $CAType)
                 ) -join '' )
 
-                $errorObject = Uninstall-AdcsCertificationAuthority -Force | Select-Object -Property ErrorId, ErrorString
+                $errorObject = Uninstall-AdcsCertificationAuthority -Force
         }
     } # switch
 

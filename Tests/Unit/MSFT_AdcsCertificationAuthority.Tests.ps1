@@ -235,7 +235,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.CA {
             Context 'CA is not installed but should be but an error is thrown installing it' {
                 Mock `
                     -CommandName Install-AdcsCertificationAuthority `
-                    -MockWith { [PSObject] @{ ErrorString = 'Something went wrong' }}
+                    -MockWith { [PSObject] @{ErrorString = 'Something went wrong' }}
 
                 Mock -CommandName Uninstall-AdcsCertificationAuthority
 
@@ -255,6 +255,45 @@ namespace Microsoft.CertificateServices.Deployment.Common.CA {
                         -CommandName Uninstall-AdcsCertificationAuthority `
                         -Exactly `
                         -Times 0
+                }
+            }
+
+            Context 'CA is multi tier and error should not throw for ErrorString with specific text' {
+                Mock `
+                    -CommandName Install-AdcsCertificationAuthority `
+                    -MockWith { [PSObject] @{ErrorString = 'The Active Directory Certificate Services installation is incomplete' }}
+
+                It 'Should not throw exception' {
+
+                    { Set-TargetResource @testParametersPresent } | Should Not Throw
+                }
+
+                It 'Should call expected mocks' {
+                    Assert-MockCalled `
+                        -CommandName Install-AdcsCertificationAuthority `
+                        -Exactly `
+                        -Times 1
+                }
+            }
+
+            Context 'CA is multi tier and error should not throw for Error ID 398' {
+                Mock `
+                    -CommandName Install-AdcsCertificationAuthority `
+                    -MockWith { [PSObject] @{
+                        ErrorID     = 398
+                        ErrorString = 'Something went wrong'
+                    }}
+
+                It 'Should not throw exception' {
+
+                    { Set-TargetResource @testParametersPresent } | Should Not Throw
+                }
+
+                It 'Should call expected mocks' {
+                    Assert-MockCalled `
+                        -CommandName Install-AdcsCertificationAuthority `
+                        -Exactly `
+                        -Times 1
                 }
             }
 
