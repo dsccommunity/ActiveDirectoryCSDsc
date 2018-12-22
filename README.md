@@ -210,8 +210,8 @@ For more information on Web Enrollment services, see [this article on TechNet](h
 
 - Updated LICENSE file to match the Microsoft Open Source Team standard.
 - Added .VSCode settings for applying DSC PSSA rules - fixes [Issue #60](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/60).
-- Added fix for two tier PKI deployment fails on initial deployment,  
-  not error - fix [Issue #57](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/57).
+- Added fix for two tier PKI deployment fails on initial deployment,
+  not error - fixes [Issue #57](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/57).
 
 ### 3.0.0.0
 

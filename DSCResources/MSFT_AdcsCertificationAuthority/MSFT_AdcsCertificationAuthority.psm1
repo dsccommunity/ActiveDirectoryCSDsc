@@ -457,7 +457,8 @@ Function Set-TargetResource
                 ) -join '' )
 
             $errorMessage = (Install-AdcsCertificationAuthority @adcsParameters -Force).ErrorString
-            if($errorMessage -like "*To complete the installation, use the request file*")
+
+            if ($errorMessage -like "*c:\windows\system32\certsrv\certenroll\*.req*")
             {
                 Write-Warning -Message $errorMessage
                 $errorMessage = ''
