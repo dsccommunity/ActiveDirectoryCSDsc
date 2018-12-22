@@ -258,7 +258,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.CA {
                 }
             }
 
-            Context 'CA is multi tier and error should not throw for ErrorString with specific text' {
+            Context 'When CA is multi tier and error should not throw for ErrorString with specific text' {
                 Mock `
                     -CommandName Install-AdcsCertificationAuthority `
                     -MockWith { [PSObject] @{ ErrorString = 'The Active Directory Certificate Services installation is incomplete' }}
@@ -276,7 +276,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.CA {
                 }
             }
 
-            Context 'CA is multi tier and error should not throw for Error ID 398' {
+            Context 'When CA is multi tier and error should not throw for Error ID 398' {
                 Mock `
                     -CommandName Install-AdcsCertificationAuthority `
                     -MockWith { [PSObject] @{

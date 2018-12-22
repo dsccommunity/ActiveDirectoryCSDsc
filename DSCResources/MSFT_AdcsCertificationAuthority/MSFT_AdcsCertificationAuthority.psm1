@@ -440,7 +440,7 @@ Function Set-TargetResource
     $null = $adcsParameters.Remove('Debug')
     $null = $adcsParameters.Remove('ErrorAction')
 
-    $errorObject = $Null
+    $resultObject = $Null
 
     if ($CertFilePassword)
     {
@@ -456,12 +456,13 @@ Function Set-TargetResource
                     $($LocalizedData.InstallingAdcsCAMessage -f $CAType)
                 ) -join '' )
 
-            $errorObject = Install-AdcsCertificationAuthority @adcsParameters -Force
+            $resultObject = Install-AdcsCertificationAuthority @adcsParameters -Force
 
-            if (($errorObject.ErrorId -eq 398) -or ($errorObject.ErrorString -like "*The Active Directory Certificate Services installation is incomplete*"))
+            # when a multi-tier ADCS is installed ErrorId 398 is returned, but is only a warning and can be safely ignored
+            if (($resultObject.ErrorId -eq 398) -or ($resultObject.ErrorString -like "*The Active Directory Certificate Services installation is incomplete*"))
             {
-                Write-Warning -Message $errorObject.ErrorString
-                $errorObject = $Null
+                Write-Warning -Message $resultObject.ErrorString
+                $resultObject = $Null
             }
         }
 
@@ -472,13 +473,13 @@ Function Set-TargetResource
                     $($LocalizedData.UninstallingAdcsCAMessage -f $CAType)
                 ) -join '' )
 
-                $errorObject = Uninstall-AdcsCertificationAuthority -Force
+            $resultObject = Uninstall-AdcsCertificationAuthority -Force
         }
     } # switch
 
-    if (-not [System.String]::IsNullOrEmpty($errorObject.ErrorString))
+    if (-not [System.String]::IsNullOrEmpty($resultObject.ErrorString))
     {
-        New-InvalidOperationException -Message $errorObject.ErrorString
+        New-InvalidOperationException -Message $resultObject.ErrorString
     }
 } # Function Set-TargetResource
 
