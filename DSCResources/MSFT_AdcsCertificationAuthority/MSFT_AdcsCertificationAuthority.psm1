@@ -440,7 +440,7 @@ Function Set-TargetResource
     $null = $adcsParameters.Remove('Debug')
     $null = $adcsParameters.Remove('ErrorAction')
 
-    $errorMessage = ''
+    $errorObject = $Null
 
     if ($CertFilePassword)
     {
@@ -456,12 +456,12 @@ Function Set-TargetResource
                     $($LocalizedData.InstallingAdcsCAMessage -f $CAType)
                 ) -join '' )
 
-            $errorMessage = (Install-AdcsCertificationAuthority @adcsParameters -Force).ErrorString
+            $errorObject = Install-AdcsCertificationAuthority @adcsParameters -Force | Select-Object -Property ErrorId, ErrorString
 
-            if ($errorMessage -like "*c:\windows\system32\certsrv\certenroll\*.req*")
+            if (($errorObject.ErrorId -eq 398) -or ($errorObject.ErrorString -like "*The Active Directory Certificate Services installation is incomplete*"))
             {
-                Write-Warning -Message $errorMessage
-                $errorMessage = ''
+                Write-Warning -Message $errorObject.ErrorString
+                $errorObject = $Null
             }
         }
 
@@ -472,13 +472,13 @@ Function Set-TargetResource
                     $($LocalizedData.UninstallingAdcsCAMessage -f $CAType)
                 ) -join '' )
 
-            $errorMessage = (Uninstall-AdcsCertificationAuthority -Force).ErrorString
+                $errorObject = Uninstall-AdcsCertificationAuthority -Force | Select-Object -Property ErrorId, ErrorString
         }
     } # switch
 
-    if (-not [System.String]::IsNullOrEmpty($errorMessage))
+    if (-not [System.String]::IsNullOrEmpty($errorObject.ErrorString))
     {
-        New-InvalidOperationException -Message $errorMessage
+        New-InvalidOperationException -Message $errorObject.ErrorString
     }
 } # Function Set-TargetResource
 
