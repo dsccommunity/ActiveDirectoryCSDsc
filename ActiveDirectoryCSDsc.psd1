@@ -1,6 +1,6 @@
 @{
     # Version number of this module.
-    moduleVersion = '3.0.0.0'
+    moduleVersion = '3.1.0.0'
 
     # ID used to uniquely identify this module
     GUID              = 'f8ddd7fc-c6d6-469e-8a80-c96efabe2fcc'
@@ -47,22 +47,16 @@
             # IconUri = ''
 
             # ReleaseNotes of this module
-        ReleaseNotes = '- Changed `Assert-VerifiableMocks` to be `Assert-VerifiableMock` to meet
-  Pester standards.
-- Updated license year in LICENSE.MD and module manifest to 2018.
-- Removed requirement for Pester maximum version 4.0.8.
-- Added new resource EnrollmentPolicyWebService - see
-  [issue 43](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/43).
-- BREAKING CHANGE: New Key for AdcsCertificationAuthority, IsSingleInstance - see
-  [issue 47](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/47).
-- Added:
-  - MSFT_xADCSOnlineResponder resource to install the Online Responder service.
-- Corrected filename of MSFT_AdcsCertificationAuthority integration test file.
+        ReleaseNotes = '- Updated LICENSE file to match the Microsoft Open Source Team standard.
+- Added .VSCode settings for applying DSC PSSA rules - fixes [Issue 60](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/60).
+- Added fix for two tier PKI deployment fails on initial deployment,
+  not error - fixes [Issue 57](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/57).
 
 '
         } # End of PSData hashtable
     } # End of PrivateData hashtable
 }
+
 
 
 
