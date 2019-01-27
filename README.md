@@ -208,6 +208,9 @@ For more information on Web Enrollment services, see [this article on TechNet](h
 
 ### Unreleased
 
+- Added 'DscResourcesToExport' to manifest to improve information in
+  PowerShell Gallery - fixes [Issue #68](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/68).
+
 ### 3.1.0.0
 
 - Updated LICENSE file to match the Microsoft Open Source Team standard.
