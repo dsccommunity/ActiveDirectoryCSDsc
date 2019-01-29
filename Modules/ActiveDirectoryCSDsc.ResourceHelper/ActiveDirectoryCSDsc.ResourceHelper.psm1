@@ -160,9 +160,53 @@ function Get-LocalizedData
     return $localizedData
 }
 
+<#
+
+    .SYNOPSIS
+        Restarts a System Service
+
+    .PARAMETER ServiceName
+        Name of the service to be restarted.
+
+#>
+
+function Restart-SystemService
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter()]
+        [System.String]
+        $ServiceName
+    )
+
+    $localizedData = Get-LocalizedData -ResourceName 'ActiveDirectoryCSDsc.ResourceHelper' -ResourcePath (Split-Path -Parent $Script:MyInvocation.MyCommand.Path)
+
+    Write-Verbose -Message ($localizedData.GetServiceInformation -f $ServiceName) -Verbose
+    $servicesService = Get-Service -Name $ServiceName -ErrorAction Continue
+
+    if ($servicesService)
+    {
+        Write-Verbose -Message ($localizedData.RestartService -f $ServiceName) -Verbose
+        try
+        {
+            $servicesService | Restart-Service -Force -ErrorAction Stop -Verbose
+        }
+        catch
+        {
+            throw $_
+        }
+    }
+    else
+    {
+        Write-Verbose -Message ($localizedData.UnknownService -f $ServiceName) -Verbose
+    }
+}
+
 Export-ModuleMember -Function @(
     'Test-IsNanoServer'
     'New-InvalidArgumentException'
     'New-InvalidOperationException'
     'Get-LocalizedData'
+    'Restart-SystemService'
 )

@@ -55,6 +55,9 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
   Responder after the feature has been installed on the server.
 - **AdcsWebEnrollment**: This resource can be used to install the ADCS Web
   Enrollment service after the feature has been installed on the server.
+- **AdcsOcspExtension**: This resource can be used to configure OCSP URI
+  extensions on a Certificate Authority after the feature has been installed
+  on the server.
 
 ### AdcsCertificationAuthority
 
@@ -204,12 +207,51 @@ For more information on Web Enrollment services, see [this article on TechNet](h
 
 - [Install web enrollment server](/Examples/Resources/AdcsWebEnrollment/1-InstallWebEnrollment.ps1)
 
+### AdcsOcspExtension
+
+This resource can be used to configure the OCSP URI extensions on the
+Certificate Authority after the feature has been installed on the server.
+Using this DSC Resource to configure an ADCS Certificate Authority assumes that
+the `ADCS-Cert-Authority` feature has already been installed.
+
+- **`[String]` IsSingleInstance** (_Key_): Specifies the resource is a single
+  instance, the value must be 'Yes'.
+- **`[String]` OcspUriPath** (_Required_): String array of Uniform Resource
+  Identifiers (URI) used to provide revocation information to clients or
+  applications requesting revocation status for a specific certificate.
+- **`[Boolean]` RestartService** (_Write_): Specifies whether the AD Certificate
+  Service should be restarted after making certificate changes.
+  Default value is $true.
+- **`[String]` Ensure** (_Write_): Ensures that the Online Certificate Status
+  Protocol (OCSP) Uniform Resource Identifiers (URI) is **Present** or **Absent**.
+  Default setting is **Present**
+
+### AdcsOcspExtension Examples
+
+- [Add Ocsp Certificate Extentions](/Examples/Resources/AdcsOcspExtension/1-AddOcspPath.ps1)
+        - A DSC configuration script to add desired Ocsp Uri path extensions for
+        a Certificate Authority.
+        This will remove all existing Ocsp Uri paths from the Certificate
+        Authority before adding in the desired Ocsp Uri paths.
+
+- [Remove Ocsp Certificate Extentions](/Examples/Resources/AdcsOcspExtension/2-RemoveOcspPath.ps1)
+        - A DSC configuration script to remove desired Ocsp Uri path extensions
+        for a Certificate Authority. No previously configured Ocsp Uri paths
+        will be removed.
+
 ## Versions
 
 ### Unreleased
 
 - Added 'DscResourcesToExport' to manifest to improve information in
   PowerShell Gallery - fixes [Issue #68](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/68).
+- Added new resource AdcsOcspExtension - see [Issue #70](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/70).
+  - Added Unit test for ActiveDirectoryCSDsc.ResourceHelper.psm1 helper function.
+  - Added message localization to ActiveDirectoryCSDsc.ResourceHelper.psm1 helper
+    function.
+  - Added stub function to /Tests/TestHelpers (ADCSStub.psm1) so Pester tests
+    can run without having to install ADCSAdministration module.
+  - Added Restart-SystemService function to  ActiveDirectoryCSDsc.ResourceHelper.psm1
 
 ### 3.1.0.0
 
