@@ -1,4 +1,4 @@
-﻿# Import the Resource Helper Module
+# Import the Resource Helper Module
 $modulePath = Join-Path -Path (Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent) -ChildPath 'Modules'
 Import-Module -Name (Join-Path -Path $modulePath -ChildPath (Join-Path -Path 'ActiveDirectoryCSDsc.ResourceHelper' -ChildPath 'ActiveDirectoryCSDsc.ResourceHelper.psm1'))
 
