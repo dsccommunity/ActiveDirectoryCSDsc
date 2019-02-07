@@ -1,29 +1,37 @@
-# Import the Resource Helper Module
 $modulePath = Join-Path -Path (Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent) -ChildPath 'Modules'
-Import-Module -Name (Join-Path -Path $modulePath -ChildPath (Join-Path -Path 'ActiveDirectoryCSDsc.ResourceHelper' -ChildPath 'ActiveDirectoryCSDsc.ResourceHelper.psm1'))
 
-# Import Localization Strings
-$localizedData = Get-LocalizedData `
+# Import the ADCS Deployment Resource Common Module.
+Import-Module -Name (Join-Path -Path $modulePath `
+        -ChildPath (Join-Path -Path 'ActiveDirectoryCSDsc.CommonHelper' `
+            -ChildPath 'ActiveDirectoryCSDsc.CommonHelper.psm1'))
+
+# Import the ADCS Deployment Resource Helper Module.
+Import-Module -Name (Join-Path -Path $modulePath `
+        -ChildPath (Join-Path -Path 'ActiveDirectoryCSDsc.ResourceHelper' `
+            -ChildPath 'ActiveDirectoryCSDsc.ResourceHelper.psm1'))
+
+# Import Localization Strings.
+$LocalizedData = Get-LocalizedData `
     -ResourceName 'MSFT_AdcsOcspExtension' `
-    -ResourcePath (Split-Path -Parent $Script:MyInvocation.MyCommand.Path)
+    -ResourcePath (Split-Path -Parent $script:MyInvocation.MyCommand.Path)
 
 <#
     .SYNOPSIS
-        Gets the current certification authority AddToCertificateOcsp (boolean) and Uniform Resource Identifiers (URI) settings.
+        Gets the current certification authority AddToCertificateOcsp (boolean) and Uniform Resource Identifiers (URI)
+        settings.
 
     .PARAMETER IsSingleInstance
-        This resource can only be set once per configuration; the value must be 'Yes'.
+        Specifies the resource is a single instance, the value must be 'Yes'..
 
     .PARAMETER OcspUriPath
-        String array of Uniform Resource Identifiers (URI) used to provide revocation information to clients or applications requesting revocation status for a specific certificate.
+        Specifies the address of the OCSP responder from where revocation of this certificate can be checked.
 
     .PARAMETER RestartService
         Specifies if the CertSvc service should be restarted to immediately apply the settings.
 
     .PARAMETER Ensure
-        Ensures that the Online Certificate Status Protocol (OCSP) Uniform Resource Identifiers (URI) is Present or Absent.
+        Specifies if the OCSP responder URI should be present or absent.
 #>
-
 function Get-TargetResource
 {
     [CmdletBinding()]
@@ -32,25 +40,28 @@ function Get-TargetResource
     (
         [Parameter(Mandatory = $true)]
         [ValidateSet('Yes')]
-        [String]
+        [System.String]
         $IsSingleInstance,
 
         [Parameter(Mandatory = $true)]
-        [String[]]
+        [System.String[]]
         $OcspUriPath,
 
         [Parameter()]
-        [Boolean]
+        [System.Boolean]
         $RestartService,
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
-        [String]
+        [System.String]
         $Ensure = 'Present'
     )
 
     Write-Verbose -Message $localizedData.GetOcspUriPaths
-    [Array] $currentOcspUriPathList = (Get-CAAuthorityInformationAccess).Where({$_.AddToCertificateOcsp -eq $true}).Uri
+
+    [System.Array] $currentOcspUriPathList = (Get-CAAuthorityInformationAccess).Where( {
+        $_.AddToCertificateOcsp -eq $true
+    } ).Uri
 
     return @{
         OcspUriPath      = $currentOcspUriPathList
@@ -65,18 +76,17 @@ function Get-TargetResource
         Sets the certification authority AddToCertificateOcsp (boolean) and Uniform Resource Identifiers (URI) settings.
 
     .PARAMETER IsSingleInstance
-        This resource can only be set once per configuration; the value must be 'Yes'.
+        Specifies the resource is a single instance, the value must be 'Yes'..
 
     .PARAMETER OcspUriPath
-        String array of Uniform Resource Identifiers (URI) used to provide revocation information to clients or applications requesting revocation status for a specific certificate.
+        Specifies the address of the OCSP responder from where revocation of this certificate can be checked.
 
     .PARAMETER RestartService
         Specifies if the CertSvc service should be restarted to immediately apply the settings.
 
     .PARAMETER Ensure
-        Ensures that the Online Certificate Status Protocol (OCSP) Uniform Resource Identifiers (URI) is Present or Absent.
+        Specifies if the OCSP responder URI should be present or absent.
 #>
-
 function Set-TargetResource
 {
     [CmdletBinding()]
@@ -84,20 +94,20 @@ function Set-TargetResource
     (
         [Parameter(Mandatory = $true)]
         [ValidateSet('Yes')]
-        [String]
+        [System.String]
         $IsSingleInstance,
 
         [Parameter(Mandatory = $true)]
-        [String[]]
+        [System.String[]]
         $OcspUriPath,
 
         [Parameter()]
-        [Boolean]
+        [System.Boolean]
         $RestartService,
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
-        [String]
+        [System.String]
         $Ensure = 'Present'
     )
 
@@ -129,49 +139,49 @@ function Set-TargetResource
     if ($RestartService)
     {
         Write-Verbose -Message $localizedData.RestartService
-        Restart-SystemService -ServiceName CertSvc
+        Restart-ServiceIfExists -Name CertSvc
     }
 }
 
 <#
     .SYNOPSIS
-        Tests the current certification authority AddToCertificateOcsp (boolean) and Uniform Resource Identifiers (URI) settings.
+        Tests the current certification authority AddToCertificateOcsp (boolean) and Uniform Resource Identifiers (URI)
+        settings.
 
     .PARAMETER IsSingleInstance
-        This resource can only be set once per configuration; the value must be 'Yes'.
+        Specifies the resource is a single instance, the value must be 'Yes'..
 
     .PARAMETER OcspUriPath
-        String array of Uniform Resource Identifiers (URI) used to provide revocation information to clients or applications requesting revocation status for a specific certificate.
+        Specifies the address of the OCSP responder from where revocation of this certificate can be checked.
 
     .PARAMETER RestartService
         Specifies if the CertSvc service should be restarted to immediately apply the settings.
 
     .PARAMETER Ensure
-        Ensures that the Online Certificate Status Protocol (OCSP) Uniform Resource Identifiers (URI) is Present or Absent.
+        Specifies if the OCSP responder URI should be present or absent.
 #>
-
 function Test-TargetResource
 {
     [CmdletBinding()]
-    [OutputType([Boolean])]
+    [OutputType([System.Boolean])]
     param
     (
         [Parameter(Mandatory = $true)]
         [ValidateSet('Yes')]
-        [String]
+        [System.String]
         $IsSingleInstance,
 
         [Parameter(Mandatory = $true)]
-        [String[]]
+        [System.String[]]
         $OcspUriPath,
 
         [Parameter()]
-        [Boolean]
+        [System.Boolean]
         $RestartService,
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
-        [String]
+        [System.String]
         $Ensure = 'Present'
     )
 
@@ -187,11 +197,15 @@ function Test-TargetResource
             {
                 $compareOcspUriPaths = Compare-Object -ReferenceObject $OcspUriPath -DifferenceObject $currentState.OcspUriPath -PassThru
 
-                #Desired state Ocsp Uri path(s) not found in reference set.
-                $desiredOcspUriPathsMissing  = $compareOcspUriPaths.Where({$_.SideIndicator -eq '<='}) -join ', '
+                # Desired state OCSP URI path(s) not found in reference set.
+                $desiredOcspUriPathsMissing  = $compareOcspUriPaths.Where( {
+                    $_.SideIndicator -eq '<='
+                } ) -join ', '
 
-                #Ocsp Uri path(s) found in $currentState that do not match $OcspUriPath desired state.
-                $notDesiredOcspUriPathsFound = $compareOcspUriPaths.Where({$_.SideIndicator -eq '=>'}) -join ', '
+                # OCSP URI path(s) found in $currentState that do not match $OcspUriPath desired state.
+                $notDesiredOcspUriPathsFound = $compareOcspUriPaths.Where( {
+                    $_.SideIndicator -eq '=>'
+                } ) -join ', '
 
                 if ($desiredOcspUriPathsMissing)
                 {
@@ -238,4 +252,4 @@ function Test-TargetResource
     return $inDesiredState
 }
 
-Export-ModuleMember -Function *-TargetResource
+Export-ModuleMember -Function Get-TargetResource, Test-TargetResource, Set-TargetResource

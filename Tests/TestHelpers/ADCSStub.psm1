@@ -16,7 +16,6 @@ param ()
         Generated from module System.Collections.Hashtable on
         operating system Microsoft Windows Server 2012 R2 Datacenter 64-bit (6.3.9600)
 #>
-
 function Add-CAAuthorityInformationAccess
 {
     [CmdletBinding()]
@@ -31,7 +30,7 @@ function Add-CAAuthorityInformationAccess
         $AddToCertificateOcsp,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $Uri,
 
         [Parameter()]
@@ -41,7 +40,6 @@ function Add-CAAuthorityInformationAccess
 
     throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
-
 <#
     .SYNOPSIS
         This is stub cmdlets for module: ADCSAdministration version: 2.0.0.0 which can be used in
@@ -51,15 +49,15 @@ function Add-CAAuthorityInformationAccess
         Generated from module System.Collections.Hashtable on
         operating system Microsoft Windows Server 2012 R2 Datacenter 64-bit (6.3.9600)
 #>
-
 function Get-CAAuthorityInformationAccess
 {
     [CmdletBinding()]
-    param()
+    param
+    (
+    )
 
     throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
-
 <#
     .SYNOPSIS
         This is stub cmdlets for module: ADCSAdministration version: 2.0.0.0 which can be used in
@@ -69,7 +67,6 @@ function Get-CAAuthorityInformationAccess
         Generated from module System.Collections.Hashtable on
         operating system Microsoft Windows Server 2012 R2 Datacenter 64-bit (6.3.9600)
 #>
-
 function Remove-CAAuthorityInformationAccess
 {
     [CmdletBinding()]
@@ -84,7 +81,7 @@ function Remove-CAAuthorityInformationAccess
         $AddToCertificateOcsp,
 
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $Uri,
 
         [Parameter()]

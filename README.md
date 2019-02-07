@@ -229,15 +229,15 @@ the `ADCS-Cert-Authority` feature has already been installed.
 ### AdcsOcspExtension Examples
 
 - [Add Ocsp Certificate Extentions](/Examples/Resources/AdcsOcspExtension/1-AddOcspPath.ps1)
-        - A DSC configuration script to add desired Ocsp Uri path extensions for
-        a Certificate Authority.
-        This will remove all existing Ocsp Uri paths from the Certificate
-        Authority before adding in the desired Ocsp Uri paths.
+  - A DSC configuration script to add desired Ocsp Uri path extensions for
+  a Certificate Authority.
+  This will remove all existing Ocsp Uri paths from the Certificate
+  Authority before adding in the desired Ocsp Uri paths.
 
 - [Remove Ocsp Certificate Extentions](/Examples/Resources/AdcsOcspExtension/2-RemoveOcspPath.ps1)
-        - A DSC configuration script to remove desired Ocsp Uri path extensions
-        for a Certificate Authority. No previously configured Ocsp Uri paths
-        will be removed.
+  - A DSC configuration script to remove desired Ocsp Uri path extensions
+  for a Certificate Authority. No previously configured Ocsp Uri paths
+  will be removed.
 
 ## Versions
 
@@ -251,12 +251,9 @@ the `ADCS-Cert-Authority` feature has already been installed.
   [issue #54](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/54).
 - Cleaned up property alignment in module manifest file.
 - Added new resource AdcsOcspExtension - see [Issue #70](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/70).
-  - Added Unit test for ActiveDirectoryCSDsc.ResourceHelper.psm1 helper function.
-  - Added message localization to ActiveDirectoryCSDsc.ResourceHelper.psm1 helper
-    function.
+  - Added new ActiveDirectoryCSDsc.CommonHelper.psm1 helper module and unit test.
   - Added stub function to /Tests/TestHelpers (ADCSStub.psm1) so Pester tests
     can run without having to install ADCSAdministration module.
-  - Added Restart-SystemService function to  ActiveDirectoryCSDsc.ResourceHelper.psm1
 
 ### 3.1.0.0
 

@@ -23,7 +23,6 @@ $TestEnvironment = Initialize-TestEnvironment `
 try
 {
     InModuleScope $DSCResourceName {
-
         $ocspUriPathList = @(
             'http://primary-ocsp-responder/ocsp'
             'http://secondary-ocsp-responder/ocsp'
@@ -59,9 +58,7 @@ try
         }
 
         Describe "$DSCResourceName\Get-TargetResource" -Tag 'Get' {
-
-            Context 'Normal Operations' {
-
+            Context 'When the CA is installed and the Get-CAAuthorityInformationAccess cmdlet returns the OCSP URI path list' {
                 $retreivedGetTargetValue = @{
                     AddToCertificateAia  = 'false'
                     AddToCertificateOcsp = 'true'
@@ -70,17 +67,10 @@ try
 
                 Mock -CommandName 'Get-CAAuthorityInformationAccess' -Mockwith { $retreivedGetTargetValue }
 
-                It 'Should return a hashtable' {
-
+                It 'Should return a hashtable with the expected properties.' {
                     $result = Get-TargetResource @presentParams
 
-                    $result | Should -Be System.Collections.Hashtable
-                }
-
-                It 'Returns all properties as expected.' {
-
-                    $result = Get-TargetResource @presentParams
-
+                    $result                  | Should -Be System.Collections.Hashtable
                     $result.OcspUriPath      | Should -Be $retreivedGetTargetValue.Uri
                     $result.Ensure           | Should -Be $presentParams.Ensure
                     $result.IsSingleInstance | Should -Be $presentParams.IsSingleInstance
@@ -90,14 +80,12 @@ try
         }
 
         Describe "$DSCResourceName\Set-TargetResource" -Tag 'Set' {
-
             Mock -CommandName Remove-CAAuthorityInformationAccess
             Mock -CommandName Add-CAAuthorityInformationAccess
-            Mock -CommandName Restart-SystemService
+            Mock -CommandName Restart-ServiceIfExists
 
-            Context 'Ensure equals present - Ocsp record missing - restart service set to $true' {
-
-                $missingOcspUriPath  = @{
+            Context 'When ensure equals present, and OCSP record is missing, and $RestartService equals $true' {
+                $missingOcspUriPath = @{
                     OcspUriPath      = @(
                         'http://primary-ocsp-responder/ocsp'
                         'http://secondary-ocsp-responder/ocsp'
@@ -110,17 +98,15 @@ try
                 Mock -CommandName Get-TargetResource -MockWith { $missingOcspUriPath }
 
                 It 'Should call the expected mocks' {
-
                     Set-TargetResource @presentParams
 
-                    Assert-MockCalled -CommandName Remove-CAAuthorityInformationAccess -Exactly -Times 2 -Scope It
-                    Assert-MockCalled -CommandName Add-CAAuthorityInformationAccess -Exactly -Times 3 -Scope It
-                    Assert-MockCalled -CommandName Restart-SystemService -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Remove-CAAuthorityInformationAccess -Exactly -Times 2 -Scope It -ParameterFilter { $OcspUriPath -eq $presentParams.OcspUriPathList }
+                    Assert-MockCalled -CommandName Add-CAAuthorityInformationAccess -Exactly -Times 3 -Scope It -ParameterFilter { $OcspUriPath -eq $presentParams.OcspUriPathList }
+                    Assert-MockCalled -CommandName Restart-ServiceIfExists -Exactly -Times 1 -Scope It -ParameterFilter { $Name -eq 'CertSvc' }
                 }
             }
 
-            Context 'Ensure equals present - Ocsp record missing - restart service set to $false' {
-
+            Context 'When ensure equals present, and OCSP record is missing, and $RestartService equals $false' {
                 $missingOcspUriPathRestartServiceFalse = @{
                     OcspUriPath      = @(
                         'http://primary-ocsp-responder/ocsp'
@@ -134,48 +120,41 @@ try
                 Mock -CommandName Get-TargetResource -MockWith { $missingOcspUriPathRestartServiceFalse }
 
                 It 'Should call the expected mocks' {
-
                     Set-TargetResource @setRestartServiceFalsePresentParams
 
-                    Assert-MockCalled -CommandName Remove-CAAuthorityInformationAccess -Exactly -Times 2 -Scope It
-                    Assert-MockCalled -CommandName Add-CAAuthorityInformationAccess -Exactly -Times 3 -Scope It
-                    Assert-MockCalled -CommandName Restart-SystemService -Exactly -Times 0 -Scope It
+                    Assert-MockCalled -CommandName Remove-CAAuthorityInformationAccess -Exactly -Times 2 -Scope It -ParameterFilter { $OcspUriPath -eq $setRestartServiceFalsePresentParams.OcspUriPathList }
+                    Assert-MockCalled -CommandName Add-CAAuthorityInformationAccess -Exactly -Times 3 -Scope It -ParameterFilter { $OcspUriPath -eq $setRestartServiceFalsePresentParams.OcspUriPathList }
+                    Assert-MockCalled -CommandName Restart-ServiceIfExists -Exactly -Times 0 -Scope It -ParameterFilter { $Name -eq 'CertSvc' }
                 }
             }
 
-            Context 'Ensure equals absent - Ocsp records present - restart service set to $true' {
-
+            Context 'When ensure equals absent, and OCSP records are present, and $RestartService equals $true' {
                 Mock -CommandName Get-TargetResource -MockWith { $presentParams }
 
                 It 'Should call the expected mocks' {
-
                     Set-TargetResource @absentParams
 
-                    Assert-MockCalled -CommandName Remove-CAAuthorityInformationAccess -Exactly -Times 3 -Scope It
-                    Assert-MockCalled -CommandName Add-CAAuthorityInformationAccess -Exactly -Times 0 -Scope It
-                    Assert-MockCalled -CommandName Restart-SystemService -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Remove-CAAuthorityInformationAccess -Exactly -Times 3 -Scope It -ParameterFilter { $OcspUriPath -eq $absentParams.OcspUriPathList }
+                    Assert-MockCalled -CommandName Add-CAAuthorityInformationAccess -Exactly -Times 0 -Scope It -ParameterFilter { $OcspUriPath -eq $absentParams.OcspUriPathList }
+                    Assert-MockCalled -CommandName Restart-ServiceIfExists -Exactly -Times 1 -Scope It -ParameterFilter { $Name -eq 'CertSvc' }
                 }
             }
 
-            Context 'Ensure equals absent - Ocsp records present - restart service set to $false' {
-
+            Context 'When ensure equals absent, and OCSP records are present, and $RestartService equals $false' {
                 Mock -CommandName Get-TargetResource -MockWith { $setRestartServiceFalsePresentParams }
 
                 It 'Should call the expected mocks' {
-
                     Set-TargetResource @setRestartServiceFalseAbsentParams
 
-                    Assert-MockCalled -CommandName Remove-CAAuthorityInformationAccess -Exactly -Times 3 -Scope It
-                    Assert-MockCalled -CommandName Add-CAAuthorityInformationAccess -Exactly -Times 0 -Scope It
-                    Assert-MockCalled -CommandName Restart-SystemService -Exactly -Times 0 -Scope It
+                    Assert-MockCalled -CommandName Remove-CAAuthorityInformationAccess -Exactly -Times 3 -Scope It -ParameterFilter { $OcspUriPath -eq $setRestartServiceFalseAbsentParams.OcspUriPathList }
+                    Assert-MockCalled -CommandName Add-CAAuthorityInformationAccess -Exactly -Times 0 -Scope It -ParameterFilter { $OcspUriPath -eq $setRestartServiceFalseAbsentParams.OcspUriPathList }
+                    Assert-MockCalled -CommandName Restart-ServiceIfExists -Exactly -Times 0 -Scope It -ParameterFilter { $Name -eq 'CertSvc' }
                 }
             }
         }
 
         Describe "$DSCResourceName\Test-TargetResource" -Tag 'Test' {
-
-            Context 'Ensure equals Present - In desired state' {
-
+            Context 'When ensure equals present and in desired state' {
                 $desiredStateRecordReturned = @(
                     @{
                         AddToCertificateAia  = 'false'
@@ -197,41 +176,35 @@ try
                 Mock -CommandName 'Get-CAAuthorityInformationAccess' -MockWith { $desiredStateRecordReturned }
 
                 It 'Should return $true' {
-
                     $result = Test-TargetResource @presentParams
 
                     $result | Should -Be $true
                 }
             }
 
-            Context 'Ensure equals Absent - In desired state' {
-
+            Context 'When ensure equals absent and in desired state' {
                 $absentStateRecordReturned = @()
 
                 Mock -CommandName 'Get-CAAuthorityInformationAccess' -MockWith { $absentStateRecordReturned }
 
                 It 'Should return $true' {
-
                     $result = Test-TargetResource @absentParams
 
                     $result | Should -Be $true
                 }
             }
 
-            Context 'Ensure equals Present - Not in desired state - No values stored in Ocsp records when passing in a value for Ocsp' {
-
-                Mock -CommandName 'Get-CAAuthorityInformationAccess' { $null }
+            Context 'When ensure equals present, but not in desired state, and no values stored in OCSP records when passing in a value for OCSP' {
+                Mock -CommandName 'Get-CAAuthorityInformationAccess'
 
                 It 'Should return $false' {
-
                     $result = Test-TargetResource @presentParams
 
                     $result | Should -Be $false
                 }
             }
 
-            Context 'Not in desired state - Different values stored in Ocsp records when passing in a value for Ocsp' {
-
+            Context 'When ensure equals present, but not in desired state, and different values are stored in OCSP records when passing in a value for OCSP' {
                 $singleRecordReturned = @{
                     AddToCertificateAia  = 'false'
                     AddToCertificateOcsp = 'true'
@@ -241,15 +214,13 @@ try
                 Mock -CommandName 'Get-CAAuthorityInformationAccess' -MockWith { $singleRecordReturned }
 
                 It 'Should return $false' {
-
                     $result = Test-TargetResource @presentParams
 
                     $result | Should -Be $false
                 }
             }
 
-            Context 'Not in desired state - Ensure equals absent, Ocsp record returned' {
-
+            Context 'When ensure equals absent, but not in desired state, and OCSP record is returned' {
                 $ocspRecordReturned = @(
                     @{
                         AddToCertificateAia  = 'false'
@@ -261,15 +232,13 @@ try
                 Mock -CommandName 'Get-CAAuthorityInformationAccess' -MockWith { $ocspRecordReturned }
 
                 It 'Should return $false' {
-
                     $result = Test-TargetResource @absentParams
 
                     $result | Should -Be $false
                 }
             }
 
-            Context 'Not in desired state - Ensure equals Present, Ocsp record # 3 contains typo' {
-
+            Context 'When ensure equals present, but not in desired state, and OCSP record # 3 contains a typographical error' {
                 $wrongOcspRecordReturned = @(
                     @{
                         AddToCertificateAia  = 'false'
@@ -291,15 +260,13 @@ try
                 Mock -CommandName 'Get-CAAuthorityInformationAccess' -MockWith { $wrongOcspRecordReturned }
 
                 It 'Should return $false' {
-
                     $result = Test-TargetResource @presentParams
 
                     $result | Should -Be $false
                 }
             }
 
-            Context 'Not in desired state - Ensure equals Present, Counts do not match, additional Ocsp Uri record returned' {
-
+            Context 'When ensure equals present, but not in desired state, and counts do not match, and additional OCSP URI record returned' {
                 $additionalOcspRecordReturned = @(
                     @{
                         AddToCertificateAia  = 'false'
@@ -326,7 +293,6 @@ try
                 Mock -CommandName 'Get-CAAuthorityInformationAccess' -MockWith { $additionalOcspRecordReturned }
 
                 It 'Should return $false' {
-
                     $result = Test-TargetResource @presentParams
 
                     $result | Should -Be $false

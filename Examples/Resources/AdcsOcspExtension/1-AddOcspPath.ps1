@@ -12,14 +12,14 @@ configuration Example
     {
         AdcsOcspExtension AddOcspUriPath
         {
+            IsSingleInstance = 'Yes'
             OcspUriPath      = @(
                 'http://primary-ocsp-responder/ocsp'
                 'http://secondary-ocsp-responder/ocsp'
                 'http://tertiary-ocsp-responder/ocsp'
             )
+            RestartService   = $true
             Ensure           = 'Present'
-            IsSingleInstance = 'Yes'
-            Restartservice   = $true
         }
     }
 }
