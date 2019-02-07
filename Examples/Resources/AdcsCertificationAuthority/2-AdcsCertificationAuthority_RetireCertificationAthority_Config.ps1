@@ -1,5 +1,24 @@
+<#PSScriptInfo
+.VERSION 1.0.0
+.GUID d0e64a0f-c86a-4b7f-b1db-aee24df4b63f
+.AUTHOR Microsoft Corporation
+.COMPANYNAME Microsoft Corporation
+.COPYRIGHT
+.TAGS DSCConfiguration
+.LICENSEURI https://github.com/PowerShell/ActiveDirectoryCSDsc/blob/master/LICENSE
+.PROJECTURI https://github.com/PowerShell/ActiveDirectoryCSDsc
+.ICONURI
+.EXTERNALMODULEDEPENDENCIES
+.REQUIREDSCRIPTS
+.EXTERNALSCRIPTDEPENDENCIES
+.RELEASENOTES First version.
+.PRIVATEDATA 2016-Datacenter,2016-Datacenter-Server-Core
+#>
+
+#Requires -module ActiveDirectoryCSDsc
+
 <#
-    .EXAMPLE
+    .DESCRIPTION
         This example will add the retire an Active Directory Certificate Services
         certificate authority from a node and uninstall the Active Directory Certificate
         Services certification authority feature.
@@ -12,10 +31,6 @@ Configuration Example
 {
     param
     (
-        [Parameter()]
-        [System.String[]]
-        $NodeName = 'localhost',
-
         [Parameter(Mandatory = $true)]
         [ValidateNotNullorEmpty()]
         [System.Management.Automation.PSCredential]
@@ -24,7 +39,7 @@ Configuration Example
 
     Import-DscResource -Module ActiveDirectoryCSDsc
 
-    Node $AllNodes.NodeName
+    Node localhost
     {
         AdcsCertificationAuthority CertificateAuthority
         {

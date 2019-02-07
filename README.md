@@ -245,6 +245,11 @@ the `ADCS-Cert-Authority` feature has already been installed.
 
 - Added 'DscResourcesToExport' to manifest to improve information in
   PowerShell Gallery - fixes [Issue #68](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/68).
+- Removed unused CAType variables and references in AdcsOnlineResponder - fixes
+  [issue #52](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/52).
+- Updated Examples to enable publising to PowerShell Gallery - fixes
+  [issue #54](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/54).
+- Cleaned up property alignment in module manifest file.
 - Added new resource AdcsOcspExtension - see [Issue #70](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/70).
   - Added Unit test for ActiveDirectoryCSDsc.ResourceHelper.psm1 helper function.
   - Added message localization to ActiveDirectoryCSDsc.ResourceHelper.psm1 helper
