@@ -40,6 +40,7 @@ function Add-CAAuthorityInformationAccess
 
     throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
+
 <#
     .SYNOPSIS
         This is stub cmdlets for module: ADCSAdministration version: 2.0.0.0 which can be used in
@@ -58,6 +59,7 @@ function Get-CAAuthorityInformationAccess
 
     throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
 }
+
 <#
     .SYNOPSIS
         This is stub cmdlets for module: ADCSAdministration version: 2.0.0.0 which can be used in
