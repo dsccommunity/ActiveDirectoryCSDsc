@@ -23,7 +23,7 @@
         feature to a server and configure it as an Online Certificate Status Protocol (OCSP)
         server.
 #>
-Configuration Example
+Configuration AdcsOnlineResponder_InstallOnlineResponder_Config
 {
     param
     (

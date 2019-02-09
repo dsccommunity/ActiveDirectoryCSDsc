@@ -22,7 +22,7 @@
         This example will add the Active Directory Certificate Services Certificate Authority
         feature to a server and configure it as a certificate authority enterprise root CA.
 #>
-Configuration Example
+Configuration AdcsCertificationAuthority_InstallCertificationAthority_Config
 {
     param
     (

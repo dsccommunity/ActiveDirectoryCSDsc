@@ -22,7 +22,7 @@
         A DSC configuration script to remove desired OCSP URI path extensions for a Certificate Authority.
         No previously configured OCSP URI paths will be removed.
 #>
-configuration Example
+configuration AdcsOcspExtension_RemoveOcspPath_Config
 {
     Import-DscResource -ModuleName ActiveDirectoryCSDsc
 

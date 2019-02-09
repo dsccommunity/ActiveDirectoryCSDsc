@@ -1,6 +1,6 @@
 <#PSScriptInfo
 .VERSION 1.0.0
-.GUID 9eee170a-2a36-49d9-bcb3-7523b5f80856
+.GUID 86676cde-d149-410b-bb23-d765163f2490
 .AUTHOR Microsoft Corporation
 .COMPANYNAME Microsoft Corporation
 .COPYRIGHT
@@ -21,12 +21,13 @@
     .DESCRIPTION
         This example will add the Active Directory Certificate Services Enrollment
         Policy Web Service feature to a server and install a new instance to
-        accepting Certificate authentication. The Enrollment Policy Web Service
-        will operate in key-based renewal mode. The local machine certificate with the
+        accepting Kerberos authentication. The Enrollment Policy Web Service
+        will operate not operate in key-based renewal mode because this is not
+        supported by Kerberos authentication. The local machine certificate with the
         thumbprint 'f0262dcf287f3e250d1760508c4ca87946006e1e' will be used for the
         IIS web site for SSL encryption.
 #>
-Configuration Example
+Configuration AdcsEnrollmentPolicyWebService_InstallWithKerberosAuthentication_Config
 {
     param
     (
@@ -48,10 +49,10 @@ Configuration Example
 
         AdcsEnrollmentPolicyWebService EnrollmentPolicyWebService
         {
-            AuthenticationType = 'Certificate'
+            AuthenticationType = 'Kerberos'
             SslCertThumbprint  = 'f0262dcf287f3e250d1760508c4ca87946006e1e'
             Credential         = $Credential
-            KeyBasedRenewal    = $true
+            KeyBasedRenewal    = $false
             Ensure             = 'Present'
             DependsOn          = '[WindowsFeature]ADCS-Enroll-Web-Pol'
         }
