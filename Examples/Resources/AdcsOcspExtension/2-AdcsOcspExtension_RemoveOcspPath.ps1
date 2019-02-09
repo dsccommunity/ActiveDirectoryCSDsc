@@ -1,9 +1,27 @@
+<#PSScriptInfo
+.VERSION 1.0.0
+.GUID 95bd5fea-6d07-4c27-bda5-bdaa9bf08437
+.AUTHOR Microsoft Corporation
+.COMPANYNAME Microsoft Corporation
+.COPYRIGHT
+.TAGS DSCConfiguration
+.LICENSEURI https://github.com/PowerShell/ActiveDirectoryCSDsc/blob/master/LICENSE
+.PROJECTURI https://github.com/PowerShell/ActiveDirectoryCSDsc
+.ICONURI
+.EXTERNALMODULEDEPENDENCIES
+.REQUIREDSCRIPTS
+.EXTERNALSCRIPTDEPENDENCIES
+.RELEASENOTES First version.
+.PRIVATEDATA 2016-Datacenter,2016-Datacenter-Server-Core
+#>
+
+#Requires -module ActiveDirectoryCSDsc
+
 <#
-    .SYNOPSIS
+    .DESCRIPTION
         A DSC configuration script to remove desired OCSP URI path extensions for a Certificate Authority.
         No previously configured OCSP URI paths will be removed.
 #>
-
 configuration Example
 {
     Import-DscResource -ModuleName ActiveDirectoryCSDsc
