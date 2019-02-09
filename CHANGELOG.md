@@ -18,6 +18,7 @@
 - Moved change log to CHANGELOG.MD.
 - Opted into Common Tests 'Validate Example Files To Be Published',
   'Validate Markdown Links' and 'Relative Path Length'.
+- Correct AppVeyor `Invoke-AppveyorAfterTestTask` - fixes [Issue #73](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/73).
 
 ## 3.1.0.0
 

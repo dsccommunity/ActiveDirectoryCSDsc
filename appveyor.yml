@@ -39,7 +39,7 @@ test_script:
 # scripts to run before deployment
 deploy_script:
     - ps: |
-        Invoke-AppveyorAfterTestTask
+        Invoke-AppveyorAfterTestTask `
             -Type 'Wiki' `
             -ResourceModuleName 'ActiveDirectoryCSDsc'
 
