@@ -26,7 +26,7 @@
         thumbprint 'f0262dcf287f3e250d1760508c4ca87946006e1e' will be used for the
         IIS web site for SSL encryption.
 #>
-Configuration Example
+Configuration AdcsEnrollmentPolicyWebService_InstallCertificateAuthentication_Config
 {
     param
     (

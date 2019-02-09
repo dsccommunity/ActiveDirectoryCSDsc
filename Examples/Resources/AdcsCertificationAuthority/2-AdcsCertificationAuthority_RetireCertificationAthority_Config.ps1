@@ -27,7 +27,7 @@
         name suffix to 'DC=CONTOSO,DC=COM'. If an existing CA root certificate exists
         in the Active Directory then it will be overwritten.
 #>
-Configuration Example
+Configuration AdcsCertificationAuthority_RetireCertificationAthority_Config
 {
     param
     (

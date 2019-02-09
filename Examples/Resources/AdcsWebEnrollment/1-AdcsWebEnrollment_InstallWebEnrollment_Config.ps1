@@ -23,7 +23,7 @@
         Authority Web Enrollment feature to a server and configure it as a web
         enrollment server.
 #>
-Configuration Example
+Configuration AdcsWebEnrollment_InstallWebEnrollment_Config
 {
     param
     (
