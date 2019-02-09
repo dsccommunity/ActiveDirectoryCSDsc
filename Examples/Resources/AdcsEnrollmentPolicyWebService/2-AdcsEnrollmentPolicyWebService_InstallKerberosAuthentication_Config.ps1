@@ -27,7 +27,7 @@
         thumbprint 'f0262dcf287f3e250d1760508c4ca87946006e1e' will be used for the
         IIS web site for SSL encryption.
 #>
-Configuration AdcsEnrollmentPolicyWebService_InstallWithKerberosAuthentication_Config
+Configuration AdcsEnrollmentPolicyWebService_InstallKerberosAuthentication_Config
 {
     param
     (
