@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 3.2.0.0
+
 - Added 'DscResourcesToExport' to manifest to improve information in
   PowerShell Gallery - fixes [Issue #68](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/68).
 - Removed unused CAType variables and references in AdcsOnlineResponder - fixes
