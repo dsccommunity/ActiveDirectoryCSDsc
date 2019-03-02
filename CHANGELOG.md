@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Remove reference to StorageDsc in README.md - fixes [Issue #76](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/76).
+
 ## 3.2.0.0
 
 - Added 'DscResourcesToExport' to manifest to improve information in
