@@ -33,8 +33,8 @@ This project has adopted [this code of conduct](CODE_OF_CONDUCT.md).
 
 ## Documentation and Examples
 
-For a full list of resources in StorageDsc and examples on their use, check out
-the [ActiveDirectoryCSDsc wiki](https://github.com/PowerShell/ActiveDirectoryCSDsc/wiki).
+For a full list of resources in ActiveDirectoryCSDsc and examples on their use, check
+out the [ActiveDirectoryCSDsc wiki](https://github.com/PowerShell/ActiveDirectoryCSDsc/wiki).
 
 ## Branches
 
