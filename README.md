@@ -28,6 +28,9 @@ certificates that will automatically be trusted.
 - **AdcsOcspExtension**: This resource can be used to configure OCSP URI
   extensions on a Certificate Authority after the feature has been installed
   on the server.
+-**AdcsAiaExtension**: This resource can be used to configure OCSP URI
+  extensions on a Certificate Authority after the feature has been installed
+  on the server.
 
 This project has adopted [this code of conduct](CODE_OF_CONDUCT.md).
 

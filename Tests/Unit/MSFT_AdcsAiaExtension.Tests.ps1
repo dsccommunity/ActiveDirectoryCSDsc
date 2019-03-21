@@ -24,9 +24,9 @@ try
 {
     InModuleScope $DSCResourceName {
         $aiaUriPathList = @(
-            'http://primary-aia-responder/aia'
-            'http://secondary-aia-responder/aia'
-            'http://tertiary-aia-responder/aia'
+            'http://setAiaPathTest/Certs/<CATruncatedName>.cer'
+            'http://setAiaPathTest2/Certs/<CATruncatedName>.cer'
+            'file://<ServerDNSName>/CertEnroll/<ServerDNSName>_<CaName><CertificateName>.crt'
         )
 
         $presentParams = @{
@@ -60,9 +60,9 @@ try
         Describe "$DSCResourceName\Get-TargetResource" -Tag 'Get' {
             Context 'When the CA is installed and the Get-CAAuthorityInformationAccess cmdlet returns the AIA URI path list' {
                 $retreivedGetTargetValue = @{
-                    AddToCertificateAia  = 'false'
+                    AddToCertificateOcsp  = 'false'
                     AddToCertificateAia = 'true'
-                    Uri                  = 'http://primary-aia-responder/aia'
+                    Uri                  = 'http://setAiaPathTest2/Certs/<CATruncatedName>.cer'
                 }
 
                 Mock -CommandName 'Get-CAAuthorityInformationAccess' -Mockwith { $retreivedGetTargetValue }
@@ -87,8 +87,8 @@ try
             Context 'When ensure equals present, and AIA record is missing, and $RestartService equals $true' {
                 $missingAiaUriPath = @{
                     AiaUriPath      = @(
-                        'http://primary-aia-responder/aia'
-                        'http://secondary-aia-responder/aia'
+                        'http://setAiaPathTest/Certs/<CATruncatedName>.cer'
+                        'http://setAiaPathTest2/Certs/<CATruncatedName>.cer'
                     )
                     Ensure           = 'Present'
                     IsSingleInstance = 'Yes'
@@ -109,8 +109,8 @@ try
             Context 'When ensure equals present, and AIA record is missing, and $RestartService equals $false' {
                 $missingAiaUriPathRestartServiceFalse = @{
                     AiaUriPath      = @(
-                        'http://primary-aia-responder/aia'
-                        'http://secondary-aia-responder/aia'
+                        'http://setAiaPathTest/Certs/<CATruncatedName>.cer'
+                        'http://setAiaPathTest2/Certs/<CATruncatedName>.cer'
                     )
                     Ensure           = 'Present'
                     IsSingleInstance = 'Yes'
@@ -157,19 +157,19 @@ try
             Context 'When ensure equals present and in desired state' {
                 $desiredStateRecordReturned = @(
                     @{
-                        AddToCertificateAia  = 'false'
+                        AddToCertificateOcsp  = 'false'
                         AddToCertificateAia = 'true'
-                        Uri                  = 'http://primary-aia-responder/aia'
+                        Uri                  = 'http://setAiaPathTest2/Certs/<CATruncatedName>.cer'
                     }
                     @{
-                        AddToCertificateAia  = 'false'
+                        AddToCertificateOcsp  = 'false'
                         AddToCertificateAia = 'true'
-                        Uri                  = 'http://secondary-aia-responder/aia'
+                        Uri                  = 'http://setAiaPathTest/Certs/<CATruncatedName>.cer'
                     }
                     @{
-                        AddToCertificateAia  = 'false'
+                        AddToCertificateOcsp  = 'false'
                         AddToCertificateAia = 'true'
-                        Uri                  = 'http://tertiary-aia-responder/aia'
+                        Uri                  = 'file://<ServerDNSName>/CertEnroll/<ServerDNSName>_<CaName><CertificateName>.crt'
                     }
                 )
 
@@ -206,9 +206,9 @@ try
 
             Context 'When ensure equals present, but not in desired state, and different values are stored in AIA records when passing in a value for AIA' {
                 $singleRecordReturned = @{
-                    AddToCertificateAia  = 'false'
+                    AddToCertificateOcsp  = 'false'
                     AddToCertificateAia = 'true'
-                    Uri                  = 'http://secondary-aia-responder/aia'
+                    Uri                  = 'http://setAiaPathTest2/Certs/<CATruncatedName>.cer'
                 }
 
                 Mock -CommandName 'Get-CAAuthorityInformationAccess' -MockWith { $singleRecordReturned }
@@ -223,9 +223,9 @@ try
             Context 'When ensure equals absent, but not in desired state, and AIA record is returned' {
                 $aiaRecordReturned = @(
                     @{
-                        AddToCertificateAia  = 'false'
+                        AddToCertificateOcsp  = 'false'
                         AddToCertificateAia = 'true'
-                        Uri                  = 'http://secondary-aia-responder/aia'
+                        Uri                  = 'http://setAiaPathTest2/Certs/<CATruncatedName>.cer'
                     }
                 )
 
@@ -241,19 +241,19 @@ try
             Context 'When ensure equals present, but not in desired state, and AIA record # 3 contains a typographical error' {
                 $wrongAiaRecordReturned = @(
                     @{
-                        AddToCertificateAia  = 'false'
+                        AddToCertificateOcsp  = 'false'
                         AddToCertificateAia = 'true'
-                        Uri                  = 'http://primary-aia-responder/aia'
+                        Uri                  = 'http://setAiaPathTest2/Certs/<CATruncatedName>.cer'
                     }
                     @{
-                        AddToCertificateAia  = 'false'
+                        AddToCertificateOcsp  = 'false'
                         AddToCertificateAia = 'true'
-                        Uri                  = 'http://secondary-aia-responder/aia'
+                        Uri                  = 'http://setAiaPathTest/Certs/<CATruncatedName>.cer'
                     }
                     @{
-                        AddToCertificateAia  = 'false'
+                        AddToCertificateOcsp  = 'false'
                         AddToCertificateAia = 'true'
-                        Uri                  = 'http://tertiaryyy-aia-responder/aia'
+                        Uri                  = 'http://wrongAiaPathTest/Certs/<CATruncatedName>.cer'
                     }
                 )
 
@@ -269,24 +269,24 @@ try
             Context 'When ensure equals present, but not in desired state, and counts do not match, and additional AIA URI record returned' {
                 $additionalAiaRecordReturned = @(
                     @{
-                        AddToCertificateAia  = 'false'
+                        AddToCertificateOcsp  = 'false'
                         AddToCertificateAia = 'true'
-                        Uri                  = 'http://primary-aia-responder/aia'
+                        Uri                  = 'http://setAiaPathTest2/Certs/<CATruncatedName>.cer'
+                    }
+                    @{
+                        AddToCertificateOcsp  = 'false'
+                        AddToCertificateAia = 'true'
+                        Uri                  = 'http://setAiaPathTest/Certs/<CATruncatedName>.cer'
+                    }
+                    @{
+                        AddToCertificateOcsp  = 'false'
+                        AddToCertificateAia = 'true'
+                        Uri                  = 'http://setAIAPathTest3/Certs/<CATruncatedName>.cer'
                     }
                     @{
                         AddToCertificateAia  = 'false'
                         AddToCertificateAia = 'true'
-                        Uri                  = 'http://secondary-aia-responder/aia'
-                    }
-                    @{
-                        AddToCertificateAia  = 'false'
-                        AddToCertificateAia = 'true'
-                        Uri                  = 'http://tertiaryyy-aia-responder/aia'
-                    }
-                    @{
-                        AddToCertificateAia  = 'false'
-                        AddToCertificateAia = 'true'
-                        Uri                  = 'http://rogue-aia-responder/aia'
+                        Uri                  = 'http://rogueAiaPathTest/Certs/<CATruncatedName>.cer'
                     }
                 )
 

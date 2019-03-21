@@ -32,9 +32,9 @@ configuration AdcsAiaExtension_AddAiaPath_Config
         {
             IsSingleInstance = 'Yes'
             AiaUriPath      = @(
-                'http://primary-aia-responder/aia'
-                'http://secondary-aia-responder/aia'
-                'http://tertiary-aia-responder/aia'
+                'http://setAIAPathTest1/Certs/<CATruncatedName>.cer'
+                'http://setAIAPathTest2/Certs/<CATruncatedName>.cer'
+                'http://setAIAPathTest3/Certs/<CATruncatedName>.cer'
             )
             RestartService   = $true
             Ensure           = 'Present'

@@ -24,13 +24,13 @@ $LocalizedData = Get-LocalizedData `
         Specifies the resource is a single instance, the value must be 'Yes'..
 
     .PARAMETER AiaUriPath
-        Specifies the address of the AIA responder from where revocation of this certificate can be checked.
+        Array of Uniform Resource Identifiers (URI) used to provide a location from where the issuer of this certificate is located.
 
     .PARAMETER RestartService
         Specifies if the CertSvc service should be restarted to immediately apply the settings.
 
     .PARAMETER Ensure
-        Specifies if the AIA responder URI should be present or absent.
+        Ensures that the Authority Information Access (AIA) Uniform Resource Identifiers (URI) is Present or Absent.
 #>
 function Get-TargetResource
 {
@@ -73,13 +73,13 @@ function Get-TargetResource
 
 <#
     .SYNOPSIS
-        Sets the certification authority AddToCertificateAia (boolean) and Uniform Resource Identifiers (URI) settings.
+        Configures the current Authority Information Access (AIA) settings for the certification authority.
 
     .PARAMETER IsSingleInstance
         Specifies the resource is a single instance, the value must be 'Yes'..
 
     .PARAMETER AiaUriPath
-        Specifies the address of the AIA responder from where revocation of this certificate can be checked.
+        Array of Uniform Resource Identifiers (URI) used to provide a location from where the issuer of this certificate is located.
 
     .PARAMETER RestartService
         Specifies if the CertSvc service should be restarted to immediately apply the settings.
@@ -152,13 +152,13 @@ function Set-TargetResource
         Specifies the resource is a single instance, the value must be 'Yes'..
 
     .PARAMETER AiaUriPath
-        Specifies the address of the AIA responder from where revocation of this certificate can be checked.
+        Array of Uniform Resource Identifiers (URI) used to provide a location from where the issuer of this certificate is located.
 
     .PARAMETER RestartService
         Specifies if the CertSvc service should be restarted to immediately apply the settings.
 
     .PARAMETER Ensure
-        Specifies if the AIA responder URI should be present or absent.
+        Ensures that the Authority Information Access (AIA) Uniform Resource Identifiers (URI) is Present or Absent.
 #>
 function Test-TargetResource
 {
