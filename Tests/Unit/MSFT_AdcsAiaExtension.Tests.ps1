@@ -284,7 +284,7 @@ try
                         Uri                  = 'http://setAIAPathTest3/Certs/<CATruncatedName>.cer'
                     }
                     @{
-                        AddToCertificateAia  = 'false'
+                        AddToCertificateOcsp  = 'false'
                         AddToCertificateAia = 'true'
                         Uri                  = 'http://rogueAiaPathTest/Certs/<CATruncatedName>.cer'
                     }
