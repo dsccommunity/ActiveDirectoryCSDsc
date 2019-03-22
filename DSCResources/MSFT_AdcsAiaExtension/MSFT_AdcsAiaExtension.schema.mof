@@ -1,8 +1,8 @@
 [ClassVersion("1.0.0"), FriendlyName("AdcsAiaExtension")]
 class MSFT_AdcsAiaExtension : OMI_BaseResource
 {
-    [Required, Description("Specifies the URI location where issuer of certificate is located")] String AiaUriPath[];
-    [Write, ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
+    [Required, Description("Specifies the URI location where issuer of certificate is located.")] String AiaUriPath[];
+    [Write, Description("Ensures that the Authority Information Access (AIA) Uniform Resource Identifiers (URI) is Present or Absent."), ValueMap{"Present", "Absent"}, Values{"Present", "Absent"}] String Ensure;
     [Key, Description("Specifies the resource is a single instance, the value must be 'Yes'."), ValueMap{"Yes"}, Values{"Yes"}] String IsSingleInstance;
     [Write, Description("Specifies if the service should be restarted.")] Boolean RestartService;
 };

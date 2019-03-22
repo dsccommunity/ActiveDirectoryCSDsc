@@ -79,6 +79,7 @@
 - Opted into Common Tests "Validate Example Files To Be Published",
   "Validate Markdown Links" and "Relative Path Length".
 - Correct AppVeyor `Invoke-AppveyorAfterTestTask` - fixes [Issue 73](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/73).
+- Added new resource AdcsAiaExtension - see [Issue 78](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/78).
 
 '
         } # End of PSData hashtable

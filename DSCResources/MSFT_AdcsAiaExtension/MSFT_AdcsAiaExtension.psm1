@@ -21,13 +21,13 @@ $LocalizedData = Get-LocalizedData `
         settings.
 
     .PARAMETER IsSingleInstance
-        Specifies the resource is a single instance, the value must be 'Yes'..
+        Specifies the resource is a single instance, the value must be 'Yes'.
 
     .PARAMETER AiaUriPath
-        Array of Uniform Resource Identifiers (URI) used to provide a location from where the issuer of this certificate is located.
+        Specifies the URI location where issuer of certificate is located.
 
     .PARAMETER RestartService
-        Specifies if the CertSvc service should be restarted to immediately apply the settings.
+        Specifies if the service should be restarted.
 
     .PARAMETER Ensure
         Ensures that the Authority Information Access (AIA) Uniform Resource Identifiers (URI) is Present or Absent.
@@ -76,13 +76,13 @@ function Get-TargetResource
         Configures the current Authority Information Access (AIA) settings for the certification authority.
 
     .PARAMETER IsSingleInstance
-        Specifies the resource is a single instance, the value must be 'Yes'..
+        Specifies the resource is a single instance, the value must be 'Yes'.
 
     .PARAMETER AiaUriPath
-        Array of Uniform Resource Identifiers (URI) used to provide a location from where the issuer of this certificate is located.
+        Specifies the URI location where issuer of certificate is located.
 
     .PARAMETER RestartService
-        Specifies if the CertSvc service should be restarted to immediately apply the settings.
+        Specifies if the service should be restarted.
 
     .PARAMETER Ensure
         Specifies if the AIA responder URI should be present or absent.
@@ -149,13 +149,13 @@ function Set-TargetResource
         settings.
 
     .PARAMETER IsSingleInstance
-        Specifies the resource is a single instance, the value must be 'Yes'..
+        Specifies the resource is a single instance, the value must be 'Yes'.
 
     .PARAMETER AiaUriPath
-        Array of Uniform Resource Identifiers (URI) used to provide a location from where the issuer of this certificate is located.
+        Specifies the URI location where issuer of certificate is located.
 
     .PARAMETER RestartService
-        Specifies if the CertSvc service should be restarted to immediately apply the settings.
+        Specifies if the service should be restarted.
 
     .PARAMETER Ensure
         Ensures that the Authority Information Access (AIA) Uniform Resource Identifiers (URI) is Present or Absent.
