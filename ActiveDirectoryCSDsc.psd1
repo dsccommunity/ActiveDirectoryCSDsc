@@ -41,7 +41,8 @@
         'AdcsEnrollmentPolicyWebService',
         'AdcsOnlineResponder',
         'AdcsWebEnrollment',
-        'AdcsOcspExtension'
+        'AdcsOcspExtension',
+        'AdcsAiaExtension'
         )
 
     # Private data to pass to the module specified in RootModule/ModuleToProcess. This may also contain a PSData hashtable with additional module metadata used by PowerShell.
@@ -62,7 +63,8 @@
             # IconUri = ''
 
             # ReleaseNotes of this module
-        ReleaseNotes = '- Added "DscResourcesToExport" to manifest to improve information in
+        ReleaseNotes = '- Added new resource AdcsAiaExtension - see [Issue 78](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/78).
+- Added "DscResourcesToExport" to manifest to improve information in
   PowerShell Gallery - fixes [Issue 68](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/68).
 - Removed unused CAType variables and references in AdcsOnlineResponder - fixes
   [issue 52](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/52).
@@ -79,10 +81,8 @@
 - Opted into Common Tests "Validate Example Files To Be Published",
   "Validate Markdown Links" and "Relative Path Length".
 - Correct AppVeyor `Invoke-AppveyorAfterTestTask` - fixes [Issue 73](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/73).
-- Added new resource AdcsAiaExtension - see [Issue 78](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/78).
 
 '
         } # End of PSData hashtable
     } # End of PrivateData hashtable
 }
-

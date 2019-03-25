@@ -31,7 +31,7 @@ configuration AdcsAiaExtension_AddAiaPath_Config
         AdcsAiaExtension AddAiaUriPath
         {
             IsSingleInstance = 'Yes'
-            AiaUriPath      = @(
+            AiaUriPath       = @(
                 'http://setAIAPathTest1/Certs/<CATruncatedName>.cer'
                 'http://setAIAPathTest2/Certs/<CATruncatedName>.cer'
                 'http://setAIAPathTest3/Certs/<CATruncatedName>.cer'

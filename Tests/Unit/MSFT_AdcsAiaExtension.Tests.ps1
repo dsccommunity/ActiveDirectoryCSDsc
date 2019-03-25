@@ -5,8 +5,7 @@ $script:DSCResourceName = 'MSFT_AdcsAiaExtension'
 
 $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
-     (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
-{
+    (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) ) {
     & git @('clone', 'https://github.com/PowerShell/DscResource.Tests.git', (Join-Path -Path $script:moduleRoot -ChildPath 'DscResource.Tests'))
 }
 
@@ -20,8 +19,7 @@ $TestEnvironment = Initialize-TestEnvironment `
     -DSCResourceName $script:DSCResourceName `
     -TestType Unit
 
-try
-{
+try {
     InModuleScope $DSCResourceName {
         $aiaUriPathList = @(
             'http://setAiaPathTest/Certs/<CATruncatedName>.cer'
@@ -30,28 +28,28 @@ try
         )
 
         $presentParams = @{
-            AiaUriPath      = $aiaUriPathList
+            AiaUriPath       = $aiaUriPathList
             Ensure           = 'Present'
             IsSingleInstance = 'Yes'
             RestartService   = $true
         }
 
         $setRestartServiceFalsePresentParams = @{
-            AiaUriPath      = $aiaUriPathList
+            AiaUriPath       = $aiaUriPathList
             Ensure           = 'Present'
             IsSingleInstance = 'Yes'
             RestartService   = $false
         }
 
         $absentParams = @{
-            AiaUriPath      = $aiaUriPathList
+            AiaUriPath       = $aiaUriPathList
             Ensure           = 'Absent'
             IsSingleInstance = 'Yes'
             RestartService   = $true
         }
 
         $setRestartServiceFalseAbsentParams = @{
-            AiaUriPath      = $aiaUriPathList
+            AiaUriPath       = $aiaUriPathList
             Ensure           = 'Absent'
             IsSingleInstance = 'Yes'
             RestartService   = $false
@@ -60,8 +58,8 @@ try
         Describe "$DSCResourceName\Get-TargetResource" -Tag 'Get' {
             Context 'When the CA is installed and the Get-CAAuthorityInformationAccess cmdlet returns the AIA URI path list' {
                 $retreivedGetTargetValue = @{
-                    AddToCertificateOcsp  = 'false'
-                    AddToCertificateAia = 'true'
+                    AddToCertificateOcsp = 'false'
+                    AddToCertificateAia  = 'true'
                     Uri                  = 'http://setAiaPathTest2/Certs/<CATruncatedName>.cer'
                 }
 
@@ -86,7 +84,7 @@ try
 
             Context 'When ensure equals present, and AIA record is missing, and $RestartService equals $true' {
                 $missingAiaUriPath = @{
-                    AiaUriPath      = @(
+                    AiaUriPath       = @(
                         'http://setAiaPathTest/Certs/<CATruncatedName>.cer'
                         'http://setAiaPathTest2/Certs/<CATruncatedName>.cer'
                     )
@@ -108,7 +106,7 @@ try
 
             Context 'When ensure equals present, and AIA record is missing, and $RestartService equals $false' {
                 $missingAiaUriPathRestartServiceFalse = @{
-                    AiaUriPath      = @(
+                    AiaUriPath       = @(
                         'http://setAiaPathTest/Certs/<CATruncatedName>.cer'
                         'http://setAiaPathTest2/Certs/<CATruncatedName>.cer'
                     )
@@ -157,18 +155,18 @@ try
             Context 'When ensure equals present and in desired state' {
                 $desiredStateRecordReturned = @(
                     @{
-                        AddToCertificateOcsp  = 'false'
-                        AddToCertificateAia = 'true'
+                        AddToCertificateOcsp = 'false'
+                        AddToCertificateAia  = 'true'
                         Uri                  = 'http://setAiaPathTest2/Certs/<CATruncatedName>.cer'
                     }
                     @{
-                        AddToCertificateOcsp  = 'false'
-                        AddToCertificateAia = 'true'
+                        AddToCertificateOcsp = 'false'
+                        AddToCertificateAia  = 'true'
                         Uri                  = 'http://setAiaPathTest/Certs/<CATruncatedName>.cer'
                     }
                     @{
-                        AddToCertificateOcsp  = 'false'
-                        AddToCertificateAia = 'true'
+                        AddToCertificateOcsp = 'false'
+                        AddToCertificateAia  = 'true'
                         Uri                  = 'file://<ServerDNSName>/CertEnroll/<ServerDNSName>_<CaName><CertificateName>.crt'
                     }
                 )
@@ -206,8 +204,8 @@ try
 
             Context 'When ensure equals present, but not in desired state, and different values are stored in AIA records when passing in a value for AIA' {
                 $singleRecordReturned = @{
-                    AddToCertificateOcsp  = 'false'
-                    AddToCertificateAia = 'true'
+                    AddToCertificateOcsp = 'false'
+                    AddToCertificateAia  = 'true'
                     Uri                  = 'http://setAiaPathTest2/Certs/<CATruncatedName>.cer'
                 }
 
@@ -223,8 +221,8 @@ try
             Context 'When ensure equals absent, but not in desired state, and AIA record is returned' {
                 $aiaRecordReturned = @(
                     @{
-                        AddToCertificateOcsp  = 'false'
-                        AddToCertificateAia = 'true'
+                        AddToCertificateOcsp = 'false'
+                        AddToCertificateAia  = 'true'
                         Uri                  = 'http://setAiaPathTest2/Certs/<CATruncatedName>.cer'
                     }
                 )
@@ -241,18 +239,18 @@ try
             Context 'When ensure equals present, but not in desired state, and AIA record # 3 contains a typographical error' {
                 $wrongAiaRecordReturned = @(
                     @{
-                        AddToCertificateOcsp  = 'false'
-                        AddToCertificateAia = 'true'
+                        AddToCertificateOcsp = 'false'
+                        AddToCertificateAia  = 'true'
                         Uri                  = 'http://setAiaPathTest2/Certs/<CATruncatedName>.cer'
                     }
                     @{
-                        AddToCertificateOcsp  = 'false'
-                        AddToCertificateAia = 'true'
+                        AddToCertificateOcsp = 'false'
+                        AddToCertificateAia  = 'true'
                         Uri                  = 'http://setAiaPathTest/Certs/<CATruncatedName>.cer'
                     }
                     @{
-                        AddToCertificateOcsp  = 'false'
-                        AddToCertificateAia = 'true'
+                        AddToCertificateOcsp = 'false'
+                        AddToCertificateAia  = 'true'
                         Uri                  = 'http://wrongAiaPathTest/Certs/<CATruncatedName>.cer'
                     }
                 )
@@ -269,23 +267,23 @@ try
             Context 'When ensure equals present, but not in desired state, and counts do not match, and additional AIA URI record returned' {
                 $additionalAiaRecordReturned = @(
                     @{
-                        AddToCertificateOcsp  = 'false'
-                        AddToCertificateAia = 'true'
+                        AddToCertificateOcsp = 'false'
+                        AddToCertificateAia  = 'true'
                         Uri                  = 'http://setAiaPathTest2/Certs/<CATruncatedName>.cer'
                     }
                     @{
-                        AddToCertificateOcsp  = 'false'
-                        AddToCertificateAia = 'true'
+                        AddToCertificateOcsp = 'false'
+                        AddToCertificateAia  = 'true'
                         Uri                  = 'http://setAiaPathTest/Certs/<CATruncatedName>.cer'
                     }
                     @{
-                        AddToCertificateOcsp  = 'false'
-                        AddToCertificateAia = 'true'
+                        AddToCertificateOcsp = 'false'
+                        AddToCertificateAia  = 'true'
                         Uri                  = 'http://setAIAPathTest3/Certs/<CATruncatedName>.cer'
                     }
                     @{
-                        AddToCertificateOcsp  = 'false'
-                        AddToCertificateAia = 'true'
+                        AddToCertificateOcsp = 'false'
+                        AddToCertificateAia  = 'true'
                         Uri                  = 'http://rogueAiaPathTest/Certs/<CATruncatedName>.cer'
                     }
                 )
@@ -302,8 +300,7 @@ try
     }
 }
 
-finally
-{
+finally {
     Restore-TestEnvironment -TestEnvironment $TestEnvironment
     Remove-Module -Name AdcsStub -Force
 }
