@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Added new resource AdcsAiaExtension - see [Issue #78](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/78).
 - Remove reference to StorageDsc in README.md - fixes [Issue #76](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/76).
 
 ## 3.2.0.0
