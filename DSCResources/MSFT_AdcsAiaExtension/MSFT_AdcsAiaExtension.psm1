@@ -32,7 +32,8 @@ $LocalizedData = Get-LocalizedData `
     .PARAMETER Ensure
         Ensures that the Authority Information Access (AIA) Uniform Resource Identifiers (URI) is Present or Absent.
 #>
-function Get-TargetResource {
+function Get-TargetResource
+{
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
@@ -86,7 +87,8 @@ function Get-TargetResource {
     .PARAMETER Ensure
         Specifies if the AIA responder URI should be present or absent.
 #>
-function Set-TargetResource {
+function Set-TargetResource
+{
     [CmdletBinding()]
     param
     (
@@ -111,25 +113,30 @@ function Set-TargetResource {
 
     $currentState = Get-TargetResource @PSBoundParameters
 
-    if ($Ensure -eq 'Present') {
-        foreach ($oldField in $currentState.AiaUriPath) {
+    if ($Ensure -eq 'Present')
+    {
+        foreach ($oldField in $currentState.AiaUriPath)
+        {
             Write-Verbose -Message ($localizedData.RemoveAiaUriPaths -f $oldField)
             Remove-CAAuthorityInformationAccess -Uri $oldField -Force -ErrorAction Stop
         }
 
-        foreach ($newField in $AiaUriPath) {
+        foreach ($newField in $AiaUriPath)
+        {
             Write-Verbose -Message ($localizedData.AddAiaUriPaths -f $newField)
             Add-CAAuthorityInformationAccess -Uri $newField -AddToCertificateAia -Force -ErrorAction Stop
         }
     }
     else {
-        foreach ($field in $AiaUriPath) {
+        foreach ($field in $AiaUriPath)
+        {
             Write-Verbose -Message ($localizedData.RemoveAiaUriPaths -f $field)
             Remove-CAAuthorityInformationAccess -Uri $field -Force -ErrorAction Stop
         }
     }
 
-    if ($RestartService) {
+    if ($RestartService)
+    {
         Write-Verbose -Message $localizedData.RestartService
         Restart-ServiceIfExists -Name CertSvc
     }
@@ -152,7 +159,8 @@ function Set-TargetResource {
     .PARAMETER Ensure
         Ensures that the Authority Information Access (AIA) Uniform Resource Identifiers (URI) is Present or Absent.
 #>
-function Test-TargetResource {
+function Test-TargetResource
+{
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -180,9 +188,12 @@ function Test-TargetResource {
 
     $inDesiredState = $true
 
-    if ($Ensure -eq 'Present') {
-        if ($currentState.AiaUriPath.Count -ne $AiaUriPath.Count) {
-            if ($null -ne $currentState.AiaUriPath) {
+    if ($Ensure -eq 'Present')
+    {
+        if ($currentState.AiaUriPath.Count -ne $AiaUriPath.Count)
+        {
+            if ($null -ne $currentState.AiaUriPath)
+            {
                 $compareAiaUriPaths = Compare-Object -ReferenceObject $AiaUriPath -DifferenceObject $currentState.AiaUriPath -PassThru
 
                 # Desired state AIA URI path(s) not found in reference set.
@@ -195,17 +206,20 @@ function Test-TargetResource {
                         $_.SideIndicator -eq '=>'
                     } ) -join ', '
 
-                if ($desiredAiaUriPathsMissing) {
+                if ($desiredAiaUriPathsMissing)
+                {
                     Write-Verbose -Message ($localizedData.DesiredAiaPathsMissing -f $desiredAiaUriPathsMissing)
                     $inDesiredState = $false
                 }
 
-                if ($notDesiredAiaUriPathsFound) {
+                if ($notDesiredAiaUriPathsFound)
+                {
                     Write-Verbose -Message ($localizedData.AdditionalAiaPathsFound -f $notDesiredAiaUriPathsFound)
                     $inDesiredState = $false
                 }
             }
-            else {
+            else
+            {
                 $aiaUriPathList = $AiaUriPath -join ', '
 
                 Write-Verbose -Message ($localizedData.AiaPathsNull -f $aiaUriPathList)
@@ -213,16 +227,21 @@ function Test-TargetResource {
             }
         }
 
-        foreach ($uri in $currentState.AiaUriPath) {
-            if ($uri -notin $AiaUriPath) {
+        foreach ($uri in $currentState.AiaUriPath)
+        {
+            if ($uri -notin $AiaUriPath)
+            {
                 Write-Verbose -Message ($localizedData.IncorrectAiaUriFound -f $uri)
                 $inDesiredState = $false
             }
         }
     }
-    else {
-        foreach ($uri in $AiaUriPath) {
-            if ($uri -in $currentState.AiaUriPath) {
+    else
+    {
+        foreach ($uri in $AiaUriPath)
+        {
+            if ($uri -in $currentState.AiaUriPath)
+            {
                 Write-Verbose -Message ($localizedData.EnsureAbsentButUriPathsExist -f $uri)
                 $inDesiredState = $false
             }
