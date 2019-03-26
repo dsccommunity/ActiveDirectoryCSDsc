@@ -19,7 +19,8 @@ $TestEnvironment = Initialize-TestEnvironment `
     -DSCResourceName $script:DSCResourceName `
     -TestType Unit
 
-try {
+try
+{
     InModuleScope $DSCResourceName {
         $aiaUriPathList = @(
             'http://setAiaPathTest/Certs/<CATruncatedName>.cer'

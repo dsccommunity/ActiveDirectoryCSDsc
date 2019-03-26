@@ -85,7 +85,7 @@ function Get-TargetResource
         Specifies if the service should be restarted.
 
     .PARAMETER Ensure
-        Specifies if the AIA responder URI should be present or absent.
+        Ensures that the Authority Information Access (AIA) Uniform Resource Identifiers (URI) is Present or Absent.
 #>
 function Set-TargetResource
 {
@@ -115,22 +115,31 @@ function Set-TargetResource
 
     if ($Ensure -eq 'Present')
     {
-        foreach ($oldField in $currentState.AiaUriPath)
+        foreach ($item in $currentState.AiaUriPath)
         {
-            Write-Verbose -Message ($localizedData.RemoveAiaUriPaths -f $oldField)
-            Remove-CAAuthorityInformationAccess -Uri $oldField -Force -ErrorAction Stop
+            if ($AiaUriPath -notcontains $item)
+            {
+                Write-Verbose -Message ($localizedData.RemoveAiAUriPath -f $item)
+                Remove-CAAuthorityInformationAccess -Uri $item -AddToCertificateAIA -Force
+            }
         }
-
-        foreach ($newField in $AiaUriPath)
-        {
-            Write-Verbose -Message ($localizedData.AddAiaUriPaths -f $newField)
-            Add-CAAuthorityInformationAccess -Uri $newField -AddToCertificateAia -Force -ErrorAction Stop
-        }
-    }
-    else {
         foreach ($field in $AiaUriPath)
         {
-            Write-Verbose -Message ($localizedData.RemoveAiaUriPaths -f $field)
+            if ($currentState.AiaUriPath -contains $field)
+            {
+                Write-Verbose -Message ($localizedData.RemoveAiAUriPath -f $field)
+                Remove-CAAuthorityInformationAccess -Uri $field -AddToCertificateAIA -Force
+            }
+
+            Write-Verbose -Message ($localizedData.AddAiAUriPath -f $field)
+            Add-CAAuthorityInformationAccess -Uri $field -AddToCertificateAIA -Force
+        }
+    }
+    else
+    {
+        foreach ($field in $AiaUriPath)
+        {
+            Write-Verbose -Message ($localizedData.RemoveAiaUriPath -f $field)
             Remove-CAAuthorityInformationAccess -Uri $field -Force -ErrorAction Stop
         }
     }
