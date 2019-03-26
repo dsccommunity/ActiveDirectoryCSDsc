@@ -88,6 +88,7 @@ try
                     AiaUriPath       = @(
                         'http://setAiaPathTest/Certs/<CATruncatedName>.cer'
                         'http://setAiaPathTest2/Certs/<CATruncatedName>.cer'
+                        'http://setAiaPathTest4/Certs/<CATruncatedName>.cer'
                     )
                     Ensure           = 'Present'
                     IsSingleInstance = 'Yes'
@@ -99,7 +100,7 @@ try
                 It 'Should call the expected mocks' {
                     Set-TargetResource @presentParams
 
-                    Assert-MockCalled -CommandName Remove-CAAuthorityInformationAccess -Exactly -Times 2 -Scope It -ParameterFilter { $AiaUriPath -eq $presentParams.AiaUriPathList }
+                    Assert-MockCalled -CommandName Remove-CAAuthorityInformationAccess -Exactly -Times 3 -Scope It -ParameterFilter { $AiaUriPath -eq $presentParams.AiaUriPathList }
                     Assert-MockCalled -CommandName Add-CAAuthorityInformationAccess -Exactly -Times 3 -Scope It -ParameterFilter { $AiaUriPath -eq $presentParams.AiaUriPathList }
                     Assert-MockCalled -CommandName Restart-ServiceIfExists -Exactly -Times 1 -Scope It -ParameterFilter { $Name -eq 'CertSvc' }
                 }
