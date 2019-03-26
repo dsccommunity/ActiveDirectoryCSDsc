@@ -176,9 +176,7 @@ try
                 Mock -CommandName 'Get-CAAuthorityInformationAccess' -MockWith { $desiredStateRecordReturned }
 
                 It 'Should return $true' {
-                    $result = Test-TargetResource @presentParams
-
-                    $result | Should -Be $true
+                    Test-TargetResource @presentParams | Should -Be $true
                 }
             }
 
@@ -188,9 +186,7 @@ try
                 Mock -CommandName 'Get-CAAuthorityInformationAccess' -MockWith { $absentStateRecordReturned }
 
                 It 'Should return $true' {
-                    $result = Test-TargetResource @absentParams
-
-                    $result | Should -Be $true
+                    Test-TargetResource @absentParams | Should -Be $true
                 }
             }
 
@@ -198,9 +194,7 @@ try
                 Mock -CommandName 'Get-CAAuthorityInformationAccess'
 
                 It 'Should return $false' {
-                    $result = Test-TargetResource @presentParams
-
-                    $result | Should -Be $false
+                    Test-TargetResource @presentParams | Should -Be $false
                 }
             }
 
@@ -214,9 +208,7 @@ try
                 Mock -CommandName 'Get-CAAuthorityInformationAccess' -MockWith { $singleRecordReturned }
 
                 It 'Should return $false' {
-                    $result = Test-TargetResource @presentParams
-
-                    $result | Should -Be $false
+                    Test-TargetResource @presentParams | Should -Be $false
                 }
             }
 
@@ -232,9 +224,7 @@ try
                 Mock -CommandName 'Get-CAAuthorityInformationAccess' -MockWith { $aiaRecordReturned }
 
                 It 'Should return $false' {
-                    $result = Test-TargetResource @absentParams
-
-                    $result | Should -Be $false
+                    Test-TargetResource @absentParams | Should -Be $false
                 }
             }
 
@@ -260,9 +250,7 @@ try
                 Mock -CommandName 'Get-CAAuthorityInformationAccess' -MockWith { $wrongAiaRecordReturned }
 
                 It 'Should return $false' {
-                    $result = Test-TargetResource @presentParams
-
-                    $result | Should -Be $false
+                    Test-TargetResource @presentParams | Should -Be $false
                 }
             }
 
@@ -293,9 +281,7 @@ try
                 Mock -CommandName 'Get-CAAuthorityInformationAccess' -MockWith { $additionalAiaRecordReturned }
 
                 It 'Should return $false' {
-                    $result = Test-TargetResource @presentParams
-
-                    $result | Should -Be $false
+                    Test-TargetResource @presentParams | Should -Be $false
                 }
             }
         }
