@@ -29,28 +29,28 @@ try
         )
 
         $presentParams = @{
-            AiaUriPath       = $aiaUriPathList
+            AiaUri           = $aiaUriPathList
             Ensure           = 'Present'
             IsSingleInstance = 'Yes'
             RestartService   = $true
         }
 
         $setRestartServiceFalsePresentParams = @{
-            AiaUriPath       = $aiaUriPathList
+            AiaUri           = $aiaUriPathList
             Ensure           = 'Present'
             IsSingleInstance = 'Yes'
             RestartService   = $false
         }
 
         $absentParams = @{
-            AiaUriPath       = $aiaUriPathList
+            AiaUri           = $aiaUriPathList
             Ensure           = 'Absent'
             IsSingleInstance = 'Yes'
             RestartService   = $true
         }
 
         $setRestartServiceFalseAbsentParams = @{
-            AiaUriPath       = $aiaUriPathList
+            AiaUri           = $aiaUriPathList
             Ensure           = 'Absent'
             IsSingleInstance = 'Yes'
             RestartService   = $false
@@ -70,7 +70,7 @@ try
                     $result = Get-TargetResource @presentParams
 
                     $result                  | Should -Be System.Collections.Hashtable
-                    $result.AiaUriPath       | Should -Be $retreivedGetTargetValue.Uri
+                    $result.AiaUri           | Should -Be $retreivedGetTargetValue.Uri
                     $result.Ensure           | Should -Be $presentParams.Ensure
                     $result.IsSingleInstance | Should -Be $presentParams.IsSingleInstance
                     $result.RestartService   | Should -Be $presentParams.RestartService
@@ -85,7 +85,7 @@ try
 
             Context 'When ensure equals present, and AIA record is missing, and $RestartService equals $true' {
                 $missingAiaUriPath = @{
-                    AiaUriPath       = @(
+                    AiaUri         = @(
                         'http://setAiaPathTest/Certs/<CATruncatedName>.cer'
                         'http://setAiaPathTest2/Certs/<CATruncatedName>.cer'
                         'http://setAiaPathTest4/Certs/<CATruncatedName>.cer'
@@ -100,15 +100,15 @@ try
                 It 'Should call the expected mocks' {
                     Set-TargetResource @presentParams
 
-                    Assert-MockCalled -CommandName Remove-CAAuthorityInformationAccess -Exactly -Times 3 -Scope It -ParameterFilter { $AiaUriPath -eq $presentParams.AiaUriPathList }
-                    Assert-MockCalled -CommandName Add-CAAuthorityInformationAccess -Exactly -Times 3 -Scope It -ParameterFilter { $AiaUriPath -eq $presentParams.AiaUriPathList }
+                    Assert-MockCalled -CommandName Remove-CAAuthorityInformationAccess -Exactly -Times 3 -Scope It -ParameterFilter { $AiaUri -eq $presentParams.AiaUriPathList }
+                    Assert-MockCalled -CommandName Add-CAAuthorityInformationAccess -Exactly -Times 3 -Scope It -ParameterFilter { $AiaUri -eq $presentParams.AiaUriPathList }
                     Assert-MockCalled -CommandName Restart-ServiceIfExists -Exactly -Times 1 -Scope It -ParameterFilter { $Name -eq 'CertSvc' }
                 }
             }
 
             Context 'When ensure equals present, and AIA record is missing, and $RestartService equals $false' {
                 $missingAiaUriPathRestartServiceFalse = @{
-                    AiaUriPath       = @(
+                    AiaUri           = @(
                         'http://setAiaPathTest/Certs/<CATruncatedName>.cer'
                         'http://setAiaPathTest2/Certs/<CATruncatedName>.cer'
                     )
@@ -122,8 +122,8 @@ try
                 It 'Should call the expected mocks' {
                     Set-TargetResource @setRestartServiceFalsePresentParams
 
-                    Assert-MockCalled -CommandName Remove-CAAuthorityInformationAccess -Exactly -Times 2 -Scope It -ParameterFilter { $AiaUriPath -eq $setRestartServiceFalsePresentParams.AiaUriPathList }
-                    Assert-MockCalled -CommandName Add-CAAuthorityInformationAccess -Exactly -Times 3 -Scope It -ParameterFilter { $AiaUriPath -eq $setRestartServiceFalsePresentParams.AiaUriPathList }
+                    Assert-MockCalled -CommandName Remove-CAAuthorityInformationAccess -Exactly -Times 2 -Scope It -ParameterFilter { $AiaUri -eq $setRestartServiceFalsePresentParams.AiaUriPathList }
+                    Assert-MockCalled -CommandName Add-CAAuthorityInformationAccess -Exactly -Times 3 -Scope It -ParameterFilter { $AiaUri -eq $setRestartServiceFalsePresentParams.AiaUriPathList }
                     Assert-MockCalled -CommandName Restart-ServiceIfExists -Exactly -Times 0 -Scope It -ParameterFilter { $Name -eq 'CertSvc' }
                 }
             }
@@ -134,8 +134,8 @@ try
                 It 'Should call the expected mocks' {
                     Set-TargetResource @absentParams
 
-                    Assert-MockCalled -CommandName Remove-CAAuthorityInformationAccess -Exactly -Times 3 -Scope It -ParameterFilter { $AiaUriPath -eq $absentParams.AiaUriPathList }
-                    Assert-MockCalled -CommandName Add-CAAuthorityInformationAccess -Exactly -Times 0 -Scope It -ParameterFilter { $AiaUriPath -eq $absentParams.AiaUriPathList }
+                    Assert-MockCalled -CommandName Remove-CAAuthorityInformationAccess -Exactly -Times 3 -Scope It -ParameterFilter { $AiaUri -eq $absentParams.AiaUriPathList }
+                    Assert-MockCalled -CommandName Add-CAAuthorityInformationAccess -Exactly -Times 0 -Scope It -ParameterFilter { $AiaUri -eq $absentParams.AiaUriPathList }
                     Assert-MockCalled -CommandName Restart-ServiceIfExists -Exactly -Times 1 -Scope It -ParameterFilter { $Name -eq 'CertSvc' }
                 }
             }
@@ -146,8 +146,8 @@ try
                 It 'Should call the expected mocks' {
                     Set-TargetResource @setRestartServiceFalseAbsentParams
 
-                    Assert-MockCalled -CommandName Remove-CAAuthorityInformationAccess -Exactly -Times 3 -Scope It -ParameterFilter { $AiaUriPath -eq $setRestartServiceFalseAbsentParams.AiaUriPathList }
-                    Assert-MockCalled -CommandName Add-CAAuthorityInformationAccess -Exactly -Times 0 -Scope It -ParameterFilter { $AiaUriPath -eq $setRestartServiceFalseAbsentParams.AiaUriPathList }
+                    Assert-MockCalled -CommandName Remove-CAAuthorityInformationAccess -Exactly -Times 3 -Scope It -ParameterFilter { $AiaUri -eq $setRestartServiceFalseAbsentParams.AiaUriPathList }
+                    Assert-MockCalled -CommandName Add-CAAuthorityInformationAccess -Exactly -Times 0 -Scope It -ParameterFilter { $AiaUri -eq $setRestartServiceFalseAbsentParams.AiaUriPathList }
                     Assert-MockCalled -CommandName Restart-ServiceIfExists -Exactly -Times 0 -Scope It -ParameterFilter { $Name -eq 'CertSvc' }
                 }
             }
