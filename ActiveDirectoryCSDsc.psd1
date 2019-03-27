@@ -63,8 +63,7 @@
             # IconUri = ''
 
             # ReleaseNotes of this module
-        ReleaseNotes = '- Added new resource AdcsAiaExtension - see [Issue 78](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/78).
-- Added "DscResourcesToExport" to manifest to improve information in
+        ReleaseNotes = '- Added "DscResourcesToExport" to manifest to improve information in
   PowerShell Gallery - fixes [Issue 68](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/68).
 - Removed unused CAType variables and references in AdcsOnlineResponder - fixes
   [issue 52](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/52).

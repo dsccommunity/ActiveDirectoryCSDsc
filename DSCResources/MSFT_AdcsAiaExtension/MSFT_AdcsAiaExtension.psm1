@@ -17,20 +17,24 @@ $LocalizedData = Get-LocalizedData `
 
 <#
     .SYNOPSIS
-        Gets the current certification authority AddToCertificateAia (boolean) and Uniform Resource Identifiers (URI)
+        Gets the current certificate Authority Information Access (AIA) Uniform Resource Identifiers (URI)
         settings.
 
     .PARAMETER IsSingleInstance
         Specifies the resource is a single instance, the value must be 'Yes'.
+        Not used in Get-TargetResource.
 
-    .PARAMETER AiaUriPath
+    .PARAMETER AiaUri
         Specifies the URI location where issuer of certificate is located.
+        Not used in Get-TargetResource.
 
     .PARAMETER RestartService
         Specifies if the service should be restarted.
+        Not used in Get-TargetResource.
 
     .PARAMETER Ensure
         Ensures that the Authority Information Access (AIA) Uniform Resource Identifiers (URI) is Present or Absent.
+        Not used in Get-TargetResource.
 #>
 function Get-TargetResource
 {
@@ -45,7 +49,7 @@ function Get-TargetResource
 
         [Parameter(Mandatory = $true)]
         [System.String[]]
-        $AiaUriPath,
+        $AiaUri,
 
         [Parameter()]
         [System.Boolean]
@@ -59,12 +63,12 @@ function Get-TargetResource
 
     Write-Verbose -Message $localizedData.GetAiaUriPaths
 
-    [System.Array] $currentAiaUriPathList = (Get-CAAuthorityInformationAccess).Where( {
+    [System.Array] $currentAiaUriList = (Get-CAAuthorityInformationAccess).Where( {
             $_.AddToCertificateAia -eq $true
         } ).Uri
 
     return @{
-        AiaUriPath       = $currentAiaUriPathList
+        AiaUri      = $currentAiaUriList
         Ensure           = $Ensure
         IsSingleInstance = $IsSingleInstance
         RestartService   = $RestartService
@@ -78,7 +82,7 @@ function Get-TargetResource
     .PARAMETER IsSingleInstance
         Specifies the resource is a single instance, the value must be 'Yes'.
 
-    .PARAMETER AiaUriPath
+    .PARAMETER AiaUri
         Specifies the URI location where issuer of certificate is located.
 
     .PARAMETER RestartService
@@ -99,7 +103,7 @@ function Set-TargetResource
 
         [Parameter(Mandatory = $true)]
         [System.String[]]
-        $AiaUriPath,
+        $AiaUri,
 
         [Parameter()]
         [System.Boolean]
@@ -115,31 +119,32 @@ function Set-TargetResource
 
     if ($Ensure -eq 'Present')
     {
-        foreach ($item in $currentState.AiaUriPath)
+        foreach ($uri in $currentState.AiaUri)
         {
-            if ($AiaUriPath -notcontains $item)
+            if ($AiaUri -notcontains $item)
             {
-                Write-Verbose -Message ($localizedData.RemoveAiAUriPath -f $item)
+                Write-Verbose -Message ($localizedData.RemoveAiAUri -f $item)
                 Remove-CAAuthorityInformationAccess -Uri $item -AddToCertificateAIA -Force
             }
         }
-        foreach ($field in $AiaUriPath)
+
+        foreach ($uri in $AiaUri)
         {
-            if ($currentState.AiaUriPath -contains $field)
+            if ($currentState.AiaUri -contains $field)
             {
-                Write-Verbose -Message ($localizedData.RemoveAiAUriPath -f $field)
+                Write-Verbose -Message ($localizedData.RemoveAiAUri -f $field)
                 Remove-CAAuthorityInformationAccess -Uri $field -AddToCertificateAIA -Force
             }
 
-            Write-Verbose -Message ($localizedData.AddAiAUriPath -f $field)
+            Write-Verbose -Message ($localizedData.AddAiAUri -f $field)
             Add-CAAuthorityInformationAccess -Uri $field -AddToCertificateAIA -Force
         }
     }
     else
     {
-        foreach ($field in $AiaUriPath)
+        foreach ($field in $AiaUri)
         {
-            Write-Verbose -Message ($localizedData.RemoveAiaUriPath -f $field)
+            Write-Verbose -Message ($localizedData.RemoveAiaUri -f $field)
             Remove-CAAuthorityInformationAccess -Uri $field -Force -ErrorAction Stop
         }
     }
@@ -159,7 +164,7 @@ function Set-TargetResource
     .PARAMETER IsSingleInstance
         Specifies the resource is a single instance, the value must be 'Yes'.
 
-    .PARAMETER AiaUriPath
+    .PARAMETER AiaUri
         Specifies the URI location where issuer of certificate is located.
 
     .PARAMETER RestartService
@@ -181,7 +186,7 @@ function Test-TargetResource
 
         [Parameter(Mandatory = $true)]
         [System.String[]]
-        $AiaUriPath,
+        $AiaUri,
 
         [Parameter()]
         [System.Boolean]
@@ -199,18 +204,18 @@ function Test-TargetResource
 
     if ($Ensure -eq 'Present')
     {
-        if ($currentState.AiaUriPath.Count -ne $AiaUriPath.Count)
+        if ($currentState.AiaUri.Count -ne $AiaUri.Count)
         {
-            if ($null -ne $currentState.AiaUriPath)
+            if ($null -ne $currentState.AiaUri)
             {
-                $compareAiaUriPaths = Compare-Object -ReferenceObject $AiaUriPath -DifferenceObject $currentState.AiaUriPath -PassThru
+                $compareAiaUriPaths = Compare-Object -ReferenceObject $AiaUri -DifferenceObject $currentState.AiaUri -PassThru
 
                 # Desired state AIA URI path(s) not found in reference set.
                 $desiredAiaUriPathsMissing = $compareAiaUriPaths.Where( {
                         $_.SideIndicator -eq '<='
                     } ) -join ', '
 
-                # AIA URI path(s) found in $currentState that do not match $AiaUriPath desired state.
+                # AIA URI path(s) found in $currentState that do not match $AiaUri desired state.
                 $notDesiredAiaUriPathsFound = $compareAiaUriPaths.Where( {
                         $_.SideIndicator -eq '=>'
                     } ) -join ', '
@@ -229,16 +234,16 @@ function Test-TargetResource
             }
             else
             {
-                $aiaUriPathList = $AiaUriPath -join ', '
+                $aiaUriPathList = $AiaUri -join ', '
 
                 Write-Verbose -Message ($localizedData.AiaPathsNull -f $aiaUriPathList)
                 $inDesiredState = $false
             }
         }
 
-        foreach ($uri in $currentState.AiaUriPath)
+        foreach ($uri in $currentState.AiaUri)
         {
-            if ($uri -notin $AiaUriPath)
+            if ($uri -notin $AiaUri)
             {
                 Write-Verbose -Message ($localizedData.IncorrectAiaUriFound -f $uri)
                 $inDesiredState = $false
@@ -247,9 +252,9 @@ function Test-TargetResource
     }
     else
     {
-        foreach ($uri in $AiaUriPath)
+        foreach ($uri in $AiaUri)
         {
-            if ($uri -in $currentState.AiaUriPath)
+            if ($uri -in $currentState.AiaUri)
             {
                 Write-Verbose -Message ($localizedData.EnsureAbsentButUriPathsExist -f $uri)
                 $inDesiredState = $false
