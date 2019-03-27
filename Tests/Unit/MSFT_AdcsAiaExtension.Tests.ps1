@@ -22,46 +22,46 @@ $TestEnvironment = Initialize-TestEnvironment `
 try
 {
     InModuleScope $DSCResourceName {
-        $aiaUriPathList = @(
-            'http://setAiaPathTest/Certs/<CATruncatedName>.cer'
-            'http://setAiaPathTest2/Certs/<CATruncatedName>.cer'
+        $aiaUriList = @(
+            'http://setAiaTest/Certs/<CATruncatedName>.cer'
+            'http://setAiaTest2/Certs/<CATruncatedName>.cer'
             'file://<ServerDNSName>/CertEnroll/<ServerDNSName>_<CaName><CertificateName>.crt'
         )
 
         $presentParams = @{
-            AiaUri           = $aiaUriPathList
+            AiaUri           = $aiaUriList
             Ensure           = 'Present'
             IsSingleInstance = 'Yes'
             RestartService   = $true
         }
 
         $setRestartServiceFalsePresentParams = @{
-            AiaUri           = $aiaUriPathList
+            AiaUri           = $aiaUriList
             Ensure           = 'Present'
             IsSingleInstance = 'Yes'
             RestartService   = $false
         }
 
         $absentParams = @{
-            AiaUri           = $aiaUriPathList
+            AiaUri           = $aiaUriList
             Ensure           = 'Absent'
             IsSingleInstance = 'Yes'
             RestartService   = $true
         }
 
         $setRestartServiceFalseAbsentParams = @{
-            AiaUri           = $aiaUriPathList
+            AiaUri           = $aiaUriList
             Ensure           = 'Absent'
             IsSingleInstance = 'Yes'
             RestartService   = $false
         }
 
         Describe "$DSCResourceName\Get-TargetResource" -Tag 'Get' {
-            Context 'When the CA is installed and the Get-CAAuthorityInformationAccess cmdlet returns the AIA URI path list' {
+            Context 'When the CA is installed and the Get-CAAuthorityInformationAccess cmdlet returns the AIA URI list' {
                 $retreivedGetTargetValue = @{
                     AddToCertificateOcsp = 'false'
                     AddToCertificateAia  = 'true'
-                    Uri                  = 'http://setAiaPathTest2/Certs/<CATruncatedName>.cer'
+                    Uri                  = 'http://setAiaTest2/Certs/<CATruncatedName>.cer'
                 }
 
                 Mock -CommandName 'Get-CAAuthorityInformationAccess' -Mockwith { $retreivedGetTargetValue }
@@ -84,46 +84,46 @@ try
             Mock -CommandName Restart-ServiceIfExists
 
             Context 'When ensure equals present, and AIA record is missing, and $RestartService equals $true' {
-                $missingAiaUriPath = @{
+                $missingAiaUri = @{
                     AiaUri         = @(
-                        'http://setAiaPathTest/Certs/<CATruncatedName>.cer'
-                        'http://setAiaPathTest2/Certs/<CATruncatedName>.cer'
-                        'http://setAiaPathTest4/Certs/<CATruncatedName>.cer'
+                        'http://setAiaTest/Certs/<CATruncatedName>.cer'
+                        'http://setAiaTest2/Certs/<CATruncatedName>.cer'
+                        'http://setAiaTest4/Certs/<CATruncatedName>.cer'
                     )
                     Ensure           = 'Present'
                     IsSingleInstance = 'Yes'
                     RestartService   = $true
                 }
 
-                Mock -CommandName Get-TargetResource -MockWith { $missingAiaUriPath }
+                Mock -CommandName Get-TargetResource -MockWith { $missingAiaUri }
 
                 It 'Should call the expected mocks' {
                     Set-TargetResource @presentParams
 
-                    Assert-MockCalled -CommandName Remove-CAAuthorityInformationAccess -Exactly -Times 3 -Scope It -ParameterFilter { $AiaUri -eq $presentParams.AiaUriPathList }
-                    Assert-MockCalled -CommandName Add-CAAuthorityInformationAccess -Exactly -Times 3 -Scope It -ParameterFilter { $AiaUri -eq $presentParams.AiaUriPathList }
+                    Assert-MockCalled -CommandName Remove-CAAuthorityInformationAccess -Exactly -Times 3 -Scope It -ParameterFilter { $AiaUri -eq $presentParams.AiaUriList }
+                    Assert-MockCalled -CommandName Add-CAAuthorityInformationAccess -Exactly -Times 3 -Scope It -ParameterFilter { $AiaUri -eq $presentParams.AiaUriList }
                     Assert-MockCalled -CommandName Restart-ServiceIfExists -Exactly -Times 1 -Scope It -ParameterFilter { $Name -eq 'CertSvc' }
                 }
             }
 
             Context 'When ensure equals present, and AIA record is missing, and $RestartService equals $false' {
-                $missingAiaUriPathRestartServiceFalse = @{
+                $missingAiaUriRestartServiceFalse = @{
                     AiaUri           = @(
-                        'http://setAiaPathTest/Certs/<CATruncatedName>.cer'
-                        'http://setAiaPathTest2/Certs/<CATruncatedName>.cer'
+                        'http://setAiaTest/Certs/<CATruncatedName>.cer'
+                        'http://setAiaTest2/Certs/<CATruncatedName>.cer'
                     )
                     Ensure           = 'Present'
                     IsSingleInstance = 'Yes'
                     RestartService   = $false
                 }
 
-                Mock -CommandName Get-TargetResource -MockWith { $missingAiaUriPathRestartServiceFalse }
+                Mock -CommandName Get-TargetResource -MockWith { $missingAiaUriRestartServiceFalse }
 
                 It 'Should call the expected mocks' {
                     Set-TargetResource @setRestartServiceFalsePresentParams
 
-                    Assert-MockCalled -CommandName Remove-CAAuthorityInformationAccess -Exactly -Times 2 -Scope It -ParameterFilter { $AiaUri -eq $setRestartServiceFalsePresentParams.AiaUriPathList }
-                    Assert-MockCalled -CommandName Add-CAAuthorityInformationAccess -Exactly -Times 3 -Scope It -ParameterFilter { $AiaUri -eq $setRestartServiceFalsePresentParams.AiaUriPathList }
+                    Assert-MockCalled -CommandName Remove-CAAuthorityInformationAccess -Exactly -Times 2 -Scope It -ParameterFilter { $AiaUri -eq $setRestartServiceFalsePresentParams.AiaUriList }
+                    Assert-MockCalled -CommandName Add-CAAuthorityInformationAccess -Exactly -Times 3 -Scope It -ParameterFilter { $AiaUri -eq $setRestartServiceFalsePresentParams.AiaUriList }
                     Assert-MockCalled -CommandName Restart-ServiceIfExists -Exactly -Times 0 -Scope It -ParameterFilter { $Name -eq 'CertSvc' }
                 }
             }
@@ -134,8 +134,8 @@ try
                 It 'Should call the expected mocks' {
                     Set-TargetResource @absentParams
 
-                    Assert-MockCalled -CommandName Remove-CAAuthorityInformationAccess -Exactly -Times 3 -Scope It -ParameterFilter { $AiaUri -eq $absentParams.AiaUriPathList }
-                    Assert-MockCalled -CommandName Add-CAAuthorityInformationAccess -Exactly -Times 0 -Scope It -ParameterFilter { $AiaUri -eq $absentParams.AiaUriPathList }
+                    Assert-MockCalled -CommandName Remove-CAAuthorityInformationAccess -Exactly -Times 3 -Scope It -ParameterFilter { $AiaUri -eq $absentParams.AiaUriList }
+                    Assert-MockCalled -CommandName Add-CAAuthorityInformationAccess -Exactly -Times 0 -Scope It -ParameterFilter { $AiaUri -eq $absentParams.AiaUriList }
                     Assert-MockCalled -CommandName Restart-ServiceIfExists -Exactly -Times 1 -Scope It -ParameterFilter { $Name -eq 'CertSvc' }
                 }
             }
@@ -146,8 +146,8 @@ try
                 It 'Should call the expected mocks' {
                     Set-TargetResource @setRestartServiceFalseAbsentParams
 
-                    Assert-MockCalled -CommandName Remove-CAAuthorityInformationAccess -Exactly -Times 3 -Scope It -ParameterFilter { $AiaUri -eq $setRestartServiceFalseAbsentParams.AiaUriPathList }
-                    Assert-MockCalled -CommandName Add-CAAuthorityInformationAccess -Exactly -Times 0 -Scope It -ParameterFilter { $AiaUri -eq $setRestartServiceFalseAbsentParams.AiaUriPathList }
+                    Assert-MockCalled -CommandName Remove-CAAuthorityInformationAccess -Exactly -Times 3 -Scope It -ParameterFilter { $AiaUri -eq $setRestartServiceFalseAbsentParams.AiaUriList }
+                    Assert-MockCalled -CommandName Add-CAAuthorityInformationAccess -Exactly -Times 0 -Scope It -ParameterFilter { $AiaUri -eq $setRestartServiceFalseAbsentParams.AiaUriList }
                     Assert-MockCalled -CommandName Restart-ServiceIfExists -Exactly -Times 0 -Scope It -ParameterFilter { $Name -eq 'CertSvc' }
                 }
             }
@@ -159,12 +159,12 @@ try
                     @{
                         AddToCertificateOcsp = 'false'
                         AddToCertificateAia  = 'true'
-                        Uri                  = 'http://setAiaPathTest2/Certs/<CATruncatedName>.cer'
+                        Uri                  = 'http://setAiaTest2/Certs/<CATruncatedName>.cer'
                     }
                     @{
                         AddToCertificateOcsp = 'false'
                         AddToCertificateAia  = 'true'
-                        Uri                  = 'http://setAiaPathTest/Certs/<CATruncatedName>.cer'
+                        Uri                  = 'http://setAiaTest/Certs/<CATruncatedName>.cer'
                     }
                     @{
                         AddToCertificateOcsp = 'false'
@@ -202,7 +202,7 @@ try
                 $singleRecordReturned = @{
                     AddToCertificateOcsp = 'false'
                     AddToCertificateAia  = 'true'
-                    Uri                  = 'http://setAiaPathTest2/Certs/<CATruncatedName>.cer'
+                    Uri                  = 'http://setAiaTest2/Certs/<CATruncatedName>.cer'
                 }
 
                 Mock -CommandName 'Get-CAAuthorityInformationAccess' -MockWith { $singleRecordReturned }
@@ -217,7 +217,7 @@ try
                     @{
                         AddToCertificateOcsp = 'false'
                         AddToCertificateAia  = 'true'
-                        Uri                  = 'http://setAiaPathTest2/Certs/<CATruncatedName>.cer'
+                        Uri                  = 'http://setAiaTest2/Certs/<CATruncatedName>.cer'
                     }
                 )
 
@@ -233,17 +233,17 @@ try
                     @{
                         AddToCertificateOcsp = 'false'
                         AddToCertificateAia  = 'true'
-                        Uri                  = 'http://setAiaPathTest2/Certs/<CATruncatedName>.cer'
+                        Uri                  = 'http://setAiaTest2/Certs/<CATruncatedName>.cer'
                     }
                     @{
                         AddToCertificateOcsp = 'false'
                         AddToCertificateAia  = 'true'
-                        Uri                  = 'http://setAiaPathTest/Certs/<CATruncatedName>.cer'
+                        Uri                  = 'http://setAiaTest/Certs/<CATruncatedName>.cer'
                     }
                     @{
                         AddToCertificateOcsp = 'false'
                         AddToCertificateAia  = 'true'
-                        Uri                  = 'http://wrongAiaPathTest/Certs/<CATruncatedName>.cer'
+                        Uri                  = 'http://wrongAiaTest/Certs/<CATruncatedName>.cer'
                     }
                 )
 
@@ -259,22 +259,22 @@ try
                     @{
                         AddToCertificateOcsp = 'false'
                         AddToCertificateAia  = 'true'
-                        Uri                  = 'http://setAiaPathTest2/Certs/<CATruncatedName>.cer'
+                        Uri                  = 'http://setAiaTest2/Certs/<CATruncatedName>.cer'
                     }
                     @{
                         AddToCertificateOcsp = 'false'
                         AddToCertificateAia  = 'true'
-                        Uri                  = 'http://setAiaPathTest/Certs/<CATruncatedName>.cer'
+                        Uri                  = 'http://setAiaTest/Certs/<CATruncatedName>.cer'
                     }
                     @{
                         AddToCertificateOcsp = 'false'
                         AddToCertificateAia  = 'true'
-                        Uri                  = 'http://setAIAPathTest3/Certs/<CATruncatedName>.cer'
+                        Uri                  = 'http://setAiaTest3/Certs/<CATruncatedName>.cer'
                     }
                     @{
                         AddToCertificateOcsp = 'false'
                         AddToCertificateAia  = 'true'
-                        Uri                  = 'http://rogueAiaPathTest/Certs/<CATruncatedName>.cer'
+                        Uri                  = 'http://rogueAiaTest/Certs/<CATruncatedName>.cer'
                     }
                 )
 

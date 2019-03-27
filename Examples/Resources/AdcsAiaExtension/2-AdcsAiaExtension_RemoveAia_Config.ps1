@@ -19,22 +19,22 @@
 
 <#
     .DESCRIPTION
-        A DSC configuration script to remove desired AIA URI path extensions for a Certificate Authority.
-        No previously configured AIA URI paths will be removed.
+        A DSC configuration script to remove desired AIA URI extensions for a Certificate Authority.
+        No previously configured AIA URIs will be removed.
 #>
-configuration AdcsAiaExtension_RemoveAiaPath_Config
+configuration AdcsAiaExtension_RemoveAia_Config
 {
     Import-DscResource -ModuleName ActiveDirectoryCSDsc
 
     node localhost
     {
-        AdcsAiaExtension RemoveAiaUriPath
+        AdcsAiaExtension RemoveAiaUri
         {
             IsSingleInstance = 'Yes'
-            AiaUriPath       = @(
-                'http://setAIAPathTest1/Certs/<CATruncatedName>.cer'
-                'http://setAIAPathTest2/Certs/<CATruncatedName>.cer'
-                'http://setAIAPathTest3/Certs/<CATruncatedName>.cer'
+            AiaUri           = @(
+                'http://setAIATest1/Certs/<CATruncatedName>.cer'
+                'http://setAIATest2/Certs/<CATruncatedName>.cer'
+                'http://setAIATest3/Certs/<CATruncatedName>.cer'
             )
             RestartService   = $true
             Ensure           = 'Absent'

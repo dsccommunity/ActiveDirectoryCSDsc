@@ -1,11 +1,11 @@
 ConvertFrom-StringData @'
-    AdditionalAiaPathsFound      = Not in desired state, additional AIA URI paths found, "{0}".
-    AddAiaUriPath                = Adding "{0}" to desired AIA URI paths.
-    DesiredAiaPathsMissing       = Not in desired state, missing desired AIA URI paths, "{0}".
-    EnsureAbsentButUriPathsExist = Not in desired state, AIA URI paths should be Absent, but found "{0}".
-    GetAiaUriPaths               = Getting all AIA URI paths.
-    AiaPathsNull                 = Not in desired state, AIA URI paths empty, missing "{0}".
-    RemoveAiaUriPath             = Removing "{0}" AIA URI paths.
+    AdditionalAiasFound          = Not in desired state, additional AIA URIs found, "{0}".
+    AddAiaUri                    = Adding "{0}" to desired AIA URIs.
+    DesiredAiasMissing           = Not in desired state, missing desired AIA URIs, "{0}".
+    EnsureAbsentButUrisExist     = Not in desired state, AIA URIs should be Absent, but found "{0}".
+    GetAiaUris                   = Getting all AIA URIs.
+    AiasNull                     = Not in desired state, AIA URIs empty, missing "{0}".
+    RemoveAiaUri                 = Removing "{0}" AIA URIs.
     RestartService               = Preparing to restart the CertSvc for changes to take affect.
-    IncorrectAiaUriFound         = Not in desired state, AIA URI path incorrect, found "{0}".
+    IncorrectAiaUriFound         = Not in desired state, AIA URI incorrect, found "{0}".
 '@

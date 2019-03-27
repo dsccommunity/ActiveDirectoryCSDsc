@@ -61,7 +61,7 @@ function Get-TargetResource
         $Ensure = 'Present'
     )
 
-    Write-Verbose -Message $localizedData.GetAiaUriPaths
+    Write-Verbose -Message $localizedData.GetAiaUris
 
     [System.Array] $currentAiaUriList = (Get-CAAuthorityInformationAccess).Where( {
             $_.AddToCertificateAia -eq $true
@@ -116,40 +116,45 @@ function Set-TargetResource
     )
 
     $currentState = Get-TargetResource @PSBoundParameters
+    $change = $false
 
     if ($Ensure -eq 'Present')
     {
         foreach ($uri in $currentState.AiaUri)
         {
-            if ($AiaUri -notcontains $item)
+            if ($AiaUri -notcontains $uri)
             {
-                Write-Verbose -Message ($localizedData.RemoveAiAUri -f $item)
-                Remove-CAAuthorityInformationAccess -Uri $item -AddToCertificateAIA -Force
+                Write-Verbose -Message ($localizedData.RemoveAiAUri -f $uri)
+                Remove-CAAuthorityInformationAccess -Uri $uri -AddToCertificateAIA -Force
+                $change = $true
             }
         }
 
         foreach ($uri in $AiaUri)
         {
-            if ($currentState.AiaUri -contains $field)
+            if ($currentState.AiaUri -contains $uri)
             {
-                Write-Verbose -Message ($localizedData.RemoveAiAUri -f $field)
-                Remove-CAAuthorityInformationAccess -Uri $field -AddToCertificateAIA -Force
+                Write-Verbose -Message ($localizedData.RemoveAiAUri -f $uri)
+                Remove-CAAuthorityInformationAccess -Uri $uri -AddToCertificateAIA -Force
+                $change = $true
             }
 
-            Write-Verbose -Message ($localizedData.AddAiAUri -f $field)
-            Add-CAAuthorityInformationAccess -Uri $field -AddToCertificateAIA -Force
+            Write-Verbose -Message ($localizedData.AddAiAUri -f $uri)
+            Add-CAAuthorityInformationAccess -Uri $uri -AddToCertificateAIA -Force
+            $change = $true
         }
     }
     else
     {
-        foreach ($field in $AiaUri)
+        foreach ($uri in $AiaUri)
         {
-            Write-Verbose -Message ($localizedData.RemoveAiaUri -f $field)
-            Remove-CAAuthorityInformationAccess -Uri $field -Force -ErrorAction Stop
+            Write-Verbose -Message ($localizedData.RemoveAiaUri -f $uri)
+            Remove-CAAuthorityInformationAccess -Uri $uri -Force -ErrorAction Stop
+            $change = $true
         }
     }
 
-    if ($RestartService)
+    if (($RestartService) -and ($change))
     {
         Write-Verbose -Message $localizedData.RestartService
         Restart-ServiceIfExists -Name CertSvc
@@ -208,35 +213,35 @@ function Test-TargetResource
         {
             if ($null -ne $currentState.AiaUri)
             {
-                $compareAiaUriPaths = Compare-Object -ReferenceObject $AiaUri -DifferenceObject $currentState.AiaUri -PassThru
+                $compareAiaUris = Compare-Object -ReferenceObject $AiaUri -DifferenceObject $currentState.AiaUri -PassThru
 
-                # Desired state AIA URI path(s) not found in reference set.
-                $desiredAiaUriPathsMissing = $compareAiaUriPaths.Where( {
+                # Desired state AIA URI(s) not found in reference set.
+                $desiredAiaUrisMissing = $compareAiaUris.Where( {
                         $_.SideIndicator -eq '<='
                     } ) -join ', '
 
-                # AIA URI path(s) found in $currentState that do not match $AiaUri desired state.
-                $notDesiredAiaUriPathsFound = $compareAiaUriPaths.Where( {
+                # AIA URI(s) found in $currentState that do not match $AiaUri desired state.
+                $notDesiredAiaUrisFound = $compareAiaUris.Where( {
                         $_.SideIndicator -eq '=>'
                     } ) -join ', '
 
-                if ($desiredAiaUriPathsMissing)
+                if ($desiredAiaUrisMissing)
                 {
-                    Write-Verbose -Message ($localizedData.DesiredAiaPathsMissing -f $desiredAiaUriPathsMissing)
+                    Write-Verbose -Message ($localizedData.DesiredAiasMissing -f $desiredAiaUrisMissing)
                     $inDesiredState = $false
                 }
 
-                if ($notDesiredAiaUriPathsFound)
+                if ($notDesiredAiaUrisFound)
                 {
-                    Write-Verbose -Message ($localizedData.AdditionalAiaPathsFound -f $notDesiredAiaUriPathsFound)
+                    Write-Verbose -Message ($localizedData.AdditionalAiasFound -f $notDesiredAiaUrisFound)
                     $inDesiredState = $false
                 }
             }
             else
             {
-                $aiaUriPathList = $AiaUri -join ', '
+                $aiaUriList = $AiaUri -join ', '
 
-                Write-Verbose -Message ($localizedData.AiaPathsNull -f $aiaUriPathList)
+                Write-Verbose -Message ($localizedData.AiasNull -f $aiaUriList)
                 $inDesiredState = $false
             }
         }
@@ -256,7 +261,7 @@ function Test-TargetResource
         {
             if ($uri -in $currentState.AiaUri)
             {
-                Write-Verbose -Message ($localizedData.EnsureAbsentButUriPathsExist -f $uri)
+                Write-Verbose -Message ($localizedData.EnsureAbsentButUrisExist -f $uri)
                 $inDesiredState = $false
             }
         }

@@ -19,22 +19,22 @@
 
 <#
     .DESCRIPTION
-        A DSC configuration script to add desired AIA URI path extensions for a Certificate Authority.
-        This will remove all existing AIA URI paths from the Certificate Authority.
+        A DSC configuration script to add desired AIA URI extensions for a Certificate Authority.
+        This will remove all existing AIA URIs from the Certificate Authority.
 #>
-configuration AdcsAiaExtension_AddAiaPath_Config
+configuration AdcsAiaExtension_AddAia_Config
 {
     Import-DscResource -ModuleName ActiveDirectoryCSDsc
 
     node localhost
     {
-        AdcsAiaExtension AddAiaUriPath
+        AdcsAiaExtension AddAiaUri
         {
             IsSingleInstance = 'Yes'
-            AiaUriPath       = @(
-                'http://setAIAPathTest1/Certs/<CATruncatedName>.cer'
-                'http://setAIAPathTest2/Certs/<CATruncatedName>.cer'
-                'http://setAIAPathTest3/Certs/<CATruncatedName>.cer'
+            AiaUri           = @(
+                'http://setAIATest1/Certs/<CATruncatedName>.cer'
+                'http://setAIATest2/Certs/<CATruncatedName>.cer'
+                'http://setAIATest3/Certs/<CATruncatedName>.cer'
             )
             RestartService   = $true
             Ensure           = 'Present'
