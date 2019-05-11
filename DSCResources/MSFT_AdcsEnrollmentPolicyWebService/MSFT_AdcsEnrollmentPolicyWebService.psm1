@@ -1,14 +1,12 @@
 $modulePath = Join-Path -Path (Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent) -ChildPath 'Modules'
 
-# Import the ADCS Deployment Resource Helper Module.
+# Import the ADCS Deployment Resource Common Module.
 Import-Module -Name (Join-Path -Path $modulePath `
-        -ChildPath (Join-Path -Path 'ActiveDirectoryCSDsc.ResourceHelper' `
-            -ChildPath 'ActiveDirectoryCSDsc.ResourceHelper.psm1'))
+        -ChildPath (Join-Path -Path 'ActiveDirectoryCSDsc.Common' `
+            -ChildPath 'ActiveDirectoryCSDsc.Common.psm1'))
 
 # Import Localization Strings.
-$LocalizedData = Get-LocalizedData `
-    -ResourceName 'MSFT_AdcsEnrollmentPolicyWebService' `
-    -ResourcePath (Split-Path -Parent $script:MyInvocation.MyCommand.Path)
+$script:localizedData = Get-LocalizedData -ResourceName 'MSFT_AdcsEnrollmentPolicyWebService'
 
 <#
     .SYNOPSIS
@@ -69,7 +67,7 @@ Function Get-TargetResource
 
     Write-Verbose -Message ( @(
             "$($MyInvocation.MyCommand): "
-            $($LocalizedData.GettingAdcsEnrollmentPolicyWebServiceStatusMessage -f $AuthenticationType)
+            $($script:localizedData.GettingAdcsEnrollmentPolicyWebServiceStatusMessage -f $AuthenticationType)
         ) -join '' )
 
     $installed = Test-AdcsEnrollmentPolicyWebServiceInstallState `
@@ -151,7 +149,7 @@ Function Set-TargetResource
 
     Write-Verbose -Message ( @(
             "$($MyInvocation.MyCommand): "
-            $($LocalizedData.SettingAdcsEnrollmentPolicyWebServiceStatusMessage -f $AuthenticationType)
+            $($script:localizedData.SettingAdcsEnrollmentPolicyWebServiceStatusMessage -f $AuthenticationType)
         ) -join '' )
 
     $adcsEnrollmentPolicyWebServiceParameters = @{} + $PSBoundParameters
@@ -169,7 +167,7 @@ Function Set-TargetResource
             {
                 Write-Verbose -Message ( @(
                         "$($MyInvocation.MyCommand): "
-                        $($LocalizedData.InstallingAdcsEnrollmentPolicyWebServiceMessage -f $AuthenticationType)
+                        $($script:localizedData.InstallingAdcsEnrollmentPolicyWebServiceMessage -f $AuthenticationType)
                     ) -join '' )
 
                 $errorMessage = (Install-AdcsEnrollmentPolicyWebService @adcsEnrollmentPolicyWebServiceParameters -Force).ErrorString
@@ -182,7 +180,7 @@ Function Set-TargetResource
 
                 Write-Verbose -Message ( @(
                         "$($MyInvocation.MyCommand): "
-                        $($LocalizedData.UninstallingAdcsEnrollmentPolicyWebServiceMessage -f $AuthenticationType)
+                        $($script:localizedData.UninstallingAdcsEnrollmentPolicyWebServiceMessage -f $AuthenticationType)
                     ) -join '' )
 
                 $errorMessage = (Uninstall-AdcsEnrollmentPolicyWebService @adcsEnrollmentPolicyWebServiceParameters -Force).ErrorString
@@ -198,7 +196,7 @@ Function Set-TargetResource
     {
         Write-Verbose -Message ( @(
             "$($MyInvocation.MyCommand): "
-            $($LocalizedData.AdcsEnrollmentPolicyWebServiceErrorMessage -f $errorMessage)
+            $($script:localizedData.AdcsEnrollmentPolicyWebServiceErrorMessage -f $errorMessage)
         ) -join '' )
         New-InvalidOperationException -Message $errorMessage
     }
@@ -266,7 +264,7 @@ Function Test-TargetResource
 
     Write-Verbose -Message ( @(
             "$($MyInvocation.MyCommand): "
-            $($LocalizedData.TestingAdcsEnrollmentPolicyWebServiceStatusMessage -f $AuthenticationType)
+            $($script:localizedData.TestingAdcsEnrollmentPolicyWebServiceStatusMessage -f $AuthenticationType)
         ) -join '' )
 
     $installed = Test-AdcsEnrollmentPolicyWebServiceInstallState `
@@ -283,7 +281,7 @@ Function Test-TargetResource
                 # CA is installed and should be - change not required
                 Write-Verbose -Message ( @(
                         "$($MyInvocation.MyCommand): "
-                        $($LocalizedData.AdcsEnrollmentPolicyWebServiceInstalledAndShouldBeMessage -f $AuthenticationType)
+                        $($script:localizedData.AdcsEnrollmentPolicyWebServiceInstalledAndShouldBeMessage -f $AuthenticationType)
                     ) -join '' )
 
                 return $true
@@ -294,7 +292,7 @@ Function Test-TargetResource
                 # CA is installed and should not be - change required
                 Write-Verbose -Message ( @(
                         "$($MyInvocation.MyCommand): "
-                        $($LocalizedData.AdcsEnrollmentPolicyWebServiceInstalledButShouldNotBeMessage -f $AuthenticationType)
+                        $($script:localizedData.AdcsEnrollmentPolicyWebServiceInstalledButShouldNotBeMessage -f $AuthenticationType)
                     ) -join '' )
 
                 return $false
@@ -311,7 +309,7 @@ Function Test-TargetResource
                 # CA is not installed but should be - change required
                 Write-Verbose -Message ( @(
                         "$($MyInvocation.MyCommand): "
-                        $($LocalizedData.AdcsEnrollmentPolicyWebServiceNotInstalledButShouldBeMessage -f $AuthenticationType)
+                        $($script:localizedData.AdcsEnrollmentPolicyWebServiceNotInstalledButShouldBeMessage -f $AuthenticationType)
                     ) -join '' )
 
                 return $false
@@ -322,7 +320,7 @@ Function Test-TargetResource
                 # CA is not installed and should not be - change not required
                 Write-Verbose -Message ( @(
                         "$($MyInvocation.MyCommand): "
-                        $($LocalizedData.AdcsEnrollmentPolicyWebServiceNotInstalledAndShouldNotBeMessage -f $AuthenticationType)
+                        $($script:localizedData.AdcsEnrollmentPolicyWebServiceNotInstalledAndShouldNotBeMessage -f $AuthenticationType)
                     ) -join '' )
 
                 return $true
@@ -365,7 +363,7 @@ Function Test-AdcsEnrollmentPolicyWebServiceInstallState
 
     Write-Verbose -Message ( @(
             "$($MyInvocation.MyCommand): "
-            $($LocalizedData.TestingAdcsEnrollmentPolicyWebServiceInstallStateMessage -f $AuthenticationType, $KeyBasedRenewal)
+            $($script:localizedData.TestingAdcsEnrollmentPolicyWebServiceInstallStateMessage -f $AuthenticationType, $KeyBasedRenewal)
         ) -join '' )
 
     # Determine the expected name of the Web Application
@@ -398,7 +396,7 @@ Function Test-AdcsEnrollmentPolicyWebServiceInstallState
     {
         Write-Verbose -Message ( @(
             "$($MyInvocation.MyCommand): "
-            $($LocalizedData.AdcsEnrollmentPolicyWebServiceInstallIsNotInstalledMessage -f $AuthenticationType, $KeyBasedRenewal)
+            $($script:localizedData.AdcsEnrollmentPolicyWebServiceInstallIsNotInstalledMessage -f $AuthenticationType, $KeyBasedRenewal)
         ) -join '' )
 
         return $false
@@ -407,7 +405,7 @@ Function Test-AdcsEnrollmentPolicyWebServiceInstallState
     {
         Write-Verbose -Message ( @(
             "$($MyInvocation.MyCommand): "
-            $($LocalizedData.AdcsEnrollmentPolicyWebServiceInstallIsInstalledMessage -f $AuthenticationType, $KeyBasedRenewal)
+            $($script:localizedData.AdcsEnrollmentPolicyWebServiceInstallIsInstalledMessage -f $AuthenticationType, $KeyBasedRenewal)
         ) -join '' )
 
         return $true
@@ -518,7 +516,7 @@ function Test-Thumbprint
             else
             {
                 New-InvalidOperationException `
-                    -Message ($LocalizedData.InvalidHashError -f $hash)
+                    -Message ($script:localizedData.InvalidHashError -f $hash)
             }
         }
     }

@@ -1,14 +1,12 @@
 $modulePath = Join-Path -Path (Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent) -ChildPath 'Modules'
 
-# Import the ADCS Deployment Resource Helper Module.
+# Import the ADCS Deployment Resource Common Module.
 Import-Module -Name (Join-Path -Path $modulePath `
-        -ChildPath (Join-Path -Path 'ActiveDirectoryCSDsc.ResourceHelper' `
-            -ChildPath 'ActiveDirectoryCSDsc.ResourceHelper.psm1'))
+        -ChildPath (Join-Path -Path 'ActiveDirectoryCSDsc.Common' `
+            -ChildPath 'ActiveDirectoryCSDsc.Common.psm1'))
 
 # Import Localization Strings.
-$LocalizedData = Get-LocalizedData `
-    -ResourceName 'MSFT_AdcsWebEnrollment' `
-    -ResourcePath (Split-Path -Parent $script:MyInvocation.MyCommand.Path)
+$script:localizedData = Get-LocalizedData -ResourceName 'MSFT_AdcsWebEnrollment'
 
 <#
     .SYNOPSIS
@@ -60,7 +58,7 @@ Function Get-TargetResource
 
     Write-Verbose -Message ( @(
             "$($MyInvocation.MyCommand): "
-            $($LocalizedData.GettingAdcsWebEnrollmentStatusMessage)
+            $($script:localizedData.GettingAdcsWebEnrollmentStatusMessage)
         ) -join '' )
 
     $adcsParameters = @{} + $PSBoundParameters
@@ -139,7 +137,7 @@ Function Set-TargetResource
 
     Write-Verbose -Message ( @(
             "$($MyInvocation.MyCommand): "
-            $($LocalizedData.SettingAdcsWebEnrollmentStatusMessage)
+            $($script:localizedData.SettingAdcsWebEnrollmentStatusMessage)
         ) -join '' )
 
     $adcsParameters = @{} + $PSBoundParameters
@@ -156,7 +154,7 @@ Function Set-TargetResource
         {
             Write-Verbose -Message ( @(
                     "$($MyInvocation.MyCommand): "
-                    $($LocalizedData.InstallingAdcsWebEnrollmentMessage)
+                    $($script:localizedData.InstallingAdcsWebEnrollmentMessage)
                 ) -join '' )
 
             $errorMessage = (Install-AdcsWebEnrollment @adcsParameters -Force).ErrorString
@@ -166,7 +164,7 @@ Function Set-TargetResource
         {
             Write-Verbose -Message ( @(
                     "$($MyInvocation.MyCommand): "
-                    $($LocalizedData.UninstallingAdcsWebEnrollmentMessage)
+                    $($script:localizedData.UninstallingAdcsWebEnrollmentMessage)
                 ) -join '' )
 
             $errorMessage = (Uninstall-AdcsWebEnrollment -Force).ErrorString
@@ -230,7 +228,7 @@ Function Test-TargetResource
 
     Write-Verbose -Message ( @(
             "$($MyInvocation.MyCommand): "
-            $($LocalizedData.TestingAdcsWebEnrollmentStatusMessage -f $CAConfig)
+            $($script:localizedData.TestingAdcsWebEnrollmentStatusMessage -f $CAConfig)
         ) -join '' )
 
     $adcsParameters = @{} + $PSBoundParameters
@@ -250,7 +248,7 @@ Function Test-TargetResource
                 # Web Enrollment is not installed but should be - change required
                 Write-Verbose -Message ( @(
                         "$($MyInvocation.MyCommand): "
-                        $($LocalizedData.AdcsWebEnrollmentNotInstalledButShouldBeMessage)
+                        $($script:localizedData.AdcsWebEnrollmentNotInstalledButShouldBeMessage)
                     ) -join '' )
 
                 return $false
@@ -261,7 +259,7 @@ Function Test-TargetResource
                 # Web Enrollment is not installed and should not be - change not required
                 Write-Verbose -Message ( @(
                         "$($MyInvocation.MyCommand): "
-                        $($LocalizedData.AdcsWebEnrollmentNotInstalledAndShouldNotBeMessage)
+                        $($script:localizedData.AdcsWebEnrollmentNotInstalledAndShouldNotBeMessage)
                     ) -join '' )
 
                 return $true
@@ -278,7 +276,7 @@ Function Test-TargetResource
                 # Web Enrollment is installed and should be - change not required
                 Write-Verbose -Message ( @(
                         "$($MyInvocation.MyCommand): "
-                        $($LocalizedData.AdcsWebEnrollmentInstalledAndShouldBeMessage)
+                        $($script:localizedData.AdcsWebEnrollmentInstalledAndShouldBeMessage)
                     ) -join '' )
 
                 return $true
@@ -289,7 +287,7 @@ Function Test-TargetResource
                 # Web Enrollment is installed and should not be - change required
                 Write-Verbose -Message ( @(
                         "$($MyInvocation.MyCommand): "
-                        $($LocalizedData.AdcsWebEnrollmentInstalledButShouldNotBeMessage)
+                        $($script:localizedData.AdcsWebEnrollmentInstalledButShouldNotBeMessage)
                     ) -join '' )
 
                 return $false

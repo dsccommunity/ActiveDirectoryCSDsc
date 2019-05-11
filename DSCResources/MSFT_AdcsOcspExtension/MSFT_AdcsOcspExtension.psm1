@@ -2,18 +2,11 @@ $modulePath = Join-Path -Path (Split-Path -Path (Split-Path -Path $PSScriptRoot 
 
 # Import the ADCS Deployment Resource Common Module.
 Import-Module -Name (Join-Path -Path $modulePath `
-        -ChildPath (Join-Path -Path 'ActiveDirectoryCSDsc.CommonHelper' `
-            -ChildPath 'ActiveDirectoryCSDsc.CommonHelper.psm1'))
-
-# Import the ADCS Deployment Resource Helper Module.
-Import-Module -Name (Join-Path -Path $modulePath `
-        -ChildPath (Join-Path -Path 'ActiveDirectoryCSDsc.ResourceHelper' `
-            -ChildPath 'ActiveDirectoryCSDsc.ResourceHelper.psm1'))
+        -ChildPath (Join-Path -Path 'ActiveDirectoryCSDsc.Common' `
+            -ChildPath 'ActiveDirectoryCSDsc.Common.psm1'))
 
 # Import Localization Strings.
-$LocalizedData = Get-LocalizedData `
-    -ResourceName 'MSFT_AdcsOcspExtension' `
-    -ResourcePath (Split-Path -Parent $script:MyInvocation.MyCommand.Path)
+$script:localizedData = Get-LocalizedData -ResourceName 'MSFT_AdcsOcspExtension'
 
 <#
     .SYNOPSIS
@@ -57,7 +50,7 @@ function Get-TargetResource
         $Ensure = 'Present'
     )
 
-    Write-Verbose -Message $localizedData.GetOcspUriPaths
+    Write-Verbose -Message $script:localizedData.GetOcspUriPaths
 
     [System.Array] $currentOcspUriPathList = (Get-CAAuthorityInformationAccess).Where( {
         $_.AddToCertificateOcsp -eq $true
@@ -117,13 +110,13 @@ function Set-TargetResource
     {
         foreach ($oldField in $currentState.OcspUriPath)
         {
-            Write-Verbose -Message ($localizedData.RemoveOcspUriPaths -f $oldField)
+            Write-Verbose -Message ($script:localizedData.RemoveOcspUriPaths -f $oldField)
             Remove-CAAuthorityInformationAccess -Uri $oldField -Force -ErrorAction Stop
         }
 
         foreach ($newField in $OcspUriPath)
         {
-            Write-Verbose -Message ($localizedData.AddOcspUriPaths -f $newField)
+            Write-Verbose -Message ($script:localizedData.AddOcspUriPaths -f $newField)
             Add-CAAuthorityInformationAccess -Uri $newField -AddToCertificateOcsp -Force -ErrorAction Stop
         }
     }
@@ -131,14 +124,14 @@ function Set-TargetResource
     {
         foreach ($field in $OcspUriPath)
         {
-            Write-Verbose -Message ($localizedData.RemoveOcspUriPaths -f $field)
+            Write-Verbose -Message ($script:localizedData.RemoveOcspUriPaths -f $field)
             Remove-CAAuthorityInformationAccess -Uri $field -Force -ErrorAction Stop
         }
     }
 
     if ($RestartService)
     {
-        Write-Verbose -Message $localizedData.RestartService
+        Write-Verbose -Message $script:localizedData.RestartService
         Restart-ServiceIfExists -Name CertSvc
     }
 }
@@ -209,13 +202,13 @@ function Test-TargetResource
 
                 if ($desiredOcspUriPathsMissing)
                 {
-                    Write-Verbose -Message ($localizedData.DesiredOcspPathsMissing -f $desiredOcspUriPathsMissing)
+                    Write-Verbose -Message ($script:localizedData.DesiredOcspPathsMissing -f $desiredOcspUriPathsMissing)
                     $inDesiredState = $false
                 }
 
                 if ($notDesiredOcspUriPathsFound)
                 {
-                    Write-Verbose -Message ($localizedData.AdditionalOcspPathsFound -f $notDesiredOcspUriPathsFound)
+                    Write-Verbose -Message ($script:localizedData.AdditionalOcspPathsFound -f $notDesiredOcspUriPathsFound)
                     $inDesiredState = $false
                 }
             }
@@ -223,7 +216,7 @@ function Test-TargetResource
             {
                 $ocspUriPathList = $OcspUriPath -join ', '
 
-                Write-Verbose -Message ($localizedData.OcspPathsNull -f $ocspUriPathList)
+                Write-Verbose -Message ($script:localizedData.OcspPathsNull -f $ocspUriPathList)
                 $inDesiredState = $false
             }
         }
@@ -232,7 +225,7 @@ function Test-TargetResource
         {
             if ($uri -notin $OcspUriPath)
             {
-                Write-Verbose -Message ($localizedData.IncorrectOcspUriFound -f $uri)
+                Write-Verbose -Message ($script:localizedData.IncorrectOcspUriFound -f $uri)
                 $inDesiredState = $false
             }
         }
@@ -243,7 +236,7 @@ function Test-TargetResource
         {
             if ($uri -in $currentState.OcspUriPath)
             {
-                Write-Verbose -Message ($localizedData.EnsureAbsentButUriPathsExist -f $uri)
+                Write-Verbose -Message ($script:localizedData.EnsureAbsentButUriPathsExist -f $uri)
                 $inDesiredState = $false
             }
         }
