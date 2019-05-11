@@ -516,7 +516,7 @@ function Test-Thumbprint
             else
             {
                 New-InvalidOperationException `
-                    -Message ($script:localizedData.InvalidHashError -f $hash)
+                    -Message ($script:localizedData.InvalidHashAlgorithmErrorMessage -f $hash)
             }
         }
     }
