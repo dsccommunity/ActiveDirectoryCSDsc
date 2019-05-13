@@ -480,8 +480,6 @@ function New-NotImplementedException
     throw $errorRecordToThrow
 }
 
-$script:localizedData = Get-LocalizedData -ResourceName 'ActiveDirectoryCSDsc.Common' -ScriptRoot $PSScriptRoot
-
 <#
     .SYNOPSIS
         Restarts a System Service
@@ -512,6 +510,8 @@ function Restart-ServiceIfExists
         Write-Verbose -Message ($script:localizedData.UnknownService -f $Name) -Verbose
     }
 }
+
+$script:localizedData = Get-LocalizedData -ResourceName 'ActiveDirectoryCSDsc.Common' -ScriptRoot $PSScriptRoot
 
 Export-ModuleMember -Function @(
     'Test-DscParameterState',
