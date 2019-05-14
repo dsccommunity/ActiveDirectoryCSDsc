@@ -3,6 +3,11 @@
 ## Unreleased
 
 - Remove reference to StorageDsc in README.md - fixes [Issue #76](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/76).
+- Combined all `ActiveDirectoryCSDsc.ResourceHelper` module functions into
+  `ActiveDirectoryCSDsc.Common` module and renamed to `ActiveDirectoryCSDsc.CommonHelper`
+  module.
+- Opted into Common Tests 'Common Tests - Validate Localization' -
+  fixes [Issue #82](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/82).
 
 ## 3.2.0.0
 
