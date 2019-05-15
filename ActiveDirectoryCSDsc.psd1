@@ -1,6 +1,6 @@
 @{
     # Version number of this module.
-    moduleVersion = '3.2.0.0'
+    moduleVersion = '3.3.0.0'
 
     # ID used to uniquely identify this module
     GUID              = 'f8ddd7fc-c6d6-469e-8a80-c96efabe2fcc'
@@ -62,26 +62,16 @@
             # IconUri = ''
 
             # ReleaseNotes of this module
-        ReleaseNotes = '- Added "DscResourcesToExport" to manifest to improve information in
-  PowerShell Gallery - fixes [Issue 68](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/68).
-- Removed unused CAType variables and references in AdcsOnlineResponder - fixes
-  [issue 52](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/52).
-- Updated Examples to enable publising to PowerShell Gallery - fixes
-  [issue 54](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/54).
-- Cleaned up property alignment in module manifest file.
-- Added new resource AdcsOcspExtension - see [Issue 70](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/70).
-  - Added new ActiveDirectoryCSDsc.CommonHelper.psm1 helper module and unit test.
-  - Added stub function to /Tests/TestHelpers (ADCSStub.psm1) so Pester tests
-    can run without having to install ADCSAdministration module.
-- Converted module to auto-documentation Wiki - fixes [Issue 53](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/53).
-- Enabled Example publishing to PSGallery.
-- Moved change log to CHANGELOG.MD.
-- Opted into Common Tests "Validate Example Files To Be Published",
-  "Validate Markdown Links" and "Relative Path Length".
-- Correct AppVeyor `Invoke-AppveyorAfterTestTask` - fixes [Issue 73](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/73).
+        ReleaseNotes = '- Remove reference to StorageDsc in README.md - fixes [Issue 76](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/76).
+- Combined all `ActiveDirectoryCSDsc.ResourceHelper` module functions into
+  `ActiveDirectoryCSDsc.Common` module and renamed to `ActiveDirectoryCSDsc.CommonHelper`
+  module.
+- Opted into Common Tests "Common Tests - Validate Localization" -
+  fixes [Issue 82](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/82).
 
 '
         } # End of PSData hashtable
     } # End of PrivateData hashtable
 }
+
 
