@@ -14,4 +14,5 @@ ConvertFrom-StringData @'
     AdcsEnrollmentPolicyWebServiceInstallIsInstalledMessage = ADCS Enrollment Policy Web Service with authentication mode '{0}' and key based renewal is '{1}' is installed.
     AdcsEnrollmentPolicyWebServiceInstallIsNotInstalledMessage = ADCS Enrollment Policy Web Service with authentication mode '{0}' and key based renewal is '{1}' is not installed.
     AdcsEnrollmentPolicyWebServiceErrorMessage = An installation/uninstallation error occured: {0}
+    InvalidHashAlgorithmErrorMessage = '{0}' is not a valid hash.
 '@

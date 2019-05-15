@@ -1,14 +1,12 @@
 $modulePath = Join-Path -Path (Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent) -ChildPath 'Modules'
 
-# Import the ADCS Deployment Resource Helper Module.
+# Import the ADCS Deployment Resource Common Module.
 Import-Module -Name (Join-Path -Path $modulePath `
-        -ChildPath (Join-Path -Path 'ActiveDirectoryCSDsc.ResourceHelper' `
-            -ChildPath 'ActiveDirectoryCSDsc.ResourceHelper.psm1'))
+        -ChildPath (Join-Path -Path 'ActiveDirectoryCSDsc.Common' `
+            -ChildPath 'ActiveDirectoryCSDsc.Common.psm1'))
 
 # Import Localization Strings.
-$LocalizedData = Get-LocalizedData `
-    -ResourceName 'MSFT_AdcsCertificationAuthority' `
-    -ResourcePath (Split-Path -Parent $script:MyInvocation.MyCommand.Path)
+$script:localizedData = Get-LocalizedData -ResourceName 'MSFT_AdcsCertificationAuthority'
 
 <#
     .SYNOPSIS
@@ -203,7 +201,7 @@ Function Get-TargetResource
 
     Write-Verbose -Message ( @(
             "$($MyInvocation.MyCommand): "
-            $($LocalizedData.GettingAdcsCAStatusMessage -f $CAType)
+            $($script:localizedData.GettingAdcsCAStatusMessage -f $CAType)
         ) -join '' )
 
     $adcsParameters = @{} + $PSBoundParameters
@@ -431,7 +429,7 @@ Function Set-TargetResource
 
     Write-Verbose -Message ( @(
             "$($MyInvocation.MyCommand): "
-            $($LocalizedData.SettingAdcsCAStatusMessage -f $CAType)
+            $($script:localizedData.SettingAdcsCAStatusMessage -f $CAType)
         ) -join '' )
 
     $adcsParameters = @{} + $PSBoundParameters
@@ -453,7 +451,7 @@ Function Set-TargetResource
         {
             Write-Verbose -Message ( @(
                     "$($MyInvocation.MyCommand): "
-                    $($LocalizedData.InstallingAdcsCAMessage -f $CAType)
+                    $($script:localizedData.InstallingAdcsCAMessage -f $CAType)
                 ) -join '' )
 
             $resultObject = Install-AdcsCertificationAuthority @adcsParameters -Force
@@ -470,7 +468,7 @@ Function Set-TargetResource
         {
             Write-Verbose -Message ( @(
                     "$($MyInvocation.MyCommand): "
-                    $($LocalizedData.UninstallingAdcsCAMessage -f $CAType)
+                    $($script:localizedData.UninstallingAdcsCAMessage -f $CAType)
                 ) -join '' )
 
             $resultObject = Uninstall-AdcsCertificationAuthority -Force
@@ -676,7 +674,7 @@ Function Test-TargetResource
 
     Write-Verbose -Message ( @(
             "$($MyInvocation.MyCommand): "
-            $($LocalizedData.TestingAdcsCAStatusMessage -f $CAType)
+            $($script:localizedData.TestingAdcsCAStatusMessage -f $CAType)
         ) -join '' )
 
     $adcsParameters = @{} + $PSBoundParameters
@@ -701,7 +699,7 @@ Function Test-TargetResource
                 # CA is not installed but should be - change required
                 Write-Verbose -Message ( @(
                         "$($MyInvocation.MyCommand): "
-                        $($LocalizedData.AdcsCANotInstalledButShouldBeMessage -f $CAType)
+                        $($script:localizedData.AdcsCANotInstalledButShouldBeMessage -f $CAType)
                     ) -join '' )
 
                 return $false
@@ -712,7 +710,7 @@ Function Test-TargetResource
                 # CA is not installed and should not be - change not required
                 Write-Verbose -Message ( @(
                         "$($MyInvocation.MyCommand): "
-                        $($LocalizedData.AdcsCANotInstalledAndShouldNotBeMessage -f $CAType)
+                        $($script:localizedData.AdcsCANotInstalledAndShouldNotBeMessage -f $CAType)
                     ) -join '' )
 
                 return $true
@@ -729,7 +727,7 @@ Function Test-TargetResource
                 # CA is installed and should be - change not required
                 Write-Verbose -Message ( @(
                         "$($MyInvocation.MyCommand): "
-                        $($LocalizedData.AdcsCAInstalledAndShouldBeMessage -f $CAType)
+                        $($script:localizedData.AdcsCAInstalledAndShouldBeMessage -f $CAType)
                     ) -join '' )
 
                 return $true
@@ -740,7 +738,7 @@ Function Test-TargetResource
                 # CA is installed and should not be - change required
                 Write-Verbose -Message ( @(
                         "$($MyInvocation.MyCommand): "
-                        $($LocalizedData.AdcsCAInstalledButShouldNotBeMessage -f $CAType)
+                        $($script:localizedData.AdcsCAInstalledButShouldNotBeMessage -f $CAType)
                     ) -join '' )
 
                 return $false
