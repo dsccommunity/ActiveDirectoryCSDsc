@@ -106,11 +106,11 @@ Function Set-TargetResource
                     $($script:localizedData.AddingAdcsTemplateMessage -f $Name)
                 ) -join '' )
 
-            Try
+            try
             {
                 Add-CATemplate -Name $Name -Verbose:$false
             }
-            Catch
+            catch
             {
                 New-InvalidOperationException -Message $($script:localizedData.InvalidOperationAddingAdcsTemplateMessage -f $Name) -ErrorRecord $_
             }
