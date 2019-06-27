@@ -27,12 +27,7 @@ Function Get-TargetResource
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $Name,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present'
+        $Name
     )
 
     Write-Verbose -Message ( @(
@@ -40,21 +35,21 @@ Function Get-TargetResource
             $($script:localizedData.GettingAdcsTemplateStatusMessage -f $Name)
         ) -join '' )
 
-    Try
+    try
     {
-        $CATemplate = Get-CATemplate -Verbose:$false | Where-Object Name -eq $Name
+        $CATemplate = Get-CATemplate -Verbose:$false | Where-Object -Property Name -eq $Name
     }
-    Catch
+    catch
     {
         New-InvalidOperationException -Message $script:localizedData.InvalidOperationGettingAdcsTemplateMessage -ErrorRecord $_
     }
 
-    If ($CATemplate)
+    if ($CATemplate)
     {
         # Template is added
         $Ensure = 'Present'
     }
-    Else
+    else
     {
         # Template is removed
         $Ensure = 'Absent'
@@ -170,12 +165,12 @@ Function Test-TargetResource
             $($script:localizedData.TestingAdcsTemplateStatusMessage -f $Name)
         ) -join '' )
 
-    $Result = Get-TargetResource -Name $Name  -Ensure $Ensure
-    Switch ($Ensure)
+    $currentState = Get-TargetResource -Name $Name
+    switch ($Ensure)
     {
         'Present'
         {
-            Switch ($Result.Ensure)
+            switch ($currentState.Ensure)
             {
                 'Present'
                 {
@@ -201,7 +196,7 @@ Function Test-TargetResource
         }
         'Absent'
         {
-            Switch ($Result.Ensure)
+            switch ($currentState.Ensure)
             {
                 'Present'
                 {

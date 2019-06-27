@@ -22,8 +22,7 @@ $TestEnvironment = Initialize-TestEnvironment `
 Try
 {
     InModuleScope $script:DSCResourceName {
-
-        $MockTemplateList = @(
+        $mockTemplateList = @(
             @{
                 Name = 'User'
                 Oid  = '1.3.6.1.4.1.311.21.8.8499410.11380151.15942274.9578998.10586356.49.1.1'
@@ -34,30 +33,28 @@ Try
             }
             @{
                 Name = 'DomainControllerAuthentication'
-                Oid = '1.3.6.1.4.1.311.21.8.8499410.11380151.15942274.9578998.10586356.49.1.28'
+                Oid  = '1.3.6.1.4.1.311.21.8.8499410.11380151.15942274.9578998.10586356.49.1.28'
             }
             @{
                 Name = 'KerberosAuthentication'
-                Oid = '1.3.6.1.4.1.311.21.8.8499410.11380151.15942274.9578998.10586356.49.1.33'
+                Oid  = '1.3.6.1.4.1.311.21.8.8499410.11380151.15942274.9578998.10586356.49.1.33'
             }
         )
 
         $testTemplatePresent = @{
-            Name   = 'User'
-            Ensure = 'Present'
+            Name = 'User'
         }
 
         $testTemplateNotPresent = @{
-            Name   = 'EFS'
+            Name = 'EFS'
+        }
+
+        $mockGetTemplatePresent = @{
+            Name   = 'User'
             Ensure = 'Present'
         }
 
-        $testTemplateNotAbsent = @{
-            Name   = 'User'
-            Ensure = 'Absent'
-        }
-
-        $testTemplateAbsent = @{
+        $mockGetTemplateNotPresent = @{
             Name   = 'EFS'
             Ensure = 'Absent'
         }
@@ -65,8 +62,7 @@ Try
         function Get-CATemplate
         {
             [CmdletBinding()]
-            param
-            ()
+            param ()
         }
 
         function Add-CATemplate
@@ -95,9 +91,9 @@ Try
             )
         }
 
-        Describe "$DSCResourceName\Get-TargetResource" {
+        Describe 'MSFT_AdcsTemplate\Get-TargetResource' {
             Context 'Template is installed' {
-                Mock -CommandName Get-CATemplate -MockWith { $MockTemplateList }
+                Mock -CommandName Get-CATemplate -MockWith { $mockTemplateList }
 
                 $result = Get-TargetResource @testTemplatePresent
 
@@ -116,7 +112,7 @@ Try
             }
 
             Context 'Template is not installed' {
-                Mock -CommandName Get-CATemplate -MockWith { $MockTemplateList }
+                Mock -CommandName Get-CATemplate -MockWith { $mockTemplateList }
 
                 $result = Get-TargetResource @testTemplateNotPresent
 
@@ -131,10 +127,21 @@ Try
                         -Times 1
                 }
             }
+
+            Context 'Get-CATemplate throws an exception' {
+                Mock -CommandName Get-CATemplate -MockWith { throw }
+
+                It 'Should throw the correct error' {
+                    $errorRecord = Get-InvalidOperationRecord `
+                        -Message $script:localizedData.InvalidOperationGettingAdcsTemplateMessage
+                    { Get-TargetResource @testTemplatePresent } | Should -Throw $errorRecord
+                }
+            }
         }
-        Describe "$DSCResourceName\Set-TargetResource" {
+
+        Describe 'MSFT_AdcsTemplate\Set-TargetResource' {
             Context 'Template is not added but should be' {
-                Mock -CommandName Add-CATemplate -MockWith { }
+                Mock -CommandName Add-CATemplate
 
                 It 'Should not throw an exception' {
                     { Set-TargetResource @testTemplateNotPresent } | Should Not Throw
@@ -143,31 +150,54 @@ Try
                 It 'Should call expected mock' {
                     Assert-MockCalled `
                         -CommandName Add-CATemplate `
+                        -ParameterFilter { $Name -eq $testTemplateNotPresent.Name } `
                         -Exactly `
                         -Times 1
                 }
-            }
 
-            Context 'Template is added but should not be' {
-                Mock -CommandName Remove-CATemplate -MockWith { }
+                Context 'Add-CATemplate throws an exception' {
+                    Mock -CommandName Add-CATemplate -MockWith { throw }
 
-                It 'Should not throw an exception' {
-                    { Set-TargetResource @testTemplateNotAbsent } | Should Not Throw
+                    It 'Should throw the correct error' {
+                        $errorRecord = Get-InvalidOperationRecord `
+                            -Message ($script:localizedData.InvalidOperationAddingAdcsTemplateMessage -f $testTemplateNotPresent.Name)
+                        { Set-TargetResource @testTemplateNotPresent } | Should -Throw $errorRecord
+                    }
                 }
 
-                It 'Should call expected mock' {
-                    Assert-MockCalled `
-                        -CommandName Remove-CATemplate `
-                        -Exactly `
-                        -Times 1
+                Context 'Template is added but should not be' {
+                    Mock -CommandName Remove-CATemplate
+
+                    It 'Should not throw an exception' {
+                        { Set-TargetResource @testTemplatePresent -Ensure 'Absent' } | Should Not Throw
+                    }
+
+                    It 'Should call expected mock' {
+                        Assert-MockCalled `
+                            -CommandName Remove-CATemplate `
+                            -ParameterFilter { $Name -eq $testTemplatePresent.Name } `
+                            -Exactly `
+                            -Times 1
+                    }
+                }
+
+                Context 'Remove-CATemplate throws an exception' {
+                    Mock -CommandName Remove-CATemplate -MockWith { throw }
+
+                    It 'Should throw the correct error' {
+                        $errorRecord = Get-InvalidOperationRecord `
+                            -Message ($script:localizedData.InvalidOperationRemovingAdcsTemplateMessage -f $testTemplatePresent.Name)
+                        { Set-TargetResource @testTemplatePresent -Ensure 'Absent' } | Should -Throw $errorRecord
+                    }
                 }
             }
         }
-        Describe "$DSCResourceName\Test-TargetResource" {
-            Context 'Template is added and should be' {
-                Mock -CommandName Get-CATemplate -MockWith { $MockTemplateList }
 
-                $result = Test-TargetResource @testTemplatePresent
+        Describe 'MSFT_AdcsTemplate\Test-TargetResource' {
+            Context 'Template is added and should be' {
+                Mock -CommandName Get-TargetResource -MockWith { $mockGetTemplatePresent }
+
+                $result = Test-TargetResource @testTemplatePresent -Ensure 'Present'
 
                 It 'Should return true' {
                     $result | Should -Be $true
@@ -175,16 +205,17 @@ Try
 
                 It 'Should call expected mock' {
                     Assert-MockCalled `
-                        -CommandName Get-CATemplate `
+                        -CommandName Get-TargetResource `
+                        -ParameterFilter { $Name -eq $testTemplatePresent.Name } `
                         -Exactly `
                         -Times 1
                 }
             }
 
             Context 'Template is added and should not be' {
-                Mock -CommandName Get-CATemplate -MockWith { $MockTemplateList }
+                Mock -CommandName Get-TargetResource -MockWith { $mockGetTemplatePresent }
 
-                $result = Test-TargetResource @testTemplateNotAbsent
+                $result = Test-TargetResource @testTemplatePresent -Ensure 'Absent'
 
                 It 'Should return false' {
                     $result | Should -Be $false
@@ -192,16 +223,17 @@ Try
 
                 It 'Should call expected mock' {
                     Assert-MockCalled `
-                        -CommandName Get-CATemplate `
+                        -CommandName Get-TargetResource `
+                        -ParameterFilter { $Name -eq $testTemplatePresent.Name } `
                         -Exactly `
                         -Times 1
                 }
             }
 
             Context 'Template is not added and should be' {
-                Mock -CommandName Get-CATemplate -MockWith { $MockTemplateList }
+                Mock -CommandName Get-TargetResource -MockWith { $mockGetTemplateNotPresent }
 
-                $result = Test-TargetResource @testTemplateNotPresent
+                $result = Test-TargetResource @testTemplateNotPresent -Ensure 'Present'
 
                 It 'Should return false' {
                     $result | Should -Be $false
@@ -209,16 +241,17 @@ Try
 
                 It 'Should call expected mock' {
                     Assert-MockCalled `
-                        -CommandName Get-CATemplate `
+                        -CommandName Get-TargetResource `
+                        -ParameterFilter { $Name -eq $testTemplateNotPresent.Name } `
                         -Exactly `
                         -Times 1
                 }
             }
 
             Context 'Template is not added and should not be' {
-                Mock -CommandName Get-CATemplate -MockWith { $MockTemplateList }
+                Mock -CommandName Get-TargetResource -MockWith { $MockGetTemplateNotPresent }
 
-                $result = Test-TargetResource @testTemplateAbsent
+                $result = Test-TargetResource @testTemplateNotPresent -Ensure 'Absent'
 
                 It 'Should return true' {
                     $result | Should -Be $true
@@ -226,7 +259,8 @@ Try
 
                 It 'Should call expected mock' {
                     Assert-MockCalled `
-                        -CommandName Get-CATemplate `
+                        -CommandName Get-TargetResource `
+                        -ParameterFilter { $Name -eq $testTemplateNotPresent.Name } `
                         -Exactly `
                         -Times 1
                 }

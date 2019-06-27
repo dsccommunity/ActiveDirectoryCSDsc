@@ -1,6 +1,6 @@
 <#PSScriptInfo
 .VERSION 1.0.0
-.GUID 4f057a4f-0d4a-4d1f-aaf1-8080718428e0
+.GUID ddda54a8-0c1c-437b-b14a-371f39e7fd95
 .AUTHOR Microsoft Corporation
 .COMPANYNAME Microsoft Corporation
 .COPYRIGHT
@@ -19,7 +19,7 @@
 
 <#
     .DESCRIPTION
-        This example will remove the DomainController CA Template from the server
+        This example will remove the DomainController CA Template from the server.
 #>
 Configuration AdcsTemplate_RemoveTemplate_Config
 {
@@ -29,7 +29,7 @@ Configuration AdcsTemplate_RemoveTemplate_Config
     {
         AdcsTemplate DomainController
         {
-            Name   = "DomainController"
+            Name   = 'DomainController'
             Ensure = 'Absent'
         }
     }

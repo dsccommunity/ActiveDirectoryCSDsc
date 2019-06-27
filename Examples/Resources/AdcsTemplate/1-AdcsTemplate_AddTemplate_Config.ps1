@@ -1,6 +1,6 @@
 <#PSScriptInfo
 .VERSION 1.0.0
-.GUID 4f057a4f-0d4a-4d1f-aaf1-8080718428e0
+.GUID 4c6ccc96-2660-4689-98b4-37eed05fad89
 .AUTHOR Microsoft Corporation
 .COMPANYNAME Microsoft Corporation
 .COPYRIGHT
@@ -19,7 +19,7 @@
 
 <#
     .DESCRIPTION
-        This example will add the KerberosAuthentication CA Template to the server
+        This example will add the KerberosAuthentication CA Template to the server.
 #>
 Configuration AdcsTemplate_AddTemplate_Config
 {
@@ -29,7 +29,7 @@ Configuration AdcsTemplate_AddTemplate_Config
     {
         AdcsTemplate KerberosAuthentication
         {
-            Name   = "KerberosAuthentication"
+            Name   = 'KerberosAuthentication'
             Ensure = 'Present'
         }
     }
