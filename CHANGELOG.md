@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Added new resource AdcsTemplate
+
 ## 3.3.0.0
 
 - Remove reference to StorageDsc in README.md - fixes [Issue #76](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/76).
