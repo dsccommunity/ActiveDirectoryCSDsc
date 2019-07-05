@@ -5,6 +5,7 @@
 - Added new resource AdcsTemplate.
 - Replaced `switch` blocks with `if` blocks for evaluating 'Ensure' parameter
   because switch was missing `break` - fixes [Issue #87](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/87).
+- Added Comment Based Help for `New-NotImplementedException` common function.
 
 ## 3.3.0.0
 
