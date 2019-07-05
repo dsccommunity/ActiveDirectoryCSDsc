@@ -1,5 +1,3 @@
-$script:modulesFolderPath = Split-Path -Path $PSScriptRoot -Parent
-
 <#
     .SYNOPSIS
         This method is used to compare current and desired values for any DSC resource.
