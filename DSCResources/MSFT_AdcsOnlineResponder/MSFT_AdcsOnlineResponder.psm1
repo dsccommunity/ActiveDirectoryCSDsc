@@ -74,7 +74,7 @@ Function Get-TargetResource
     catch
     {
         # Something else went wrong
-        Throw $_
+        throw $_
     }
 
     return @{
@@ -262,7 +262,7 @@ Function Test-TargetResource
     catch
     {
         # Something else went wrong
-        Throw $_
+        throw $_
     } # try
 } # Function Test-TargetResource
 
