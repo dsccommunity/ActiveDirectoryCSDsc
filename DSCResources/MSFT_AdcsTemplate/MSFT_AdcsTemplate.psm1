@@ -92,42 +92,38 @@ Function Set-TargetResource
             $($script:localizedData.SettingAdcsTemplateStatusMessage -f $Name)
         ) -join '' )
 
-    switch ($Ensure)
+    if ($Ensure -eq 'Present')
     {
-        'Present'
+        Write-Verbose -Message ( @(
+                "$($MyInvocation.MyCommand): "
+                $($script:localizedData.AddingAdcsTemplateMessage -f $Name)
+            ) -join '' )
+
+        try
         {
-            Write-Verbose -Message ( @(
-                    "$($MyInvocation.MyCommand): "
-                    $($script:localizedData.AddingAdcsTemplateMessage -f $Name)
-                ) -join '' )
-
-            try
-            {
-                Add-CATemplate -Name $Name -Verbose:$false
-            }
-            catch
-            {
-                New-InvalidOperationException -Message $($script:localizedData.InvalidOperationAddingAdcsTemplateMessage -f $Name) -ErrorRecord $_
-            }
+            Add-CATemplate -Name $Name -Verbose:$false
         }
-
-        'Absent'
+        catch
         {
-            Write-Verbose -Message ( @(
-                    "$($MyInvocation.MyCommand): "
-                    $($script:localizedData.RemovingAdcsTemplateMessage -f $Name)
-                ) -join '' )
-
-            try
-            {
-                Remove-CATemplate -Name $Name -Force -Verbose:$false
-            }
-            catch
-            {
-                New-InvalidOperationException -Message $($script:localizedData.InvalidOperationRemovingAdcsTemplateMessage -f $Name) -ErrorRecord $_
-            }
+            New-InvalidOperationException -Message $($script:localizedData.InvalidOperationAddingAdcsTemplateMessage -f $Name) -ErrorRecord $_
         }
-    } # switch
+    }
+    else
+    {
+        Write-Verbose -Message ( @(
+                "$($MyInvocation.MyCommand): "
+                $($script:localizedData.RemovingAdcsTemplateMessage -f $Name)
+            ) -join '' )
+
+        try
+        {
+            Remove-CATemplate -Name $Name -Force -Verbose:$false
+        }
+        catch
+        {
+            New-InvalidOperationException -Message $($script:localizedData.InvalidOperationRemovingAdcsTemplateMessage -f $Name) -ErrorRecord $_
+        }
+    }
 } # Function Set-TargetResource
 
 <#
@@ -166,59 +162,50 @@ Function Test-TargetResource
         ) -join '' )
 
     $currentState = Get-TargetResource -Name $Name
-    switch ($Ensure)
+    if ($Ensure -eq 'Present')
     {
-        'Present'
+        if ($currentState.Ensure -eq 'Present')
         {
-            switch ($currentState.Ensure)
-            {
-                'Present'
-                {
-                    # CA Template is added and should be - change not required
-                    Write-Verbose -Message ( @(
-                            "$($MyInvocation.MyCommand): "
-                            $($script:localizedData.AdcsTemplateAddedAndShouldBeMessage -f $Name)
-                        ) -join '' )
+            # CA Template is added and should be - change not required
+            Write-Verbose -Message ( @(
+                    "$($MyInvocation.MyCommand): "
+                    $($script:localizedData.AdcsTemplateAddedAndShouldBeMessage -f $Name)
+                ) -join '' )
 
-                    return $true
-                }
-                'Absent'
-                {
-                    # CA Template is not added but should be - change required
-                    Write-Verbose -Message ( @(
-                            "$($MyInvocation.MyCommand): "
-                            $($script:localizedData.AdcsTemplateNotAddedButShouldBeMessage -f $Name)
-                        ) -join '' )
-
-                    return $false
-                }
-            }
+            return $true
         }
-        'Absent'
+        else
         {
-            switch ($currentState.Ensure)
-            {
-                'Present'
-                {
-                    # CA Template is installed and should not be - change required
-                    Write-Verbose -Message ( @(
-                            "$($MyInvocation.MyCommand): "
-                            $($script:localizedData.AdcsTemplateAddedButShouldNotBeMessage -f $Name)
-                        ) -join '' )
+            # CA Template is not added but should be - change required
+            Write-Verbose -Message ( @(
+                    "$($MyInvocation.MyCommand): "
+                    $($script:localizedData.AdcsTemplateNotAddedButShouldBeMessage -f $Name)
+                ) -join '' )
 
-                    return $false
-                }
-                'Absent'
-                {
-                    # CA Template is not added and should not be - change not required
-                    Write-Verbose -Message ( @(
-                            "$($MyInvocation.MyCommand): "
-                            $($script:localizedData.AdcsTemplateNotAddedAndShouldNotBeMessage -f $Name)
-                        ) -join '' )
+            return $false
+        }
+    }
+    else
+    {
+        if ($currentState.Ensure -eq 'Present')
+        {
+            # CA Template is installed and should not be - change required
+            Write-Verbose -Message ( @(
+                    "$($MyInvocation.MyCommand): "
+                    $($script:localizedData.AdcsTemplateAddedButShouldNotBeMessage -f $Name)
+                ) -join '' )
 
-                    return $true
-                }
-            }
+            return $false
+        }
+        else
+        {
+            # CA Template is not added and should not be - change not required
+            Write-Verbose -Message ( @(
+                    "$($MyInvocation.MyCommand): "
+                    $($script:localizedData.AdcsTemplateNotAddedAndShouldNotBeMessage -f $Name)
+                ) -join '' )
+
+            return $true
         }
     }
 } # Function Test-TargetResource

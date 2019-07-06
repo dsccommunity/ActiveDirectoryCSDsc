@@ -229,7 +229,7 @@ Function Get-TargetResource
     catch
     {
         # Something else went wrong
-        Throw $_
+        throw $_
     }
 
     return @{
@@ -445,35 +445,31 @@ Function Set-TargetResource
         $adcsParameters['CertFilePassword'] = $CertFilePassword.Password
     }
 
-    switch ($Ensure)
+    if ($Ensure -eq 'Present')
     {
-        'Present'
+        Write-Verbose -Message ( @(
+                "$($MyInvocation.MyCommand): "
+                $($script:localizedData.InstallingAdcsCAMessage -f $CAType)
+            ) -join '' )
+
+        $resultObject = Install-AdcsCertificationAuthority @adcsParameters -Force
+
+        # when a multi-tier ADCS is installed ErrorId 398 is returned, but is only a warning and can be safely ignored
+        if (($resultObject.ErrorId -eq 398) -or ($resultObject.ErrorString -like "*The Active Directory Certificate Services installation is incomplete*"))
         {
-            Write-Verbose -Message ( @(
-                    "$($MyInvocation.MyCommand): "
-                    $($script:localizedData.InstallingAdcsCAMessage -f $CAType)
-                ) -join '' )
-
-            $resultObject = Install-AdcsCertificationAuthority @adcsParameters -Force
-
-            # when a multi-tier ADCS is installed ErrorId 398 is returned, but is only a warning and can be safely ignored
-            if (($resultObject.ErrorId -eq 398) -or ($resultObject.ErrorString -like "*The Active Directory Certificate Services installation is incomplete*"))
-            {
-                Write-Warning -Message $resultObject.ErrorString
-                $resultObject = $Null
-            }
+            Write-Warning -Message $resultObject.ErrorString
+            $resultObject = $Null
         }
+    }
+    else
+    {
+        Write-Verbose -Message ( @(
+                "$($MyInvocation.MyCommand): "
+                $($script:localizedData.UninstallingAdcsCAMessage -f $CAType)
+            ) -join '' )
 
-        'Absent'
-        {
-            Write-Verbose -Message ( @(
-                    "$($MyInvocation.MyCommand): "
-                    $($script:localizedData.UninstallingAdcsCAMessage -f $CAType)
-                ) -join '' )
-
-            $resultObject = Uninstall-AdcsCertificationAuthority -Force
-        }
-    } # switch
+        $resultObject = Uninstall-AdcsCertificationAuthority -Force
+    }
 
     if (-not [System.String]::IsNullOrEmpty($resultObject.ErrorString))
     {
@@ -692,63 +688,55 @@ Function Test-TargetResource
     {
         $null = Install-AdcsCertificationAuthority @adcsParameters -WhatIf
         # CA is not installed
-        switch ($Ensure)
+        if ($Ensure -eq 'Present')
         {
-            'Present'
-            {
-                # CA is not installed but should be - change required
-                Write-Verbose -Message ( @(
-                        "$($MyInvocation.MyCommand): "
-                        $($script:localizedData.AdcsCANotInstalledButShouldBeMessage -f $CAType)
-                    ) -join '' )
+            # CA is not installed but should be - change required
+            Write-Verbose -Message ( @(
+                    "$($MyInvocation.MyCommand): "
+                    $($script:localizedData.AdcsCANotInstalledButShouldBeMessage -f $CAType)
+                ) -join '' )
 
-                return $false
-            }
+            return $false
+        }
+        else
+        {
+            # CA is not installed and should not be - change not required
+            Write-Verbose -Message ( @(
+                    "$($MyInvocation.MyCommand): "
+                    $($script:localizedData.AdcsCANotInstalledAndShouldNotBeMessage -f $CAType)
+                ) -join '' )
 
-            'Absent'
-            {
-                # CA is not installed and should not be - change not required
-                Write-Verbose -Message ( @(
-                        "$($MyInvocation.MyCommand): "
-                        $($script:localizedData.AdcsCANotInstalledAndShouldNotBeMessage -f $CAType)
-                    ) -join '' )
-
-                return $true
-            }
-        } # switch
+            return $true
+        }
     }
     catch [Microsoft.CertificateServices.Deployment.Common.CA.CertificationAuthoritySetupException]
     {
         # CA is already installed
-        switch ($Ensure)
+        if ($Ensure -eq 'Present')
         {
-            'Present'
-            {
-                # CA is installed and should be - change not required
-                Write-Verbose -Message ( @(
-                        "$($MyInvocation.MyCommand): "
-                        $($script:localizedData.AdcsCAInstalledAndShouldBeMessage -f $CAType)
-                    ) -join '' )
+            # CA is installed and should be - change not required
+            Write-Verbose -Message ( @(
+                    "$($MyInvocation.MyCommand): "
+                    $($script:localizedData.AdcsCAInstalledAndShouldBeMessage -f $CAType)
+                ) -join '' )
 
-                return $true
-            }
+            return $true
+        }
+        else
+        {
+            # CA is installed and should not be - change required
+            Write-Verbose -Message ( @(
+                    "$($MyInvocation.MyCommand): "
+                    $($script:localizedData.AdcsCAInstalledButShouldNotBeMessage -f $CAType)
+                ) -join '' )
 
-            'Absent'
-            {
-                # CA is installed and should not be - change required
-                Write-Verbose -Message ( @(
-                        "$($MyInvocation.MyCommand): "
-                        $($script:localizedData.AdcsCAInstalledButShouldNotBeMessage -f $CAType)
-                    ) -join '' )
-
-                return $false
-            }
-        } # switch
+            return $false
+        }
     }
     catch
     {
         # Something else went wrong
-        Throw $_
+        throw $_
     } # try
 } # Function Test-TargetResource
 
