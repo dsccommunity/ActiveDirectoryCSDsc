@@ -172,7 +172,7 @@ function New-LocalUserInAdministratorsGroup
 
     if (-not (Get-LocalGroupMember -Group 'administrators' -Member $Username -ErrorAction SilentlyContinue))
     {
-        $null = New-LocalGroupMember -Group 'administrators' -Member $Username
+        $null = Add-LocalGroupMember -Group 'administrators' -Member $Username
     }
 }
 
