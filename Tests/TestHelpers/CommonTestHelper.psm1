@@ -140,7 +140,7 @@ function Test-WindowsFeature
         group then add it to the group and make sure the password is set
         to the provided value.
 
-    .PARAMETER Name
+    .PARAMETER Username
         The username of the local user to create and add to the administrators
         group.
 
@@ -154,7 +154,7 @@ function New-LocalUserInAdministratorsGroup
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $Name,
+        $Username,
 
         [Parameter(Mandatory = $true)]
         [System.Security.SecureString]
@@ -163,16 +163,16 @@ function New-LocalUserInAdministratorsGroup
 
     if (-not (Get-LocalUser -Name $Username -ErrorAction SilentlyContinue))
     {
-        $null = New-LocalUser @PSBoundParameters
+        $null = New-LocalUser -Name $Username -Password $Password
     }
     else
     {
-        $null = Set-LocalUser @PSBoundParameters
+        $null = Set-LocalUser -Name $Username -Password $Password
     }
 
-    if (-not (Get-LocalGroupMember -Group 'administrators' -Member $Name))
+    if (-not (Get-LocalGroupMember -Group 'administrators' -Member $Username))
     {
-        $null = New-LocalGroupMember -Group 'administrators' -Member $Name
+        $null = New-LocalGroupMember -Group 'administrators' -Member $Username
     }
 }
 

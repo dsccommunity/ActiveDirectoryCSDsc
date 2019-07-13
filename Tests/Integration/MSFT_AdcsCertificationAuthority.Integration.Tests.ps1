@@ -53,7 +53,7 @@ try
     $script:adminCredential = New-Object `
         -TypeName System.Management.Automation.PSCredential `
         -ArgumentList ($script:adminUsername, $script:adminPassword)
-    New-LocalUserInAdministratorsGroup -User $script:adminUsername -Password $script:adminPassword
+    New-LocalUserInAdministratorsGroup -Username $script:adminUsername -Password $script:adminPassword
 
     Describe "$($script:DSCResourceName)_Install_Integration" {
         $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName)_Install.config.ps1"
