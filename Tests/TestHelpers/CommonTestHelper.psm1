@@ -161,16 +161,16 @@ function New-LocalUserInAdministratorsGroup
         $Password
     )
 
-    if (-not (Get-LocalUser -Name $Username -ErrorAction SilentlyContinue))
-    {
-        $null = New-LocalUser -Name $Username -Password $Password
-    }
-    else
+    if (Get-LocalUser -Name $Username -ErrorAction SilentlyContinue)
     {
         $null = Set-LocalUser -Name $Username -Password $Password
     }
+    else
+    {
+        $null = New-LocalUser -Name $Username -Password $Password
+    }
 
-    if (-not (Get-LocalGroupMember -Group 'administrators' -Member $Username))
+    if (-not (Get-LocalGroupMember -Group 'administrators' -Member $Username -ErrorAction SilentlyContinue))
     {
         $null = New-LocalGroupMember -Group 'administrators' -Member $Username
     }
