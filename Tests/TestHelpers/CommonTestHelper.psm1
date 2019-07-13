@@ -157,7 +157,7 @@ function New-LocalUserInAdministratorsGroup
         $Name,
 
         [Parameter(Mandatory = $true)]
-        [System.SecureString]
+        [System.Security.SecureString]
         $Password
     )
 
