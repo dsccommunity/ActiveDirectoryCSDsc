@@ -54,10 +54,12 @@ function Get-InvalidOperationRecord
     [CmdletBinding()]
     param
     (
+        [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $Message,
 
+        [Parameter()]
         [ValidateNotNull()]
         [System.Management.Automation.ErrorRecord]
         $ErrorRecord
@@ -129,8 +131,54 @@ function Test-WindowsFeature
     return $True
 } # end function Test-WindowsFeature
 
+<#
+    .SYNOPSIS
+        Create a new local user account to be created and added to the
+        local Administrators group for use by integration tests.
+
+        If the user account already exists but is not in the administrators
+        group then add it to the group and make sure the password is set
+        to the provided value.
+
+    .PARAMETER Name
+        The username of the local user to create and add to the administrators
+        group.
+
+    .PARAMETER Password
+        The password of the local user account.
+#>
+function New-LocalUserInAdministratorsGroup
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Name,
+
+        [Parameter(Mandatory = $true)]
+        [System.SecureString]
+        $Password
+    )
+
+    if (-not (Get-LocalUser -Name $Username -ErrorAction SilentlyContinue))
+    {
+        $null = New-LocalUser @PSBoundParameters
+    }
+    else
+    {
+        $null = Set-LocalUser @PSBoundParameters
+    }
+
+    if (-not (Get-LocalGroupMember -Group 'administrators' -Member $Name))
+    {
+        $null = New-LocalGroupMember -Group 'administrators' -Member $Name
+    }
+}
+
 Export-ModuleMember -Function @(
     'Get-InvalidArgumentRecord'
     'Get-InvalidOperationRecord'
     'Test-WindowsFeature'
+    'New-LocalUserInAdministratorsGroup'
 )

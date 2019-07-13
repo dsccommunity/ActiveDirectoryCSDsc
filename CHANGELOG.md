@@ -6,6 +6,15 @@
 - Replaced `switch` blocks with `if` blocks for evaluating 'Ensure' parameter
   because switch was missing `break` - fixes [Issue #87](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/87).
 - Added Comment Based Help for `New-NotImplementedException` common function.
+- Moved code to create the user account for use in integration test into a
+  `CommonTestHelper.psm1` function.
+- Removed user account creation code from `AppVeyor.yml` and into integration
+  tests themselves to make tests execution easier.
+- Updated user account creation code to use local user/group management Powershell
+  cmdlets available in WMF 5.1 - fixes [Issue #24](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/24).
+- AdcsCertificationAuthority:
+  - Integration tests updated to create test user account in administrators
+    group to make test execution easier.
 
 ## 3.3.0.0
 
