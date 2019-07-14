@@ -1,18 +1,10 @@
-# Suppress this PSSA message because we need to allow credentials to be
-# set when running the tests.
+<#
+    Suppress this PSSA message because we need to allow credentials to be
+    set when running the tests.
+#>
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
 param ()
 
-<#
-    IMPORTANT: To run these tests requires a domain admin account to be
-    available on the machine running the tests that can be used to install the
-    ADCS component being tested. Please change the following values to the
-    credentials that are set up for this purpose.
-    These tests can not be run on AppVeyor because it requires a domain joined
-    machine.
-#>
-$script:adminUsername = "$($env:USERDNSDOMAIN)\Administrator"
-$script:adminPassword = 'NotPass12!'
 $script:DSCModuleName = 'ActiveDirectoryCSDsc'
 $script:DSCResourceName = 'MSFT_AdcsEnrollmentPolicyWebService'
 Import-Module -Name (Join-Path -Path (Join-Path -Path (Split-Path $PSScriptRoot -Parent) -ChildPath 'TestHelpers') -ChildPath 'CommonTestHelper.psm1') -Global
@@ -36,8 +28,21 @@ $TestEnvironment = Initialize-TestEnvironment `
 # Using try/finally to always cleanup even if something awful happens.
 try
 {
+    <#
+        IMPORTANT: To run these tests requires a domain admin account to be
+        available on the machine running the tests that can be used to install the
+        ADCS component being tested. Please change the following values to the
+        credentials that are set up for this purpose.
+
+        These tests can not be run on AppVeyor because it requires a domain joined
+        machine.
+    #>
+    $script:adminUsername = "$($env:USERDNSDOMAIN)\Administrator"
+    $script:adminPassword = ConvertTo-SecureString -String 'NotPass12!' -AsPlainText -Force
+
     # Ensure that the tests can be performed on this computer
     $skipIntegrationTests = $false
+
     if (-not (Test-WindowsFeature -Name 'ADCS-Enroll-Web-Pol'))
     {
         Write-Warning -Message 'Skipping integration tests for AdcsEnrollmentPolicyWebService because the feature ADCS-Enroll-Web-Pol is not installed.'
@@ -57,19 +62,19 @@ try
     }
 
     # Get the Administrator credential
-    $secureAdminPassword = ConvertTo-SecureString -String $script:adminPassword -AsPlainText -Force
-    $adminCred = New-Object -TypeName System.Management.Automation.PSCredential `
-        -ArgumentList ($script:adminUsername, $secureAdminPassword)
+    $script:adminCredential = New-Object `
+        -TypeName System.Management.Automation.PSCredential `
+        -ArgumentList ($script:adminUsername, $script:AdminPassword)
 
     # Create an SSL certificate to be used for the Web Service
     $certificate = New-SelfSignedCertificate `
         -DnsName $ENV:ComputerName `
         -CertStoreLocation Cert:\LocalMachine\My
 
-    $ConfigFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName).config.ps1"
-    . $ConfigFile -Verbose -ErrorAction Stop
-
     Describe "$($script:DSCResourceName) integration test" {
+        $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName).config.ps1"
+        . $configFile -Verbose -ErrorAction Stop
+
         # These are the test cases to run integration tests for
         $testAdcsEnrollmentPolicyWebServiceTestCases = @(
             @{
@@ -108,7 +113,7 @@ try
                                     NodeName                    = 'localhost'
                                     AuthenticationType          = $authenticationType
                                     SslCertThumbprint           = $certificate.Thumbprint
-                                    Credential                  = $adminCred
+                                    Credential                  = $script:adminCredential
                                     KeyBasedRenewal             = $keyBasedRenewal
                                     Ensure                      = 'Present'
                                     PsDscAllowPlainTextPassword = $true
@@ -151,7 +156,7 @@ try
                                     NodeName                    = 'localhost'
                                     AuthenticationType          = $authenticationType
                                     SslCertThumbprint           = $certificate.Thumbprint
-                                    Credential                  = $adminCred
+                                    Credential                  = $script:adminCredential
                                     KeyBasedRenewal             = $keyBasedRenewal
                                     Ensure                      = 'Absent'
                                     PsDscAllowPlainTextPassword = $true
