@@ -15,6 +15,8 @@
 - AdcsCertificationAuthority:
   - Integration tests updated to create test user account in administrators
     group to make test execution easier.
+- Added new resource AdcsCertificateAuthoritySettings - see
+  [Issue #13](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/13).
 
 ## 3.3.0.0
 

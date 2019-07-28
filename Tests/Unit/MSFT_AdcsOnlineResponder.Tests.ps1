@@ -4,12 +4,12 @@ $script:DSCResourceName = 'MSFT_AdcsOnlineResponder'
 Import-Module -Name (Join-Path -Path (Join-Path -Path (Split-Path $PSScriptRoot -Parent) -ChildPath 'TestHelpers') -ChildPath 'CommonTestHelper.psm1') -Global
 
 #region HEADER
-# Integration Test Template Version: 1.1.0
-[String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+# Unit Test Template Version: 1.1.0
+$script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
-     (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
+    (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
 {
-    & git @('clone','https://github.com/PowerShell/DscResource.Tests.git',(Join-Path -Path $script:moduleRoot -ChildPath '\DSCResource.Tests\'))
+    & git @('clone', 'https://github.com/PowerShell/DscResource.Tests.git', (Join-Path -Path $script:moduleRoot -ChildPath '\DSCResource.Tests\'))
 }
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
@@ -19,18 +19,16 @@ $TestEnvironment = Initialize-TestEnvironment `
     -TestType Unit
 #endregion
 
-# Begin Testing
 try
 {
-    #region Pester Tests
     InModuleScope $script:DSCResourceName {
-        $DSCResourceName = 'MSFT_AdcsOnlineResponder'
-
         if (-not ([System.Management.Automation.PSTypeName]'Microsoft.CertificateServices.Deployment.Common.OCSP.OnlineResponderSetupException').Type)
         {
-            # Define the exception class:
-            # Microsoft.CertificateServices.Deployment.Common.OCSP.OnlineResponderSetupException
-            # so that unit tests can be run without ADCS being installed.
+            <#
+                Define the exception class:
+                Microsoft.CertificateServices.Deployment.Common.OCSP.OnlineResponderSetupException
+                so that unit tests can be run without ADCS being installed.
+            #>
 
             $ExceptionDefinition = @'
 namespace Microsoft.CertificateServices.Deployment.Common.OCSP {
@@ -85,8 +83,8 @@ namespace Microsoft.CertificateServices.Deployment.Common.OCSP {
             )
         }
 
-        Describe "$DSCResourceName\Get-TargetResource" {
-            Context 'Online Responder is installed' {
+        Describe 'MSFT_AdcsOnlineResponder\Get-TargetResource' {
+            Context 'When the Online Responder is installed' {
                 Mock `
                     -CommandName Install-AdcsOnlineResponder `
                     -MockWith { Throw (New-Object -TypeName 'Microsoft.CertificateServices.Deployment.Common.OCSP.OnlineResponderSetupException') } `
@@ -107,7 +105,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.OCSP {
                 }
             }
 
-            Context 'Online Responder is not installed' {
+            Context 'When the Online Responder is not installed' {
                 Mock -CommandName Install-AdcsOnlineResponder
 
                 $result = Get-TargetResource @testParametersPresent
@@ -125,8 +123,8 @@ namespace Microsoft.CertificateServices.Deployment.Common.OCSP {
             }
         }
 
-        Describe "$DSCResourceName\Set-TargetResource" {
-            Context 'Online Responder is not installed but should be' {
+        Describe 'MSFT_AdcsOnlineResponder\Set-TargetResource' {
+            Context 'When the Online Responder is not installed but should be' {
                 Mock -CommandName Install-AdcsOnlineResponder
                 Mock -CommandName Uninstall-AdcsOnlineResponder
 
@@ -147,7 +145,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.OCSP {
                 }
             }
 
-            Context 'Online Responder is not installed but should be but an error is thrown installing it' {
+            Context 'When the Online Responder is not installed but should be but an error is thrown installing it' {
                 Mock -CommandName Install-AdcsOnlineResponder `
                     -MockWith { [PSObject] @{ ErrorString = 'Something went wrong' }}
 
@@ -172,7 +170,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.OCSP {
                 }
             }
 
-            Context 'Online Responder is installed but should not be' {
+            Context 'When the Online Responder is installed but should not be' {
                 Mock -CommandName Install-AdcsOnlineResponder
                 Mock -CommandName Uninstall-AdcsOnlineResponder
 
@@ -194,9 +192,9 @@ namespace Microsoft.CertificateServices.Deployment.Common.OCSP {
             }
         }
 
-        Describe "$DSCResourceName\Test-TargetResource" {
-            Context 'Online Responder is installed' {
-                Context 'Online Responder should be installed' {
+        Describe 'MSFT_AdcsOnlineResponder\Test-TargetResource' {
+            Context 'When the Online Responder is installed' {
+                Context 'When the Online Responder should be installed' {
                     Mock -CommandName Install-AdcsOnlineResponder `
                         -MockWith { Throw (New-Object -TypeName 'Microsoft.CertificateServices.Deployment.Common.OCSP.OnlineResponderSetupException') } `
                         -Verifiable
@@ -216,7 +214,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.OCSP {
                     }
                 }
 
-                Context 'Online Responder should not be installed' {
+                Context 'When the Online Responder should not be installed' {
                     Mock -CommandName Install-AdcsOnlineResponder `
                         -MockWith { Throw (New-Object -TypeName 'Microsoft.CertificateServices.Deployment.Common.OCSP.OnlineResponderSetupException') } `
                         -Verifiable
@@ -237,8 +235,8 @@ namespace Microsoft.CertificateServices.Deployment.Common.OCSP {
                 }
             }
 
-            Context 'Online Responder is not installed' {
-                Context 'Online Responder should be installed' {
+            Context 'When the Online Responder is not installed' {
+                Context 'When the Online Responder should be installed' {
                     Mock -CommandName Install-AdcsOnlineResponder `
                         -Verifiable
 
@@ -257,7 +255,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.OCSP {
                     }
                 }
 
-                Context 'Online Responder should not be installed' {
+                Context 'When the Online Responder should not be installed' {
                     Mock -CommandName Install-AdcsOnlineResponder `
                         -Verifiable
 
@@ -278,7 +276,6 @@ namespace Microsoft.CertificateServices.Deployment.Common.OCSP {
             }
         }
     }
-    #endregion
 }
 finally
 {

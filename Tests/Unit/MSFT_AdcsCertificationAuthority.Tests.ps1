@@ -4,12 +4,12 @@ $script:DSCResourceName = 'MSFT_AdcsCertificationAuthority'
 Import-Module -Name (Join-Path -Path (Join-Path -Path (Split-Path $PSScriptRoot -Parent) -ChildPath 'TestHelpers') -ChildPath 'CommonTestHelper.psm1') -Global
 
 #region HEADER
-# Integration Test Template Version: 1.1.0
-[System.String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+# Unit Test Template Version: 1.1.0
+$script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
-     (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
+    (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
 {
-    & git @('clone','https://github.com/PowerShell/DscResource.Tests.git',(Join-Path -Path $script:moduleRoot -ChildPath '\DSCResource.Tests\'))
+    & git @('clone', 'https://github.com/PowerShell/DscResource.Tests.git', (Join-Path -Path $script:moduleRoot -ChildPath '\DSCResource.Tests\'))
 }
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
@@ -19,18 +19,16 @@ $TestEnvironment = Initialize-TestEnvironment `
     -TestType Unit
 #endregion
 
-# Begin Testing
 try
 {
-    #region Pester Tests
     InModuleScope $($script:DSCResourceName) {
-        $DSCResourceName = 'MSFT_AdcsCertificationAuthority'
-
         if (-not ([System.Management.Automation.PSTypeName]'Microsoft.CertificateServices.Deployment.Common.CA.CertificationAuthoritySetupException').Type)
         {
-            # Define the exception class:
-            # Microsoft.CertificateServices.Deployment.Common.CA.CertificationAuthoritySetupException
-            # so that unit tests can be run without ADCS being installed.
+            <#
+                Define the exception class:
+                Microsoft.CertificateServices.Deployment.Common.CA.CertificationAuthoritySetupException
+                so that unit tests can be run without ADCS being installed.
+            #>
 
             $exceptionDefinition = @'
 namespace Microsoft.CertificateServices.Deployment.Common.CA {
@@ -169,8 +167,8 @@ namespace Microsoft.CertificateServices.Deployment.Common.CA {
             )
         }
 
-        Describe "$DSCResourceName\Get-TargetResource" {
-            Context 'CA is installed' {
+        Describe 'MSFT_AdcsCertificationAuthority\Get-TargetResource' {
+            Context 'When the CA is installed' {
                 Mock `
                     -CommandName Install-AdcsCertificationAuthority `
                     -MockWith { Throw (New-Object -TypeName 'Microsoft.CertificateServices.Deployment.Common.CA.CertificationAuthoritySetupException') } `
@@ -192,7 +190,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.CA {
                 }
             }
 
-            Context 'CA is not installed' {
+            Context 'When the CA is not installed' {
                 Mock -CommandName Install-AdcsCertificationAuthority
 
                 $result = Get-TargetResource @testParametersPresent
@@ -210,8 +208,8 @@ namespace Microsoft.CertificateServices.Deployment.Common.CA {
             }
         }
 
-        Describe "$DSCResourceName\Set-TargetResource" {
-            Context 'CA is not installed but should be' {
+        Describe 'MSFT_AdcsCertificationAuthority\Set-TargetResource' {
+            Context 'When theCA is not installed but should be' {
                 Mock -CommandName Install-AdcsCertificationAuthority
                 Mock -CommandName Uninstall-AdcsCertificationAuthority
 
@@ -232,7 +230,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.CA {
                 }
             }
 
-            Context 'CA is not installed but should be but an error is thrown installing it' {
+            Context 'When the CA is not installed but should be but an error is thrown installing it' {
                 Mock `
                     -CommandName Install-AdcsCertificationAuthority `
                     -MockWith { [PSObject] @{ErrorString = 'Something went wrong' }}
@@ -297,7 +295,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.CA {
                 }
             }
 
-            Context 'CA is installed but should not be' {
+            Context 'When the CA is installed but should not be' {
                 Mock -CommandName Install-AdcsCertificationAuthority
                 Mock -CommandName Uninstall-AdcsCertificationAuthority
 
@@ -319,8 +317,8 @@ namespace Microsoft.CertificateServices.Deployment.Common.CA {
             }
         }
 
-        Describe "$DSCResourceName\Test-TargetResource" {
-            Context 'CA is installed and should be' {
+        Describe 'MSFT_AdcsCertificationAuthority\Test-TargetResource' {
+            Context 'When the CA is installed and should be' {
                 Mock -CommandName Install-AdcsCertificationAuthority `
                     -MockWith { Throw (New-Object -TypeName 'Microsoft.CertificateServices.Deployment.Common.CA.CertificationAuthoritySetupException') } `
                     -Verifiable
@@ -340,7 +338,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.CA {
                 }
             }
 
-            Context 'CA is installed but should not be' {
+            Context 'When the CA is installed but should not be' {
                 Mock -CommandName Install-AdcsCertificationAuthority `
                     -MockWith { Throw (New-Object -TypeName 'Microsoft.CertificateServices.Deployment.Common.CA.CertificationAuthoritySetupException') } `
                     -Verifiable
@@ -360,7 +358,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.CA {
                 }
             }
 
-            Context 'CA is not installed but should be' {
+            Context 'When the CA is not installed but should be' {
                 Mock -CommandName Install-AdcsCertificationAuthority `
                     -Verifiable
 
@@ -379,7 +377,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.CA {
                 }
             }
 
-            Context 'CA is not installed and should not be' {
+            Context 'When the CA is not installed and should not be' {
                 Mock -CommandName Install-AdcsCertificationAuthority `
                     -Verifiable
 
@@ -399,7 +397,6 @@ namespace Microsoft.CertificateServices.Deployment.Common.CA {
             }
         }
     }
-    #endregion
 }
 finally
 {

@@ -4,8 +4,8 @@ $script:DSCResourceName = 'MSFT_AdcsWebEnrollment'
 Import-Module -Name (Join-Path -Path (Join-Path -Path (Split-Path $PSScriptRoot -Parent) -ChildPath 'TestHelpers') -ChildPath 'CommonTestHelper.psm1') -Global
 
 #region HEADER
-# Integration Test Template Version: 1.1.0
-[String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+# Unit Test Template Version: 1.1.0
+$script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
     (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
 {
@@ -19,16 +19,16 @@ $TestEnvironment = Initialize-TestEnvironment `
     -TestType Unit
 #endregion
 
-# Begin Testing
 try
 {
-    #region Pester Tests
     InModuleScope $script:DSCResourceName {
         if (-not ([System.Management.Automation.PSTypeName]'Microsoft.CertificateServices.Deployment.Common.WEP.WebEnrollmentSetupException').Type)
         {
-            # Define the exception class:
-            # Microsoft.CertificateServices.Deployment.Common.WEP.WebEnrollmentSetupException
-            # so that unit tests can be run without ADCS being installed.
+            <#
+                Define the exception class:
+                Microsoft.CertificateServices.Deployment.Common.WEP.WebEnrollmentSetupException
+                so that unit tests can be run without ADCS being installed.
+            #>
 
             $ExceptionDefinition = @'
 namespace Microsoft.CertificateServices.Deployment.Common.WEP {
@@ -38,8 +38,6 @@ namespace Microsoft.CertificateServices.Deployment.Common.WEP {
 '@
             Add-Type -TypeDefinition $ExceptionDefinition
         }
-
-        $DSCResourceName = 'MSFT_AdcsWebEnrollment'
 
         $dummyCredential = New-Object System.Management.Automation.PSCredential ("Administrator", (New-Object -Type SecureString))
 
@@ -92,8 +90,8 @@ namespace Microsoft.CertificateServices.Deployment.Common.WEP {
             )
         }
 
-        Describe "$DSCResourceName\Get-TargetResource" {
-            Context 'Web Enrollment is installed' {
+        Describe 'MSFT_AdcsWebEnrollment\Get-TargetResource' {
+            Context 'When the Web Enrollment is installed' {
                 Mock `
                     -CommandName Install-AdcsWebEnrollment `
                     -MockWith { Throw (New-Object -TypeName 'Microsoft.CertificateServices.Deployment.Common.WEP.WebEnrollmentSetupException') } `
@@ -115,7 +113,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.WEP {
                 }
             }
 
-            Context 'Web Enrollment is not installed' {
+            Context 'When the Web Enrollment is not installed' {
                 Mock `
                     -CommandName Install-AdcsWebEnrollment
 
@@ -134,8 +132,8 @@ namespace Microsoft.CertificateServices.Deployment.Common.WEP {
             }
         }
 
-        Describe "$DSCResourceName\Set-TargetResource" {
-            Context 'Web Enrollment is not installed but should be' {
+        Describe 'MSFT_AdcsWebEnrollment\Set-TargetResource' {
+            Context 'When the Web Enrollment is not installed but should be' {
                 Mock -CommandName Install-AdcsWebEnrollment
                 Mock -CommandName Uninstall-AdcsWebEnrollment
 
@@ -156,7 +154,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.WEP {
                 }
             }
 
-            Context 'Web Enrollment is not installed but should be but an error is thrown installing it' {
+            Context 'When the Web Enrollment is not installed but should be but an error is thrown installing it' {
                 Mock -CommandName Install-AdcsWebEnrollment `
                     -MockWith { [PSObject] @{ ErrorString = 'Something went wrong' }}
 
@@ -181,7 +179,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.WEP {
                 }
             }
 
-            Context 'Web Enrollment is installed but should not be' {
+            Context 'When the Web Enrollment is installed but should not be' {
                 Mock -CommandName Install-AdcsWebEnrollment
                 Mock -CommandName Uninstall-AdcsWebEnrollment
 
@@ -203,9 +201,9 @@ namespace Microsoft.CertificateServices.Deployment.Common.WEP {
             }
         }
 
-        Describe "$DSCResourceName\Test-TargetResource" {
-            Context 'Web Enrollment is installed' {
-                Context 'Web Enrollment should be installed' {
+        Describe 'MSFT_AdcsWebEnrollment\Test-TargetResource' {
+            Context 'When the Web Enrollment is installed' {
+                Context 'When the Web Enrollment should be installed' {
                     Mock `
                         -CommandName Install-AdcsWebEnrollment `
                         -MockWith { Throw (New-Object -TypeName 'Microsoft.CertificateServices.Deployment.Common.WEP.WebEnrollmentSetupException') } `
@@ -227,7 +225,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.WEP {
                     }
                 }
 
-                Context 'Web Enrollment should not be installed' {
+                Context 'When the Web Enrollment should not be installed' {
                     Mock `
                         -CommandName Install-AdcsWebEnrollment `
                         -MockWith { Throw (New-Object -TypeName 'Microsoft.CertificateServices.Deployment.Common.WEP.WebEnrollmentSetupException') } `
@@ -250,8 +248,8 @@ namespace Microsoft.CertificateServices.Deployment.Common.WEP {
                 }
             }
 
-            Context 'Web Enrollment is not installed' {
-                Context 'Web Enrollment should be installed' {
+            Context 'When the Web Enrollment is not installed' {
+                Context 'When the Web Enrollment should be installed' {
                     Mock -CommandName Install-AdcsWebEnrollment -Verifiable
 
                     $result = Test-TargetResource @testParametersPresent
@@ -270,7 +268,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.WEP {
                     }
                 }
 
-                Context 'Web Enrollment should not be installed' {
+                Context 'When the Web Enrollment should not be installed' {
                     Mock -CommandName Install-AdcsWebEnrollment -Verifiable
 
                     $result = Test-TargetResource @testParametersAbsent
@@ -291,7 +289,6 @@ namespace Microsoft.CertificateServices.Deployment.Common.WEP {
             }
         }
     }
-    #endregion
 }
 finally
 {
