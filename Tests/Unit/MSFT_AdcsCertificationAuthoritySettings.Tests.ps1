@@ -163,9 +163,9 @@ try
                 }
 
                 It 'Should return Active Directory Certification Authority settings' {
-                    foreach ($parameter in $script:parameterList)
+                    foreach ($parameter in $script:parameterList.GetEnumerator())
                     {
-                        $script:getTargetResourceResult.$($parameter.Name) | Should -Be $parameter.CurrentValue
+                        $script:getTargetResourceResult.$($parameter.Name) | Should -Be $parameter.Value.CurrentValue
                     }
                 }
 
@@ -232,28 +232,30 @@ try
                 }
             }
 
-            foreach ($parameter in $script:parameterList)
+            foreach ($parameter in $script:parameterList.GetEnumerator())
             {
                 Context "When all Active Directory Certification Authority settings are in the correct state, except $($parameter.Name) is different" {
-                    It 'Should return false' {
-                        $testTargetResourceSplat = $adcsCertificationAuthorityParameters.Clone()
-                        $testTargetResourceSplat.$($parameter.Name) = $parameter.NewValue
-                        Test-TargetResource @testTargetResourceSplat | Should -Be $False
+                    BeforeAll {
+                        Mock -CommandName Get-TargetResource `
+                            -MockWith $getTargetResourceInStateMock
                     }
 
-                    It 'Should call expected Mocks' {
-                        foreach ($parameter in $parameterList)
+                    It 'Should not throw exception' {
                         {
-                            $parameterPath = Join-Path `
-                                -Path 'WSMan:\Localhost\Service\' `
-                                -ChildPath $parameter.Path
+                            $currentTestTargetResourceParameters = @{} + $script:testTargetResourceParameters
+                            $currentTestTargetResourceParameters[$parameter.Name] = $parameter.Value.NewValue
+                            $script:testTargetResourceResult = Test-TargetResource @currentTestTargetResourceParameters
+                        } | Should -Not -Throw
+                    }
 
-                            Assert-MockCalled `
-                                -CommandName Get-Item `
-                                -ParameterFilter {
-                                $Path -eq $parameterPath
-                            } -Exactly -Times 1
-                        }
+                    It 'Should return false' {
+                        $testTargetResourceResult | Should -BeFalse
+                    }
+
+                    It 'Should call the expected mocks' {
+                        Assert-MockCalled `
+                            -CommandName Get-TargetResource `
+                            -Exactly -Times 1
                     }
                 }
             }

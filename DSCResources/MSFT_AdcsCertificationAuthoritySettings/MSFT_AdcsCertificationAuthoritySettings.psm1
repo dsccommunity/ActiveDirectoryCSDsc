@@ -75,8 +75,8 @@ Function Get-TargetResource
 
     return @{
         IsSingleInstance      = 'Yes'
-        CACertPublicationURLs = ($CACertPublicationURLs -split "`n")
-        CRLPublicationURLs    = ($CRLPublicationURLs -split "`n")
+        CACertPublicationURLs = ($currentcertificateAuthoritySettings.CACertPublicationURLs -split "`n")
+        CRLPublicationURLs    = ($currentcertificateAuthoritySettings.CRLPublicationURLs -split "`n")
         CRLOverlapUnits       = $currentcertificateAuthoritySettings.CRLOverlapUnits
         CRLOverlapPeriod      = $currentcertificateAuthoritySettings.CRLOverlapPeriod
         CRLPeriodUnits        = $currentcertificateAuthoritySettings.CRLPeriodUnits
