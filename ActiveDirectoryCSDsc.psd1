@@ -18,7 +18,7 @@
     Description       = 'This DSC Resource module can be used to install or uninstall Certificate Services components in Windows Server.'
 
     # Minimum version of the Windows PowerShell engine required by this module
-    PowerShellVersion = '4.0'
+    PowerShellVersion = '5.0'
 
     # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
     # NestedModules = @()
@@ -38,6 +38,7 @@
     # DSC resources to export from this module
     DscResourcesToExport = @(
         'AdcsCertificationAuthority',
+        'AdcsCertificationAuthoritySettings'
         'AdcsEnrollmentPolicyWebService',
         'AdcsOnlineResponder',
         'AdcsWebEnrollment',

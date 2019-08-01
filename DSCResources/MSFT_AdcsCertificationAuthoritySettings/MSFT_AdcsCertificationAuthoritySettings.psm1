@@ -1,3 +1,5 @@
+#Requires -Version 5.0
+
 $modulePath = Join-Path -Path (Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent) -ChildPath 'Modules'
 
 # Import the ADCS Deployment Resource Common Module.
@@ -7,6 +9,16 @@ Import-Module -Name (Join-Path -Path $modulePath `
 
 # Import Localization Strings.
 $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_AdcsCertificationAuthoritySettings'
+
+<#
+    This is an array of all the parameters used by this resource.
+    The CurrentValue, NewValue and MockedValue properties are only used by
+    tests but are stored here so that a duplicate table does not have
+    to be created.
+#>
+$script:parameterList = Import-LocalizedData `
+    -BaseDirectory $PSScriptRoot `
+    -FileName 'MSFT_AdcsCertificationAuthoritySettings.data.psd1'
 
 # A flags enum containing the Certificate Authority audit filter flags
 [flags()]
@@ -73,20 +85,42 @@ Function Get-TargetResource
     $currentcertificateAuthoritySettings = Get-ItemProperty `
         -Path $certificateAuthorityRegistryPath
 
-    return @{
-        IsSingleInstance      = 'Yes'
-        CACertPublicationURLs = ($currentcertificateAuthoritySettings.CACertPublicationURLs -split "`n")
-        CRLPublicationURLs    = ($currentcertificateAuthoritySettings.CRLPublicationURLs -split "`n")
-        CRLOverlapUnits       = $currentcertificateAuthoritySettings.CRLOverlapUnits
-        CRLOverlapPeriod      = $currentcertificateAuthoritySettings.CRLOverlapPeriod
-        CRLPeriodUnits        = $currentcertificateAuthoritySettings.CRLPeriodUnits
-        CRLPeriod             = $currentcertificateAuthoritySettings.CRLPeriod
-        ValidityPeriodUnits   = $currentcertificateAuthoritySettings.ValidityPeriodUnits
-        ValidityPeriod        = $currentcertificateAuthoritySettings.ValidityPeriod
-        DSConfigDN            = $currentcertificateAuthoritySettings.DSConfigDN
-        DSDomainDN            = $currentcertificateAuthoritySettings.DSDomainDN
-        AuditFilter           = Convert-AuditFilterToStringArray -AuditFilter $currentcertificateAuthoritySettings.AuditFilter
+    # Generate the return object
+    $returnValue = @{
+        IsSingleInstance = 'Yes'
     }
+
+    # Loop through each of the parameters and add it to the return object
+    foreach ($parameter in $script:parameterList.GetEnumerator())
+    {
+        switch ($parameter.Value.Type)
+        {
+            'String[]'
+            {
+                $parameterValue = $currentcertificateAuthoritySettings.$($parameter.Name) -split '\\n'
+                break
+            }
+
+            'Flags'
+            {
+                $parameterValue = Convert-AuditFilterToStringArray `
+                    -AuditFilter $currentcertificateAuthoritySettings.AuditFilter
+                break
+            }
+
+            default
+            {
+                $parameterValue = $currentcertificateAuthoritySettings.$($parameter.Name)
+                break
+            }
+        }
+
+        $returnValue += @{
+            $($parameter.Name) = $parameterValue
+        }
+    } # foreach
+
+    return $returnValue
 } # Function Get-TargetResource
 
 <#
@@ -202,22 +236,66 @@ Function Set-TargetResource
             $script:localizedData.SettingAdcsCaSettingsMessage
         ) -join '' )
 
-    $currentSettings = Get-TargetResource @PSBoundParameters
+    $currentSettings = Get-TargetResource `
+        -IsSingleInstance $IsSingleInstance `
+        -Verbose:$VerbosePreference
 
     $settingUpdated = $false
 
-    if ($PSBoundParameters.ContainsKey('AuditFilter'))
+    <#
+        Step through each parameter and update any that are passed
+        and the current value differs from the desired value.
+    #>
+    foreach ($parameter in $script:parameterList.GetEnumerator())
     {
-        $newAuditFilter = Convert-StringArrayToAuditFilter -StringArray $AuditFilter
+        $updateParameter = $false
+        $parameterName = $parameter.Name
+        $parameterCurrentValue = $currentSettings.$parameterName
+        $parameterDesiredValue = (Get-Variable -Name $parameterName).Value
 
-        if ($currentSettings.AuditFilter -ne $newAuditFilter)
+        if ($PSBoundParameters.ContainsKey($parameterName))
         {
-            Set-CertificateAuthoritySetting -Name 'AuditFilter' -Value $newAuditFilter
-            $settingUpdated = $true
-        }
-    }
+            switch ($parameter.Value.Type)
+            {
+                'String[]'
+                {
+                    $updateParameter = (Compare-Object `
+                        -ReferenceObject $parameterCurrentValue `
+                        -DifferenceObject $parameterDesiredValue).Count -ne 0
+                    $parameterNewValue = $parameterDesiredValue -join '\n'
+                    break
+                }
 
-    if ($settingUpdated)
+                'Flags'
+                {
+                    $updateParameter = (Compare-Object `
+                        -ReferenceObject $parameterCurrentValue `
+                        -DifferenceObject $parameterDesiredValue).Count -ne 0
+                    $parameterNewValue = Convert-StringArrayToAuditFilter -StringArray $parameterDesiredValue
+                    break
+                }
+
+                default
+                {
+                    $updateParameter = $parameterCurrentValue -ne $parameterDesiredValue
+                    $parameterNewValue = $parameterDesiredValue
+                }
+            }
+
+            # A parameter needs to be updated
+            if ($updateParameter)
+            {
+                $parameterUpdated = $true
+
+                Set-CertificateAuthoritySetting `
+                    -Name $parameterName `
+                    -Value $parameterNewValue `
+                    -Verbose:$VerbosePreference
+            }
+        } # if
+    } # foreach
+
+    if ($parameterUpdated)
     {
         Write-Verbose -Message ( @(
             "$($MyInvocation.MyCommand): "
@@ -226,7 +304,6 @@ Function Set-TargetResource
 
         $null = Restart-ServiceIfExists -Name 'CertSvc'
     }
-
 } # Function Set-TargetResource
 
 <#
@@ -437,7 +514,7 @@ Function Set-CertificateAuthoritySetting
 
     Write-Verbose -Message ( @(
             "$($MyInvocation.MyCommand): "
-            ($script:localizedData.UpdatingAdcsCaSettingMessage -f $Name,$Value)
+            ($script:localizedData.UpdatingAdcsCaSettingMessage -f $Name, $Value)
         ) -join '' )
 } # Function Convert-StringArrayToAuditFilter
 

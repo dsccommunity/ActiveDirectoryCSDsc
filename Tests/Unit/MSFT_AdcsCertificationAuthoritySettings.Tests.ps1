@@ -19,131 +19,59 @@ $TestEnvironment = Initialize-TestEnvironment `
     -TestType Unit
 #endregion
 
+$script:parameterList = Import-LocalizedData `
+    -BaseDirectory (Join-Path -Path $script:moduleRoot -ChildPath 'DscResources\MSFT_AdcsCertificationAuthoritySettings') `
+    -FileName 'MSFT_AdcsCertificationAuthoritySettings.data.psd1'
+
 try
 {
     InModuleScope $script:DSCResourceName {
         # Create the Mock Objects that will be used for running tests
-        $script:parameterList = @{
-            CACertPublicationURLs = @{
-                Type         = 'String[]'
-                CurrentValue = @('1:C:\Windows\system32\CertSrv\CertEnroll\%1_%3%4.crt', '2:ldap:///CN=%7,CN=AIA,CN=Public Key Services,CN=Services,%6%11')
-                NewValue     = @('1:C:\Windows\system32\CertSrv\CertEnroll\%1_%3%4.crt', '2:http://pki.contoso.com/CertEnroll/%1_%3%4.crt')
-                MockedValue  = "1:C:\Windows\system32\CertSrv\CertEnroll\%1_%3%4.crt`n2:ldap:///CN=%7,CN=AIA,CN=Public Key Services,CN=Services,%6%11"
-            }
-            CRLPublicationURLs    = @{
-                Type         = 'String[]'
-                CurrentValue = @('65:C:\Windows\system32\CertSrv\CertEnroll\%3%8%9.crl', '79:ldap:///CN=%7%8,CN=%2,CN=CDP,CN=Public Key Services,CN=Services,%6%10')
-                NewValue     = @('65:C:\Windows\system32\CertSrv\CertEnroll\%3%8%9.crl', '6:http://pki.contoso.com/CertEnroll/%3%8%9.crl')
-                MockedValue  = "65:C:\Windows\system32\CertSrv\CertEnroll\%3%8%9.crl`n79:ldap:///CN=%7%8,CN=%2,CN=CDP,CN=Public Key Services,CN=Services,%6%10"
-            }
-            CRLOverlapUnits       = @{
-                Type         = 'Uint32'
-                CurrentValue = 24
-                NewValue     = 12
-                MockedValue  = 24
-            }
-            CRLOverlapPeriod      = @{
-                Type         = 'String'
-                CurrentValue = 'Hours'
-                NewValue     = 'Days'
-                MockedValue  = 'Hours'
-            }
-            CRLPeriodUnits        = @{
-                Type         = 'Uint32'
-                CurrentValue = 5
-                NewValue     = 10
-                MockedValue  = 5
-            }
-            CRLPeriod             = @{
-                Type         = 'String'
-                CurrentValue = 'Years'
-                NewValue     = 'Months'
-                MockedValue  = 'Years'
-            }
-            ValidityPeriodUnits   = @{
-                Type         = 'Uint32'
-                CurrentValue = 2
-                NewValue     = 4
-                MockedValue  = 2
-            }
-            ValidityPeriod        = @{
-                Type         = 'String'
-                CurrentValue = 'Days'
-                NewValue     = 'Hours'
-                MockedValue  = 'Days'
-            }
-            DSConfigDN            = @{
-                Type         = 'String'
-                CurrentValue = 'CN=Configuration,DC=CONTOSO,DC=COM'
-                NewValue     = 'CN=Configuration,DC=SOMEWHERE,DC=COM'
-                MockedValue  = 'CN=Configuration,DC=CONTOSO,DC=COM'
-            }
-            DSDomainDN            = @{
-                Type         = 'String'
-                CurrentValue = 'DC=CONTOSO,DC=COM'
-                NewValue     = 'DC=SOMEWHERE,DC=COM'
-                MockedValue  = 'DC=CONTOSO,DC=COM'
-            }
-            AuditFilter           = @{
-                Type         = 'String[]'
-                CurrentValue = @('StartAndStopADCS', 'ChangeCAConfiguration')
-                NewValue     = @('BackupAndRestoreCADatabase', 'ChangeCAConfiguration')
-                MockedValue  = 65
-            }
-        }
         $script:certificateAuthorityActiveName = 'CONTOSO-CA'
         $script:certificateAuthorityRegistrySettingsActivePath = Join-Path `
             -Path $script:certificateAuthorityRegistrySettingsPath `
             -ChildPath $script:certificateAuthorityActiveName
+
+        # Assemble test mocks and parameter splats
+        $script:baseParameterCurrentList = @{}
+        $script:baseParameterMockedList = @{}
+
+        foreach ($parameter in $script:parameterList.GetEnumerator())
+        {
+            $script:baseParameterCurrentList += @{
+                $parameter.Name = $parameter.Value.CurrentValue
+            }
+
+            $script:baseParameterMockedList += @{
+                $parameter.Name = $parameter.Value.MockedValue
+            }
+        }
+
         $script:getTargetResourceParameters = @{
             IsSingleInstance = 'Yes'
             Verbose          = $True
         }
-        $script:testTargetResourceParameters = @{
+
+        $script:testAndSetTargetResourceParameters = @{
             IsSingleInstance = 'Yes'
             Verbose          = $True
-        }
-        foreach ($parameter in $script:parameterList.GetEnumerator())
-        {
-            $script:testTargetResourceParameters += @{
-                $parameter.Name = $parameter.Value.CurrentValue
-            }
-        }
+        } + $script:baseParameterCurrentList
 
         $getItemPropertyValueExistsMock = {
             $script:certificateAuthorityActiveName
-            }
+        }
+
         $getItemPropertyValueExistsParameterFilter = {
             $Path -eq $script:certificateAuthorityRegistrySettingsPath -and `
                 $Name -eq 'Active'
         }
-        $getItemPropertyMock = {
-            $parameters = @{ }
 
-            foreach ($parameter in $script:parameterList.GetEnumerator())
-            {
-                $parameters += @{
-                    $parameter.Name = $parameter.Value.MockedValue
-                }
-            }
-
-            return $parameters
-        }
         $getItemPropertyParameterFilter = {
             $Path -eq $script:certificateAuthorityRegistrySettingsActivePath
         }
 
-        $getTargetResourceInStateMock = {
-            $parameters = @{ }
-
-            foreach ($parameter in $script:parameterList.GetEnumerator())
-            {
-                $parameters += @{
-                    $parameter.Name = $parameter.Value.CurrentValue
-                }
-            }
-
-            return $parameters
+        $getItemPropertyMock = {
+            return $script:baseParameterMockedList
         }
 
         Describe 'MSFT_AdcsCertificationAuthoritySettings\Get-TargetResource' {
@@ -206,18 +134,103 @@ try
         }
 
         Describe 'MSFT_AdcsCertificationAuthoritySettings\Set-TargetResource' {
+            Context 'When all Active Directory Certification Authority settings are in the correct state' {
+                BeforeAll {
+                    Mock -CommandName Get-ItemPropertyValue `
+                        -MockWith $getItemPropertyValueExistsMock
+
+                    Mock -CommandName Get-ItemProperty `
+                        -MockWith $getItemPropertyMock
+
+                    Mock -CommandName Set-CertificateAuthoritySetting
+                }
+
+                It 'Should not throw exception' {
+                    {
+                        Set-TargetResource @script:testAndSetTargetResourceParameters
+                    } | Should -Not -Throw
+                }
+
+                It 'Should call the expected mocks' {
+                    Assert-MockCalled `
+                        -CommandName Get-ItemPropertyValue `
+                        -ParameterFilter $getItemPropertyValueExistsParameterFilter `
+                        -Exactly -Times 1
+
+                    Assert-MockCalled `
+                        -CommandName Get-ItemProperty `
+                        -ParameterFilter $getItemPropertyParameterFilter `
+                        -Exactly -Times 1
+
+                    Assert-MockCalled `
+                        -CommandName Set-CertificateAuthoritySetting `
+                        -Exactly -Times 0
+                }
+            }
+
+            foreach ($parameter in $script:parameterList.GetEnumerator())
+            {
+                Context ('When all Active Directory Certification Authority settings are in the correct state except {0}' -f $parameter.Name) {
+                    BeforeAll {
+                        Mock -CommandName Get-ItemPropertyValue `
+                        -MockWith $getItemPropertyValueExistsMock
+
+                        Mock -CommandName Get-ItemProperty `
+                            -MockWith $getItemPropertyMock
+
+                        Mock -CommandName Set-CertificateAuthoritySetting
+
+                        Mock -CommandName Restart-ServiceIfExists
+                    }
+
+                    It 'Should not throw exception' {
+                        {
+                            $setTargetResourceParameters = @{} + $script:testAndSetTargetResourceParameters
+                            $setTargetResourceParameters.$($parameter.Name) = $parameter.Value.NewValue
+                            Set-TargetResource @setTargetResourceParameters
+                        } | Should -Not -Throw
+                    }
+
+                    It 'Should call the expected mocks' {
+                        Assert-MockCalled `
+                            -CommandName Get-ItemPropertyValue `
+                            -ParameterFilter $getItemPropertyValueExistsParameterFilter `
+                            -Exactly -Times 1
+
+                        Assert-MockCalled `
+                            -CommandName Get-ItemProperty `
+                            -ParameterFilter $getItemPropertyParameterFilter `
+                            -Exactly -Times 1
+
+                        Assert-MockCalled `
+                            -CommandName Set-CertificateAuthoritySetting `
+                            -ParameterFilter {
+                                $Name -eq $parameter.Name -and `
+                                $Value -eq $parameter.Value.SetValue
+                            } `
+                            -Exactly -Times 1
+
+                        Assert-MockCalled `
+                            -CommandName Restart-ServiceIfExists `
+                            -Exactly -Times 1
+                    }
+                }
+            }
         }
 
         Describe 'MSFT_AdcsCertificationAuthoritySettings\Test-TargetResource' {
             Context 'When all Active Directory Certification Authority settings are in the correct state' {
                 BeforeAll {
-                    Mock -CommandName Get-TargetResource `
-                        -MockWith $getTargetResourceInStateMock
+                    Mock -CommandName Get-ItemPropertyValue `
+                        -MockWith $getItemPropertyValueExistsMock
+
+                    Mock -CommandName Get-ItemProperty `
+                        -MockWith $getItemPropertyMock
                 }
 
                 It 'Should not throw exception' {
                     {
-                        $script:testTargetResourceResult = Test-TargetResource @script:testTargetResourceParameters
+                        $script:testTargetResourceResult = Test-TargetResource @script:testAndSetTargetResourceParameters
                     } | Should -Not -Throw
                 }
 
@@ -227,7 +240,13 @@ try
 
                 It 'Should call the expected mocks' {
                     Assert-MockCalled `
-                        -CommandName Get-TargetResource `
+                        -CommandName Get-ItemPropertyValue `
+                        -ParameterFilter $getItemPropertyValueExistsParameterFilter `
+                        -Exactly -Times 1
+
+                    Assert-MockCalled `
+                        -CommandName Get-ItemProperty `
+                        -ParameterFilter $getItemPropertyParameterFilter `
                         -Exactly -Times 1
                 }
             }
@@ -236,13 +255,16 @@ try
             {
                 Context "When all Active Directory Certification Authority settings are in the correct state, except $($parameter.Name) is different" {
                     BeforeAll {
-                        Mock -CommandName Get-TargetResource `
-                            -MockWith $getTargetResourceInStateMock
+                        Mock -CommandName Get-ItemPropertyValue `
+                        -MockWith $getItemPropertyValueExistsMock
+
+                        Mock -CommandName Get-ItemProperty `
+                            -MockWith $getItemPropertyMock
                     }
 
                     It 'Should not throw exception' {
                         {
-                            $currentTestTargetResourceParameters = @{} + $script:testTargetResourceParameters
+                            $currentTestTargetResourceParameters = @{} + $script:testAndSetTargetResourceParameters
                             $currentTestTargetResourceParameters[$parameter.Name] = $parameter.Value.NewValue
                             $script:testTargetResourceResult = Test-TargetResource @currentTestTargetResourceParameters
                         } | Should -Not -Throw
@@ -254,7 +276,13 @@ try
 
                     It 'Should call the expected mocks' {
                         Assert-MockCalled `
-                            -CommandName Get-TargetResource `
+                            -CommandName Get-ItemPropertyValue `
+                            -ParameterFilter $getItemPropertyValueExistsParameterFilter `
+                            -Exactly -Times 1
+
+                        Assert-MockCalled `
+                            -CommandName Get-ItemProperty `
+                            -ParameterFilter $getItemPropertyParameterFilter `
                             -Exactly -Times 1
                     }
                 }
