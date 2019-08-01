@@ -1,5 +1,5 @@
 [ClassVersion("0.1.0.0"), FriendlyName("AdcsCertificationAuthoritySettings")]
-class AdcsCertificationAuthoritySettings : OMI_BaseResource
+class MSFT_AdcsCertificationAuthoritySettings : OMI_BaseResource
 {
     [Key, Description("Specifies the resource is a single instance, the value must be 'Yes'."), ValueMap{"Yes"}, Values{"Yes"}] String IsSingleInstance;
     [write, Description("Specifies an array of Certificate Authority certificate publication URLs, each prepended with an integer representing the type of URL endpoint.")] String CACertPublicationURLs[];
