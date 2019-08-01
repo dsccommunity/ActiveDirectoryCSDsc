@@ -5,6 +5,10 @@
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
 param ()
 
+<#
+    This integration test validates both AdcsCertificationAuthority
+    and AdcsCertificationAuthoritySettings.
+#>
 $script:DSCModuleName = 'ActiveDirectoryCSDsc'
 $script:DSCResourceName = 'MSFT_AdcsCertificationAuthority'
 

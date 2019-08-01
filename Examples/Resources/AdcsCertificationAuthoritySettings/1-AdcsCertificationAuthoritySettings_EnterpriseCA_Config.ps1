@@ -80,7 +80,7 @@ Configuration AdcsCertificationAuthoritySettings_EnterpriseCA_Config
             CRLOverlapUnits = 8
             CRLOverlapPeriod = 'Hours'
             CRLPeriodUnits = 1
-            CRLPeriod = 'Month'
+            CRLPeriod = 'Months'
             ValidityPeriodUnits = 10
             ValidityPeriod = 'Years'
             DSConfigDN = 'CN=Configuration,DC=CONTOSO,DC=COM'
