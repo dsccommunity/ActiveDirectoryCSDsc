@@ -454,7 +454,7 @@ Function Convert-AuditFilterToStringArray
 
     if ($AuditFilter -eq 0)
     {
-        return @()
+        return [System.String[]] @()
     }
 
     return ([CertificateAuthorityAuditFilter] $AuditFilter -split ', ')
@@ -471,7 +471,7 @@ Function Convert-AuditFilterToStringArray
 Function Convert-StringArrayToAuditFilter
 {
     [CmdletBinding()]
-    [OutputType([System.String[]])]
+    [OutputType([System.Int32])]
     param
     (
         [Parameter()]
