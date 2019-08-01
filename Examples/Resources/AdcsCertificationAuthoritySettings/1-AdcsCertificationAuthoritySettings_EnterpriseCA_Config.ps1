@@ -35,7 +35,7 @@
         See this page for more information on these settings:
         https://blogs.technet.microsoft.com/xdot509/2013/03/22/installing-a-two-tier-pki-hierarchy-in-windows-server-2012-wrap-up/
 #>
-Configuration AdcsCertificationAuthority_InstallCertificationAthority_Config
+Configuration AdcsCertificationAuthoritySettings_EnterpriseCA_Config
 {
     param
     (
