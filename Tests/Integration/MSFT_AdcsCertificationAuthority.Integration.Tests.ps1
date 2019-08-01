@@ -99,6 +99,48 @@ try
         }
     }
 
+    Describe 'MSFT_AdcsCertificationAuthoritySettings_Integration' {
+        $configFile = Join-Path -Path $PSScriptRoot -ChildPath 'MSFT_AdcsCertificationAuthoritySettings_Install.config.ps1'
+        . $configFile -Verbose -ErrorAction Stop
+
+        Context 'Install ADCS Certification Authority' {
+            It 'Should compile and apply the MOF without throwing' {
+                {
+                    $configData = @{
+                        AllNodes = @(
+                            @{
+                                NodeName                    = 'localhost'
+                                PsDscAllowPlainTextPassword = $true
+                            }
+                        )
+                    }
+
+                    & "MSFT_AdcsCertificationAuthoritySettings_Config" `
+                        -OutputPath $TestDrive `
+                        -ConfigurationData $configData
+
+                    Start-DscConfiguration `
+                        -Path $TestDrive `
+                        -ComputerName localhost `
+                        -Wait `
+                        -Verbose `
+                        -Force `
+                        -ErrorAction Stop
+                } | Should -Not -Throw
+            }
+
+            It 'Should be able to call Get-DscConfiguration without throwing' {
+                { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
+            }
+
+            It 'Should have set the resource and all the parameters should match' {
+                $current = Get-DscConfiguration | Where-Object {
+                    $_.ConfigurationName -eq 'MSFT_AdcsCertificationAuthoritySettings_Config'
+                }
+            }
+        }
+    }
+
     Describe "$($script:DSCResourceName)_Uninstall_Integration" {
         $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName)_Uninstall.config.ps1"
         . $configFile -Verbose -ErrorAction Stop
