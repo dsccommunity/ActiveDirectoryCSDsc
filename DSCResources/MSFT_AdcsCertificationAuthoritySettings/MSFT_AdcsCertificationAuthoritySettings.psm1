@@ -97,14 +97,28 @@ Function Get-TargetResource
         {
             'String[]'
             {
-                $parameterValue = $currentcertificateAuthoritySettings.$($parameter.Name) -split '\\n'
+                if ($null -ne $currentcertificateAuthoritySettings.$($parameter.Name))
+                {
+                    $parameterValue = $currentcertificateAuthoritySettings.$($parameter.Name) -split '\\n'
+                }
+                else
+                {
+                    $parameterValue = @()
+                }
                 break
             }
 
             'Flags'
             {
-                $parameterValue = Convert-AuditFilterToStringArray `
-                    -AuditFilter $currentcertificateAuthoritySettings.AuditFilter
+                if ($null -ne $currentcertificateAuthoritySettings.AuditFilter)
+                {
+                    $parameterValue = Convert-AuditFilterToStringArray `
+                        -AuditFilter $currentcertificateAuthoritySettings.AuditFilter
+                }
+                else
+                {
+                    $parameterValue = 0
+                }
                 break
             }
 
@@ -448,7 +462,7 @@ Function Convert-AuditFilterToStringArray
     (
         [Parameter()]
         [ValidateRange(0,127)]
-        [System.String[]]
+        [System.Int32]
         $AuditFilter
     )
 
@@ -516,6 +530,6 @@ Function Set-CertificateAuthoritySetting
             "$($MyInvocation.MyCommand): "
             ($script:localizedData.UpdatingAdcsCaSettingMessage -f $Name, $Value)
         ) -join '' )
-} # Function Convert-StringArrayToAuditFilter
+} # Function Set-CertificateAuthoritySetting
 
 Export-ModuleMember -Function *-TargetResource
