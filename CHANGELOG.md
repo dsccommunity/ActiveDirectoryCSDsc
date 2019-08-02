@@ -2,8 +2,9 @@
 
 ## Unreleased
 
-- BREAKING CHANGE: AdcsCertificateAuthoritySettings resource requires WMF 5.0
-  so ActiveDirectoryCSDsc module minimum requirements WMF 5.0.
+- BREAKING CHANGE: ActiveDirectoryCSDsc module minimum requirements updated
+  to WMF 5.0 because newly added AdcsCertificateAuthoritySettings resource
+  requires WMF 5.0.
 - Added new resource AdcsCertificateAuthoritySettings - see
   [Issue #13](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/13).
 - Added new resource AdcsTemplate.
