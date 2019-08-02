@@ -24,13 +24,13 @@ $script:parameterList = Import-LocalizedData `
 [flags()]
 enum CertificateAuthorityAuditFilter
 {
-    StartAndStopADCS                  = 1
-    BackupAndRestoreCADatabase        = 2
+    StartAndStopADCS = 1
+    BackupAndRestoreCADatabase = 2
     IssueAndManageCertificateRequests = 4
-    RevokeCertificatesAndPublishCRLs  = 8
-    ChangeCASecuritySettings          = 16
-    StoreAndRetrieveArchivedKeys      = 32
-    ChangeCAConfiguration             = 64
+    RevokeCertificatesAndPublishCRLs = 8
+    ChangeCASecuritySettings = 16
+    StoreAndRetrieveArchivedKeys = 32
+    ChangeCAConfiguration = 64
 }
 
 <#
@@ -67,23 +67,7 @@ Function Get-TargetResource
             $($script:localizedData.GettingAdcsCaSettingsMessage)
         ) -join '' )
 
-    $activeCertificateAuthority = Get-ItemPropertyValue `
-        -Path $script:certificateAuthorityRegistrySettingsPath `
-        -Name 'Active' `
-        -ErrorAction SilentlyContinue
-
-    if ([System.String]::IsNullOrEmpty($activeCertificateAuthority))
-    {
-        New-ObjectNotFoundException -Message ($script:localizedData.CertificateAuthorityNoneActive -f `
-            $script:certificateAuthorityRegistrySettingsPath)
-    }
-
-    $certificateAuthorityRegistryPath = Join-Path `
-        -Path $script:certificateAuthorityRegistrySettingsPath `
-        -ChildPath $activeCertificateAuthority
-
-    $currentcertificateAuthoritySettings = Get-ItemProperty `
-        -Path $certificateAuthorityRegistryPath
+    $currentcertificateAuthoritySettings = Get-CertificateAuthoritySettings
 
     # Generate the return object
     $returnValue = @{
@@ -274,8 +258,8 @@ Function Set-TargetResource
                 'String[]'
                 {
                     $updateParameter = (Compare-Object `
-                        -ReferenceObject $parameterCurrentValue `
-                        -DifferenceObject $parameterDesiredValue).Count -ne 0
+                            -ReferenceObject $parameterCurrentValue `
+                            -DifferenceObject $parameterDesiredValue).Count -ne 0
                     $parameterNewValue = $parameterDesiredValue -join '\n'
                     break
                 }
@@ -283,8 +267,8 @@ Function Set-TargetResource
                 'Flags'
                 {
                     $updateParameter = (Compare-Object `
-                        -ReferenceObject $parameterCurrentValue `
-                        -DifferenceObject $parameterDesiredValue).Count -ne 0
+                            -ReferenceObject $parameterCurrentValue `
+                            -DifferenceObject $parameterDesiredValue).Count -ne 0
                     $parameterNewValue = Convert-StringArrayToAuditFilter -StringArray $parameterDesiredValue
                     break
                 }
@@ -312,9 +296,9 @@ Function Set-TargetResource
     if ($parameterUpdated)
     {
         Write-Verbose -Message ( @(
-            "$($MyInvocation.MyCommand): "
-            $script:localizedData.RestartingCertSvcMessage
-        ) -join '' )
+                "$($MyInvocation.MyCommand): "
+                $script:localizedData.RestartingCertSvcMessage
+            ) -join '' )
 
         $null = Restart-ServiceIfExists -Name 'CertSvc'
     }
@@ -448,6 +432,42 @@ Function Test-TargetResource
 
 <#
     .SYNOPSIS
+        Return the settings for the installed certificate authotity.
+
+    .DESCRIPTION
+        Get the settings for the installed certificate authotity
+        from the registry and return them.
+
+        If no active certificate authority is found in the registry
+        then an exception is thrown.
+#>
+Function Get-CertificateAuthoritySettings
+{
+    [CmdletBinding()]
+    [OutputType([System.Management.Automation.PSCustomObject[]])]
+    param ()
+
+    $activeCertificateAuthority = Get-ItemPropertyValue `
+        -Path $script:certificateAuthorityRegistrySettingsPath `
+        -Name 'Active' `
+        -ErrorAction SilentlyContinue
+
+    if ([System.String]::IsNullOrEmpty($activeCertificateAuthority))
+    {
+        New-ObjectNotFoundException -Message ($script:localizedData.CertificateAuthorityNoneActive -f `
+                $script:certificateAuthorityRegistrySettingsPath)
+    }
+
+    $certificateAuthorityRegistryPath = Join-Path `
+        -Path $script:certificateAuthorityRegistrySettingsPath `
+        -ChildPath $activeCertificateAuthority
+
+    return Get-ItemProperty `
+        -Path $certificateAuthorityRegistryPath
+} # Function Get-CertificateAuthoritySettings
+
+<#
+    .SYNOPSIS
         Convers an audit filter flags bit field into an array of strings
         containing the friendly names of the audit filter flag.
 
@@ -461,7 +481,7 @@ Function Convert-AuditFilterToStringArray
     param
     (
         [Parameter()]
-        [ValidateRange(0,127)]
+        [ValidateRange(0, 127)]
         [System.Int32]
         $AuditFilter
     )
@@ -524,7 +544,7 @@ Function Set-CertificateAuthoritySetting
         $Value
     )
 
-    & "$($ENV:SystemRoot)\system32\certutil.exe" @('-setreg',"CA\$Name",$Value)
+    & "$($ENV:SystemRoot)\system32\certutil.exe" @('-setreg', "CA\$Name", $Value)
 
     Write-Verbose -Message ( @(
             "$($MyInvocation.MyCommand): "

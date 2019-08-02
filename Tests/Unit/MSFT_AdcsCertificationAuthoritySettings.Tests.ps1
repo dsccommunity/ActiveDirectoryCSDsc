@@ -216,6 +216,28 @@ try
                     }
                 }
             }
+
+            Context 'When Active Directory Certification Authority is not installed' {
+                BeforeAll {
+                    Mock -CommandName Get-ItemPropertyValue
+                }
+
+                $exception = Get-ObjectNotFoundException -Message ($script:localizedData.CertificateAuthorityNoneActive -f `
+                    $script:certificateAuthorityRegistrySettingsPath)
+
+                It 'Should throw expected exception' {
+                    {
+                        $script:setTargetResourceResult = Set-TargetResource @script:testAndSetTargetResourceParameters
+                    } | Should -Throw $exception
+                }
+
+                It 'Should call the expected mocks' {
+                    Assert-MockCalled `
+                        -CommandName Get-ItemPropertyValue `
+                        -ParameterFilter $getItemPropertyValueExistsParameterFilter `
+                        -Exactly -Times 1
+                }
+            }
         }
 
         Describe 'MSFT_AdcsCertificationAuthoritySettings\Test-TargetResource' {
@@ -285,6 +307,87 @@ try
                             -ParameterFilter $getItemPropertyParameterFilter `
                             -Exactly -Times 1
                     }
+                }
+            }
+
+            Context 'When Active Directory Certification Authority is not installed' {
+                BeforeAll {
+                    Mock -CommandName Get-ItemPropertyValue
+                }
+
+                $exception = Get-ObjectNotFoundException -Message ($script:localizedData.CertificateAuthorityNoneActive -f `
+                    $script:certificateAuthorityRegistrySettingsPath)
+
+                It 'Should throw expected exception' {
+                    {
+                        $script:testTargetResourceResult = Test-TargetResource @script:testAndSetTargetResourceParameters
+                    } | Should -Throw $exception
+                }
+
+                It 'Should call the expected mocks' {
+                    Assert-MockCalled `
+                        -CommandName Get-ItemPropertyValue `
+                        -ParameterFilter $getItemPropertyValueExistsParameterFilter `
+                        -Exactly -Times 1
+                }
+            }
+        }
+
+        Describe 'MSFT_AdcsCertificationAuthoritySettings\Get-CertificateAuthoritySettings' {
+            Context 'When Active Directory Certification Authority is installed' {
+                BeforeAll {
+                    Mock -CommandName Get-ItemPropertyValue `
+                        -MockWith $getItemPropertyValueExistsMock
+
+                    Mock -CommandName Get-ItemProperty `
+                        -MockWith $getItemPropertyMock
+                }
+
+                It 'Should not throw exception' {
+                    {
+                        $script:getCertificateAuthoritySettingsResult = Get-CertificateAuthoritySettings
+                    } | Should -Not -Throw
+                }
+
+                It 'Should return Active Directory Certification Authority settings' {
+                    foreach ($parameter in $script:parameterList.GetEnumerator())
+                    {
+                        $script:getCertificateAuthoritySettingsResult.$($parameter.Name) | Should -Be $parameter.Value.MockedValue
+                    }
+                }
+
+                It 'Should call the expected mocks' {
+                    Assert-MockCalled `
+                        -CommandName Get-ItemPropertyValue `
+                        -ParameterFilter $getItemPropertyValueExistsParameterFilter `
+                        -Exactly -Times 1
+
+                    Assert-MockCalled `
+                        -CommandName Get-ItemProperty `
+                        -ParameterFilter $getItemPropertyParameterFilter `
+                        -Exactly -Times 1
+                }
+            }
+
+            Context 'When Active Directory Certification Authority is not installed' {
+                BeforeAll {
+                    Mock -CommandName Get-ItemPropertyValue
+                }
+
+                $exception = Get-ObjectNotFoundException -Message ($script:localizedData.CertificateAuthorityNoneActive -f `
+                    $script:certificateAuthorityRegistrySettingsPath)
+
+                It 'Should throw expected exception' {
+                    {
+                        $script:getCertificateAuthoritySettingsResult = Get-CertificateAuthoritySettings
+                    } | Should -Throw $exception
+                }
+
+                It 'Should call the expected mocks' {
+                    Assert-MockCalled `
+                        -CommandName Get-ItemPropertyValue `
+                        -ParameterFilter $getItemPropertyValueExistsParameterFilter `
+                        -Exactly -Times 1
                 }
             }
         }
