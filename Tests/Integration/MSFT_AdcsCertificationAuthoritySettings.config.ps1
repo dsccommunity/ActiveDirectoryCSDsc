@@ -2,7 +2,7 @@ configuration MSFT_AdcsCertificationAuthoritySettings_Config {
     Import-DscResource -ModuleName ActiveDirectoryCSDsc
 
     node localhost {
-        AdcsCertificationAuthority Integration_Test {
+        AdcsCertificationAuthoritySettings Integration_Test {
             IsSingleInstance = 'Yes'
             CACertPublicationURLs = @(
                 '1:C:\Windows\system32\CertSrv\CertEnroll\%1_%3%4.crt'
