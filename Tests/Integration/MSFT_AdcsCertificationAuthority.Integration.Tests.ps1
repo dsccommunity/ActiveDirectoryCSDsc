@@ -168,17 +168,17 @@ try
                 $current = Get-DscConfiguration | Where-Object -FilterScript {
                     $_.ConfigurationName -eq 'MSFT_AdcsCertificationAuthoritySettings_Config'
                 }
-                $current.CACertPublicationURLs = $configData.AllNodes[0].CACertPublicationURLs
-                $current.CRLPublicationURLs    = $configData.AllNodes[0].CRLPublicationURLs
-                $current.CRLOverlapUnits       = $configData.AllNodes[0].CRLOverlapUnits
-                $current.CRLOverlapPeriod      = $configData.AllNodes[0].CRLOverlapPeriod
-                $current.CRLPeriodUnits        = $configData.AllNodes[0].CRLPeriodUnits
-                $current.CRLPeriod             = $configData.AllNodes[0].CRLPeriod
-                $current.ValidityPeriodUnits   = $configData.AllNodes[0].ValidityPeriodUnits
-                $current.ValidityPeriod        = $configData.AllNodes[0].ValidityPeriod
-                $current.DSConfigDN            = $configData.AllNodes[0].DSConfigDN
-                $current.DSDomainDN            = $configData.AllNodes[0].DSDomainDN
-                $current.AuditFilter           = $configData.AllNodes[0].AuditFilter
+                $current.CACertPublicationURLs | Should -BeExactly $configData.AllNodes[0].CACertPublicationURLs
+                $current.CRLPublicationURLs    | Should -BeExactly $configData.AllNodes[0].CRLPublicationURLs
+                $current.CRLOverlapUnits       | Should -BeExactly $configData.AllNodes[0].CRLOverlapUnits
+                $current.CRLOverlapPeriod      | Should -BeExactly $configData.AllNodes[0].CRLOverlapPeriod
+                $current.CRLPeriodUnits        | Should -BeExactly $configData.AllNodes[0].CRLPeriodUnits
+                $current.CRLPeriod             | Should -BeExactly $configData.AllNodes[0].CRLPeriod
+                $current.ValidityPeriodUnits   | Should -BeExactly $configData.AllNodes[0].ValidityPeriodUnits
+                $current.ValidityPeriod        | Should -BeExactly $configData.AllNodes[0].ValidityPeriod
+                $current.DSConfigDN            | Should -BeExactly $configData.AllNodes[0].DSConfigDN
+                $current.DSDomainDN            | Should -BeExactly $configData.AllNodes[0].DSDomainDN
+                $current.AuditFilter           | Should -BeExactly $configData.AllNodes[0].AuditFilter
             }
         }
     }
