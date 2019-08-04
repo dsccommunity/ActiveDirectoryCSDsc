@@ -50,7 +50,7 @@ $script:certificateAuthorityRegistrySettingsPath = 'HKLM:\System\CurrentControlS
     .OUTPUTS
         Returns an object containing the Active Directory Certificate Authority Settings.
 #>
-Function Get-TargetResource
+function Get-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
@@ -119,7 +119,7 @@ Function Get-TargetResource
     } # foreach
 
     return $returnValue
-} # Function Get-TargetResource
+} # function Get-TargetResource
 
 <#
     .SYNOPSIS
@@ -170,7 +170,7 @@ Function Get-TargetResource
     .PARAMETER AuditFilter
         Specifies an array of audit categories to enable audit logging for.
 #>
-Function Set-TargetResource
+function Set-TargetResource
 {
     [CmdletBinding()]
     param
@@ -302,7 +302,7 @@ Function Set-TargetResource
 
         $null = Restart-ServiceIfExists -Name 'CertSvc'
     }
-} # Function Set-TargetResource
+} # function Set-TargetResource
 
 <#
     .SYNOPSIS
@@ -353,7 +353,7 @@ Function Set-TargetResource
     .PARAMETER AuditFilter
         Specifies an array of audit categories to enable audit logging for.
 #>
-Function Test-TargetResource
+function Test-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
@@ -428,7 +428,7 @@ Function Test-TargetResource
         -CurrentValues $currentSettings `
         -DesiredValues $PSBoundParameters `
         -Verbose:$VerbosePreference
-} # Function Test-TargetResource
+} # function Test-TargetResource
 
 <#
     .SYNOPSIS
@@ -441,7 +441,7 @@ Function Test-TargetResource
         If no active certificate authority is found in the registry
         then an exception is thrown.
 #>
-Function Get-CertificateAuthoritySettings
+function Get-CertificateAuthoritySettings
 {
     [CmdletBinding()]
     [OutputType([System.Management.Automation.PSCustomObject[]])]
@@ -464,7 +464,7 @@ Function Get-CertificateAuthoritySettings
 
     return Get-ItemProperty `
         -Path $certificateAuthorityRegistryPath
-} # Function Get-CertificateAuthoritySettings
+} # function Get-CertificateAuthoritySettings
 
 <#
     .SYNOPSIS
@@ -474,7 +474,7 @@ Function Get-CertificateAuthoritySettings
     .PARAMETER AuditFilter
         The audit filter bit field to convert to an array of strings.
 #>
-Function Convert-AuditFilterToStringArray
+function Convert-AuditFilterToStringArray
 {
     [CmdletBinding()]
     [OutputType([System.String[]])]
@@ -492,7 +492,7 @@ Function Convert-AuditFilterToStringArray
     }
 
     return ([CertificateAuthorityAuditFilter] $AuditFilter -split ', ')
-} # Function Convert-AuditFilterToStringArray
+} # function Convert-AuditFilterToStringArray
 
 <#
     .SYNOPSIS
@@ -502,7 +502,7 @@ Function Convert-AuditFilterToStringArray
     .PARAMETER AuditFilter
         The audit filter bit field to convert to an array of strings.
 #>
-Function Convert-StringArrayToAuditFilter
+function Convert-StringArrayToAuditFilter
 {
     [CmdletBinding()]
     [OutputType([System.Int32])]
@@ -520,7 +520,7 @@ Function Convert-StringArrayToAuditFilter
     }
 
     return ([CertificateAuthorityAuditFilter] $StringArray).value__
-} # Function Convert-StringArrayToAuditFilter
+} # function Convert-StringArrayToAuditFilter
 
 <#
     .SYNOPSIS
@@ -530,7 +530,7 @@ Function Convert-StringArrayToAuditFilter
     .PARAMETER AuditFilter
         The audit filter bit field to convert to an array of strings.
 #>
-Function Set-CertificateAuthoritySetting
+function Set-CertificateAuthoritySetting
 {
     [CmdletBinding()]
     param
@@ -550,6 +550,6 @@ Function Set-CertificateAuthoritySetting
             "$($MyInvocation.MyCommand): "
             ($script:localizedData.UpdatingAdcsCaSettingMessage -f $Name, $Value)
         ) -join '' )
-} # Function Set-CertificateAuthoritySetting
+} # function Set-CertificateAuthoritySetting
 
 Export-ModuleMember -Function *-TargetResource

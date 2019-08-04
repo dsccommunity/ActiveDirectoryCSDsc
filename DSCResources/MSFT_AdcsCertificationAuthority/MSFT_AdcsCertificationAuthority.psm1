@@ -95,7 +95,7 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_AdcsCertificationA
     .OUTPUTS
         Returns an object containing the ADCS CA state information.
 #>
-Function Get-TargetResource
+function Get-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
@@ -238,7 +238,7 @@ Function Get-TargetResource
         CAType           = $CAType
         Credential       = $Credential
     }
-} # Function Get-TargetResource
+} # function Get-TargetResource
 
 <#
     .SYNOPSIS
@@ -324,7 +324,7 @@ Function Get-TargetResource
         Validity period of the certification authority certificate. If this is a subordinate CA, do not
         specify this parameter because the validity period is determined by the parent CA.
 #>
-Function Set-TargetResource
+function Set-TargetResource
 {
     [CmdletBinding()]
     param
@@ -475,7 +475,7 @@ Function Set-TargetResource
     {
         New-InvalidOperationException -Message $resultObject.ErrorString
     }
-} # Function Set-TargetResource
+} # function Set-TargetResource
 
 <#
     .SYNOPSIS
@@ -564,7 +564,7 @@ Function Set-TargetResource
     .OUTPUTS
         Returns true if the ADCS CA is in the desired state.
 #>
-Function Test-TargetResource
+function Test-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
@@ -738,6 +738,6 @@ Function Test-TargetResource
         # Something else went wrong
         throw $_
     } # try
-} # Function Test-TargetResource
+} # function Test-TargetResource
 
 Export-ModuleMember -Function *-TargetResource
