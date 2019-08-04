@@ -14,7 +14,7 @@
         SetValue     = '65:C:\Windows\system32\CertSrv\CertEnroll\%3%8%9.crl\n6:http://pki.contoso.com/CertEnroll/%3%8%9.crl'
     }
     CRLOverlapUnits       = @{
-        Type         = 'Uint32'
+        Type         = 'UInt32'
         CurrentValue = 24
         NewValue     = 12
         MockedValue  = 24
@@ -28,7 +28,7 @@
         SetValue     = 'Days'
     }
     CRLPeriodUnits        = @{
-        Type         = 'Uint32'
+        Type         = 'UInt32'
         CurrentValue = 5
         NewValue     = 10
         MockedValue  = 5
@@ -42,7 +42,7 @@
         SetValue     = 'Months'
     }
     ValidityPeriodUnits   = @{
-        Type         = 'Uint32'
+        Type         = 'UInt32'
         CurrentValue = 2
         NewValue     = 4
         MockedValue  = 2

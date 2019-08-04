@@ -15,7 +15,7 @@ class MSFT_AdcsCertificationAuthority : OMI_BaseResource
     [write, Description("Specifies the signature hash algorithm used by the certification authority.")] String HashAlgorithmName;
     [write, Description("Specifies that Unicode characters are allowed in certification authority name string.")] Boolean IgnoreUnicode;
     [write, Description("Specifies the name of an existing private key container.")] String KeyContainerName;
-    [write, Description("Specifies the bit length for new certification authority key.")] Uint32 KeyLength;
+    [write, Description("Specifies the bit length for new certification authority key.")] UInt32 KeyLength;
     [write, Description("Specifies the folder location of the certification authority database log.")] String LogDirectory;
     [write, Description("Specifies the folder location for certificate request file.")] String OutputCertRequestFile;
     [write, Description("Specifies that the computer object in the Active Directory Domain Service domain should be overwritten with the same computer name.")] Boolean OverwriteExistingCAinDS;
@@ -23,6 +23,6 @@ class MSFT_AdcsCertificationAuthority : OMI_BaseResource
     [write, Description("Overwrite existing key container with the same name")] Boolean OverwriteExistingKey;
     [write, Description("Specifies the configuration string of the parent certification authority that will certify this CA.")] String ParentCA;
     [write, Description("Specifies the validity period of the certification authority certificate in hours, days, weeks, months or years. If this is a subordinate CA, do not use this parameter, because the validity period is determined by the parent CA."), ValueMap{"Hours","Days","Months","Years"}, Values{"Hours","Days","Months","Years"}] String ValidityPeriod;
-    [write, Description("Validity period of the certification authority certificate. If this is a subordinate CA, do not specify this parameter because the validity period is determined by the parent CA.")] Uint32 ValidityPeriodUnits;
+    [write, Description("Validity period of the certification authority certificate. If this is a subordinate CA, do not specify this parameter because the validity period is determined by the parent CA.")] UInt32 ValidityPeriodUnits;
 };
 

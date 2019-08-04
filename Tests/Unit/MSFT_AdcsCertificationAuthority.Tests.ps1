@@ -111,7 +111,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.CA {
                 $KeyContainerName,
 
                 [Parameter()]
-                [System.Uint32]
+                [System.UInt32]
                 $KeyLength,
 
                 [Parameter()]
@@ -144,7 +144,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.CA {
                 $ValidityPeriod,
 
                 [Parameter()]
-                [System.Uint32]
+                [System.UInt32]
                 $ValidityPeriodUnits,
 
                 [Parameter()]

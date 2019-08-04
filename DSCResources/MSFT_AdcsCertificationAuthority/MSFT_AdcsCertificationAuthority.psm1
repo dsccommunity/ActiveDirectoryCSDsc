@@ -162,7 +162,7 @@ Function Get-TargetResource
         $KeyContainerName,
 
         [Parameter()]
-        [System.Uint32]
+        [System.UInt32]
         $KeyLength,
 
         [Parameter()]
@@ -195,7 +195,7 @@ Function Get-TargetResource
         $ValidityPeriod,
 
         [Parameter()]
-        [System.Uint32]
+        [System.UInt32]
         $ValidityPeriodUnits
     )
 
@@ -390,7 +390,7 @@ Function Set-TargetResource
         $KeyContainerName,
 
         [Parameter()]
-        [System.Uint32]
+        [System.UInt32]
         $KeyLength,
 
         [Parameter()]
@@ -423,7 +423,7 @@ Function Set-TargetResource
         $ValidityPeriod,
 
         [Parameter()]
-        [System.Uint32]
+        [System.UInt32]
         $ValidityPeriodUnits
     )
 
@@ -631,7 +631,7 @@ Function Test-TargetResource
         $KeyContainerName,
 
         [Parameter()]
-        [System.Uint32]
+        [System.UInt32]
         $KeyLength,
 
         [Parameter()]
@@ -664,7 +664,7 @@ Function Test-TargetResource
         $ValidityPeriod,
 
         [Parameter()]
-        [System.Uint32]
+        [System.UInt32]
         $ValidityPeriodUnits
     )
 

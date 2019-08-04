@@ -189,7 +189,7 @@ Function Set-TargetResource
         $CRLPublicationURLs,
 
         [Parameter()]
-        [System.Uint32]
+        [System.UInt32]
         $CRLOverlapUnits,
 
         [Parameter()]
@@ -198,7 +198,7 @@ Function Set-TargetResource
         $CRLOverlapPeriod,
 
         [Parameter()]
-        [System.Uint32]
+        [System.UInt32]
         $CRLPeriodUnits,
 
         [Parameter()]
@@ -207,7 +207,7 @@ Function Set-TargetResource
         $CRLPeriod,
 
         [Parameter()]
-        [System.Uint32]
+        [System.UInt32]
         $ValidityPeriodUnits,
 
         [Parameter()]
@@ -373,7 +373,7 @@ Function Test-TargetResource
         $CRLPublicationURLs,
 
         [Parameter()]
-        [System.Uint32]
+        [System.UInt32]
         $CRLOverlapUnits,
 
         [Parameter()]
@@ -382,7 +382,7 @@ Function Test-TargetResource
         $CRLOverlapPeriod,
 
         [Parameter()]
-        [System.Uint32]
+        [System.UInt32]
         $CRLPeriodUnits,
 
         [Parameter()]
@@ -391,7 +391,7 @@ Function Test-TargetResource
         $CRLPeriod,
 
         [Parameter()]
-        [System.Uint32]
+        [System.UInt32]
         $ValidityPeriodUnits,
 
         [Parameter()]
