@@ -28,6 +28,10 @@ certificates that will automatically be trusted.
 - **AdcsOcspExtension**: This resource can be used to configure OCSP URI
   extensions on a Certificate Authority after the feature has been installed
   on the server.
+- **AdcsTemplate**: This resource can be used to add or remove Certificate
+  Authority templates to an Enterprise CA, after the feature has been installed
+  on the server and the `AdcsCertificationAuthority` resource installed with a
+  `CAType` of `EnterpriseRootCA` or `EnterpriseSubordinateCA`.
 
 This project has adopted [this code of conduct](CODE_OF_CONDUCT.md).
 
