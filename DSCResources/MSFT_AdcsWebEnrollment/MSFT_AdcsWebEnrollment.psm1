@@ -30,7 +30,7 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_AdcsWebEnrollment'
     .OUTPUTS
         Returns an object containing the ADCS Web Enrollment state information.
 #>
-Function Get-TargetResource
+function Get-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
@@ -89,7 +89,7 @@ Function Get-TargetResource
         CAConfig   = $CAConfig
         Credential = $Credential
     }
-} # Function Get-TargetResource
+} # function Get-TargetResource
 
 <#
     .SYNOPSIS
@@ -110,7 +110,7 @@ Function Get-TargetResource
     .PARAMETER Ensure
         Specifies whether the Web Enrollment feature should be installed or uninstalled.
 #>
-Function Set-TargetResource
+function Set-TargetResource
 {
     [CmdletBinding()]
     param
@@ -171,7 +171,7 @@ Function Set-TargetResource
     {
         New-InvalidOperationException -Message $errorMessage
     }
-} # Function Set-TargetResource
+} # function Set-TargetResource
 
 <#
     .SYNOPSIS
@@ -195,7 +195,7 @@ Function Set-TargetResource
     .OUTPUTS
         Returns true if the ADCS Web Enrollment is in the desired state.
 #>
-Function Test-TargetResource
+function Test-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
@@ -287,6 +287,6 @@ Function Test-TargetResource
         # Something else went wrong
         throw $_
     } # try
-} # Function Test-TargetResource
+} # function Test-TargetResource
 
 Export-ModuleMember -Function *-TargetResource

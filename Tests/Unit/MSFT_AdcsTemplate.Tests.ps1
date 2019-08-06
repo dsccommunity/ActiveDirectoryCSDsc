@@ -4,8 +4,8 @@ $script:DSCResourceName = 'MSFT_AdcsTemplate'
 Import-Module -Name (Join-Path -Path (Join-Path -Path (Split-Path $PSScriptRoot -Parent) -ChildPath 'TestHelpers') -ChildPath 'CommonTestHelper.psm1') -Global
 
 #region HEADER
-# Integration Test Template Version: 1.1.0
-[String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+# Unit Test Template Version: 1.1.0
+$script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
     (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
 {
@@ -92,7 +92,7 @@ Try
         }
 
         Describe 'MSFT_AdcsTemplate\Get-TargetResource' {
-            Context 'Template is installed' {
+            Context 'When the template is installed' {
                 Mock -CommandName Get-CATemplate -MockWith { $mockTemplateList }
 
                 $result = Get-TargetResource @testTemplatePresent
@@ -111,7 +111,7 @@ Try
                 }
             }
 
-            Context 'Template is not installed' {
+            Context 'When the template is not installed' {
                 Mock -CommandName Get-CATemplate -MockWith { $mockTemplateList }
 
                 $result = Get-TargetResource @testTemplateNotPresent
@@ -128,7 +128,7 @@ Try
                 }
             }
 
-            Context 'Get-CATemplate throws an exception' {
+            Context 'When Get-CATemplate throws an exception' {
                 Mock -CommandName Get-CATemplate -MockWith { throw }
 
                 It 'Should throw the correct error' {
@@ -140,7 +140,7 @@ Try
         }
 
         Describe 'MSFT_AdcsTemplate\Set-TargetResource' {
-            Context 'Template is not added but should be' {
+            Context 'When the template is not added but should be' {
                 Mock -CommandName Add-CATemplate
 
                 It 'Should not throw an exception' {
@@ -155,7 +155,7 @@ Try
                         -Times 1
                 }
 
-                Context 'Add-CATemplate throws an exception' {
+                Context 'When Add-CATemplate throws an exception' {
                     Mock -CommandName Add-CATemplate -MockWith { throw }
 
                     It 'Should throw the correct error' {
@@ -165,7 +165,7 @@ Try
                     }
                 }
 
-                Context 'Template is added but should not be' {
+                Context 'When the template is added but should not be' {
                     Mock -CommandName Remove-CATemplate
 
                     It 'Should not throw an exception' {
@@ -181,7 +181,7 @@ Try
                     }
                 }
 
-                Context 'Remove-CATemplate throws an exception' {
+                Context 'When Remove-CATemplate throws an exception' {
                     Mock -CommandName Remove-CATemplate -MockWith { throw }
 
                     It 'Should throw the correct error' {
@@ -194,7 +194,7 @@ Try
         }
 
         Describe 'MSFT_AdcsTemplate\Test-TargetResource' {
-            Context 'Template is added and should be' {
+            Context 'When the template is added and should be' {
                 Mock -CommandName Get-TargetResource -MockWith { $mockGetTemplatePresent }
 
                 $result = Test-TargetResource @testTemplatePresent -Ensure 'Present'
@@ -212,7 +212,7 @@ Try
                 }
             }
 
-            Context 'Template is added and should not be' {
+            Context 'When the template is added and should not be' {
                 Mock -CommandName Get-TargetResource -MockWith { $mockGetTemplatePresent }
 
                 $result = Test-TargetResource @testTemplatePresent -Ensure 'Absent'
@@ -230,7 +230,7 @@ Try
                 }
             }
 
-            Context 'Template is not added and should be' {
+            Context 'When the template is not added and should be' {
                 Mock -CommandName Get-TargetResource -MockWith { $mockGetTemplateNotPresent }
 
                 $result = Test-TargetResource @testTemplateNotPresent -Ensure 'Present'
@@ -248,7 +248,7 @@ Try
                 }
             }
 
-            Context 'Template is not added and should not be' {
+            Context 'When the template is not added and should not be' {
                 Mock -CommandName Get-TargetResource -MockWith { $MockGetTemplateNotPresent }
 
                 $result = Test-TargetResource @testTemplateNotPresent -Ensure 'Absent'

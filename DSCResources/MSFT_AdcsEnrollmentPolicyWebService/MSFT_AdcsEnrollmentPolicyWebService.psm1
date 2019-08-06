@@ -39,7 +39,7 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_AdcsEnrollmentPoli
         Returns an object containing the ADCS AdcsEnrollmentPolicyWebService
         state information.
 #>
-Function Get-TargetResource
+function Get-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
@@ -89,7 +89,7 @@ Function Get-TargetResource
         KeyBasedRenewal    = $KeyBasedRenewal
         Ensure             = $Ensure
     }
-} # Function Get-TargetResource
+} # function Get-TargetResource
 
 <#
     .SYNOPSIS
@@ -117,7 +117,7 @@ Function Get-TargetResource
         Specifies whether the Certificate Authority should be installed or uninstalled. Defaults
         to Present.
 #>
-Function Set-TargetResource
+function Set-TargetResource
 {
     [CmdletBinding()]
     param
@@ -196,7 +196,7 @@ Function Set-TargetResource
         ) -join '' )
         New-InvalidOperationException -Message $errorMessage
     }
-} # Function Set-TargetResource
+} # function Set-TargetResource
 
 <#
     .SYNOPSIS
@@ -227,7 +227,7 @@ Function Set-TargetResource
     .OUTPUTS
         Returns true if the ADCS Enrollment Policy Web Service is in the correct state.
 #>
-Function Test-TargetResource
+function Test-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
@@ -315,7 +315,7 @@ Function Test-TargetResource
             return $true
         }
     }
-} # Function Test-TargetResource
+} # function Test-TargetResource
 
 <#
     .SYNOPSIS
@@ -333,7 +333,7 @@ Function Test-TargetResource
     .OUTPUTS
         Returns true if the ADCS Enrollment Policy Web Service is installed.
 #>
-Function Test-AdcsEnrollmentPolicyWebServiceInstallState
+function Test-AdcsEnrollmentPolicyWebServiceInstallState
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
@@ -398,7 +398,7 @@ Function Test-AdcsEnrollmentPolicyWebServiceInstallState
 
         return $true
     }
-} # Function Test-AdcsEnrollmentPolicyWebServiceInstallState
+} # function Test-AdcsEnrollmentPolicyWebServiceInstallState
 
 <#
     .SYNOPSIS
