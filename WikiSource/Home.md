@@ -6,7 +6,7 @@ capabilities and known issues, and information to help plan a DSC based
 implementation of ActiveDirectoryCSDsc.
 
 Please leave comments, feature requests, and bug reports in then
-[issues section](../issues) for this module.
+[issues section](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues) for this module.
 
 ## Getting started
 
