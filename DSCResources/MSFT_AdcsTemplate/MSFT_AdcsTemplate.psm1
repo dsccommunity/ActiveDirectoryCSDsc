@@ -19,7 +19,7 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_AdcsTemplate'
     .PARAMETER Ensure
         Specifies whether the Template should be added or removed.
 #>
-Function Get-TargetResource
+function Get-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
@@ -59,7 +59,7 @@ Function Get-TargetResource
         Name   = $Name
         Ensure = $Ensure
     }
-} # Function Get-TargetResource
+} # function Get-TargetResource
 
 <#
     .SYNOPSIS
@@ -72,7 +72,7 @@ Function Get-TargetResource
     .PARAMETER Ensure
         Specifies whether the Template should be added or removed.
 #>
-Function Set-TargetResource
+function Set-TargetResource
 {
     [CmdletBinding()]
     param
@@ -124,7 +124,7 @@ Function Set-TargetResource
             New-InvalidOperationException -Message $($script:localizedData.InvalidOperationRemovingAdcsTemplateMessage -f $Name) -ErrorRecord $_
         }
     }
-} # Function Set-TargetResource
+} # function Set-TargetResource
 
 <#
     .SYNOPSIS
@@ -140,7 +140,7 @@ Function Set-TargetResource
     .OUTPUTS
         Returns true if the CA Template is in the desired state.
 #>
-Function Test-TargetResource
+function Test-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
@@ -208,6 +208,6 @@ Function Test-TargetResource
             return $true
         }
     }
-} # Function Test-TargetResource
+} # function Test-TargetResource
 
 Export-ModuleMember -Function *-TargetResource
