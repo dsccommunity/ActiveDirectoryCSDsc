@@ -27,12 +27,3 @@ DSC resources available:
 ```powershell
 Get-DscResource -Module ActiveDirectoryCSDsc
 ```
-
-## Included resources
-
-- [AdcsCertificationAuthority](AdcsCertificationAuthority)
-- [AdcsEnrollmentPolicyWebService](AdcsEnrollmentPolicyWebService)
-- [AdcsOcspExtension](AdcsOcspExtension)
-- [AdcsOnlineResponder](AdcsOnlineResponder)
-- [AdcsTemplate](AdcsTemplate)
-- [AdcsWebEnrollment](AdcsWebEnrollment)
