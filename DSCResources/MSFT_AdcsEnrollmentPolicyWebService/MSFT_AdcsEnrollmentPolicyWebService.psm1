@@ -39,7 +39,7 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_AdcsEnrollmentPoli
         Returns an object containing the ADCS AdcsEnrollmentPolicyWebService
         state information.
 #>
-Function Get-TargetResource
+function Get-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
@@ -89,7 +89,7 @@ Function Get-TargetResource
         KeyBasedRenewal    = $KeyBasedRenewal
         Ensure             = $Ensure
     }
-} # Function Get-TargetResource
+} # function Get-TargetResource
 
 <#
     .SYNOPSIS
@@ -117,7 +117,7 @@ Function Get-TargetResource
         Specifies whether the Certificate Authority should be installed or uninstalled. Defaults
         to Present.
 #>
-Function Set-TargetResource
+function Set-TargetResource
 {
     [CmdletBinding()]
     param
@@ -161,31 +161,27 @@ Function Set-TargetResource
 
     try
     {
-        switch ($Ensure)
+        if ($Ensure -eq 'Present')
         {
-            'Present'
-            {
-                Write-Verbose -Message ( @(
-                        "$($MyInvocation.MyCommand): "
-                        $($script:localizedData.InstallingAdcsEnrollmentPolicyWebServiceMessage -f $AuthenticationType)
-                    ) -join '' )
+            Write-Verbose -Message ( @(
+                    "$($MyInvocation.MyCommand): "
+                    $($script:localizedData.InstallingAdcsEnrollmentPolicyWebServiceMessage -f $AuthenticationType)
+                ) -join '' )
 
-                $errorMessage = (Install-AdcsEnrollmentPolicyWebService @adcsEnrollmentPolicyWebServiceParameters -Force).ErrorString
-            }
+            $errorMessage = (Install-AdcsEnrollmentPolicyWebService @adcsEnrollmentPolicyWebServiceParameters -Force).ErrorString
+        }
+        else
+        {
+            $null = $adcsEnrollmentPolicyWebServiceParameters.Remove('SslCertThumbprint')
+            $null = $adcsEnrollmentPolicyWebServiceParameters.Remove('Credential')
 
-            'Absent'
-            {
-                $null = $adcsEnrollmentPolicyWebServiceParameters.Remove('SslCertThumbprint')
-                $null = $adcsEnrollmentPolicyWebServiceParameters.Remove('Credential')
+            Write-Verbose -Message ( @(
+                    "$($MyInvocation.MyCommand): "
+                    $($script:localizedData.UninstallingAdcsEnrollmentPolicyWebServiceMessage -f $AuthenticationType)
+                ) -join '' )
 
-                Write-Verbose -Message ( @(
-                        "$($MyInvocation.MyCommand): "
-                        $($script:localizedData.UninstallingAdcsEnrollmentPolicyWebServiceMessage -f $AuthenticationType)
-                    ) -join '' )
-
-                $errorMessage = (Uninstall-AdcsEnrollmentPolicyWebService @adcsEnrollmentPolicyWebServiceParameters -Force).ErrorString
-            }
-        } # switch
+            $errorMessage = (Uninstall-AdcsEnrollmentPolicyWebService @adcsEnrollmentPolicyWebServiceParameters -Force).ErrorString
+        }
     }
     catch
     {
@@ -200,7 +196,7 @@ Function Set-TargetResource
         ) -join '' )
         New-InvalidOperationException -Message $errorMessage
     }
-} # Function Set-TargetResource
+} # function Set-TargetResource
 
 <#
     .SYNOPSIS
@@ -231,7 +227,7 @@ Function Set-TargetResource
     .OUTPUTS
         Returns true if the ADCS Enrollment Policy Web Service is in the correct state.
 #>
-Function Test-TargetResource
+function Test-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
@@ -274,60 +270,52 @@ Function Test-TargetResource
     if ($installed -eq $true)
     {
         # Enrollment Policy Web Service is already installed
-        switch ($Ensure)
+        if ($Ensure -eq 'Present')
         {
-            'Present'
-            {
-                # CA is installed and should be - change not required
-                Write-Verbose -Message ( @(
-                        "$($MyInvocation.MyCommand): "
-                        $($script:localizedData.AdcsEnrollmentPolicyWebServiceInstalledAndShouldBeMessage -f $AuthenticationType)
-                    ) -join '' )
+            # CA is installed and should be - change not required
+            Write-Verbose -Message ( @(
+                    "$($MyInvocation.MyCommand): "
+                    $($script:localizedData.AdcsEnrollmentPolicyWebServiceInstalledAndShouldBeMessage -f $AuthenticationType)
+                ) -join '' )
 
-                return $true
-            }
+            return $true
+        }
+        else
+        {
+            # CA is installed and should not be - change required
+            Write-Verbose -Message ( @(
+                    "$($MyInvocation.MyCommand): "
+                    $($script:localizedData.AdcsEnrollmentPolicyWebServiceInstalledButShouldNotBeMessage -f $AuthenticationType)
+                ) -join '' )
 
-            'Absent'
-            {
-                # CA is installed and should not be - change required
-                Write-Verbose -Message ( @(
-                        "$($MyInvocation.MyCommand): "
-                        $($script:localizedData.AdcsEnrollmentPolicyWebServiceInstalledButShouldNotBeMessage -f $AuthenticationType)
-                    ) -join '' )
-
-                return $false
-            }
-        } # switch
+            return $false
+        }
     }
     else
     {
         # Enrollment Policy Web Service is not installed
-        switch ($Ensure)
+        if ($Ensure -eq 'Present')
         {
-            'Present'
-            {
-                # CA is not installed but should be - change required
-                Write-Verbose -Message ( @(
-                        "$($MyInvocation.MyCommand): "
-                        $($script:localizedData.AdcsEnrollmentPolicyWebServiceNotInstalledButShouldBeMessage -f $AuthenticationType)
-                    ) -join '' )
+            # CA is not installed but should be - change required
+            Write-Verbose -Message ( @(
+                    "$($MyInvocation.MyCommand): "
+                    $($script:localizedData.AdcsEnrollmentPolicyWebServiceNotInstalledButShouldBeMessage -f $AuthenticationType)
+                ) -join '' )
 
-                return $false
-            }
+            return $false
+        }
+        else
+        {
+            # CA is not installed and should not be - change not required
+            Write-Verbose -Message ( @(
+                    "$($MyInvocation.MyCommand): "
+                    $($script:localizedData.AdcsEnrollmentPolicyWebServiceNotInstalledAndShouldNotBeMessage -f $AuthenticationType)
+                ) -join '' )
 
-            'Absent'
-            {
-                # CA is not installed and should not be - change not required
-                Write-Verbose -Message ( @(
-                        "$($MyInvocation.MyCommand): "
-                        $($script:localizedData.AdcsEnrollmentPolicyWebServiceNotInstalledAndShouldNotBeMessage -f $AuthenticationType)
-                    ) -join '' )
-
-                return $true
-            }
-        } # switch
+            return $true
+        }
     }
-} # Function Test-TargetResource
+} # function Test-TargetResource
 
 <#
     .SYNOPSIS
@@ -345,7 +333,7 @@ Function Test-TargetResource
     .OUTPUTS
         Returns true if the ADCS Enrollment Policy Web Service is installed.
 #>
-Function Test-AdcsEnrollmentPolicyWebServiceInstallState
+function Test-AdcsEnrollmentPolicyWebServiceInstallState
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
@@ -410,7 +398,7 @@ Function Test-AdcsEnrollmentPolicyWebServiceInstallState
 
         return $true
     }
-} # Function Test-AdcsEnrollmentPolicyWebServiceInstallState
+} # function Test-AdcsEnrollmentPolicyWebServiceInstallState
 
 <#
     .SYNOPSIS

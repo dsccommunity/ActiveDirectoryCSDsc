@@ -27,7 +27,7 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_AdcsOnlineResponde
     .OUTPUTS
         Returns an object containing the ADCS Online Responder state information.
 #>
-Function Get-TargetResource
+function Get-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
@@ -74,14 +74,14 @@ Function Get-TargetResource
     catch
     {
         # Something else went wrong
-        Throw $_
+        throw $_
     }
 
     return @{
         Ensure     = $Ensure
         Credential = $Credential
     }
-} # Function Get-TargetResource
+} # function Get-TargetResource
 
 <#
     .SYNOPSIS
@@ -99,7 +99,7 @@ Function Get-TargetResource
     .PARAMETER Ensure
         Specifies whether the Online Responder feature should be installed or uninstalled.
 #>
-Function Set-TargetResource
+function Set-TargetResource
 {
     [CmdletBinding()]
     param
@@ -133,34 +133,30 @@ Function Set-TargetResource
 
     $errorMessage = ''
 
-    switch ($Ensure)
+    if ($Ensure -eq 'Present')
     {
-        'Present'
-        {
-            Write-Verbose -Message ( @(
-                    "$($MyInvocation.MyCommand): "
-                    $($script:localizedData.InstallingAdcsOnlineResponderMessage)
-                ) -join '' )
+        Write-Verbose -Message ( @(
+                "$($MyInvocation.MyCommand): "
+                $($script:localizedData.InstallingAdcsOnlineResponderMessage)
+            ) -join '' )
 
-            $errorMessage = (Install-AdcsOnlineResponder @adcsParameters -Force).ErrorString
-        }
+        $errorMessage = (Install-AdcsOnlineResponder @adcsParameters -Force).ErrorString
+    }
+    else
+    {
+    Write-Verbose -Message ( @(
+                "$($MyInvocation.MyCommand): "
+                $($script:localizedData.UninstallingAdcsOnlineResponderMessage)
+            ) -join '' )
 
-        'Absent'
-        {
-            Write-Verbose -Message ( @(
-                    "$($MyInvocation.MyCommand): "
-                    $($script:localizedData.UninstallingAdcsOnlineResponderMessage)
-                ) -join '' )
-
-            $errorMessage = (Uninstall-AdcsOnlineResponder -Force).ErrorString
-        }
-    } # switch
+        $errorMessage = (Uninstall-AdcsOnlineResponder -Force).ErrorString
+    }
 
     if (-not [System.String]::IsNullOrEmpty($errorMessage))
     {
         New-InvalidOperationException -Message $errorMessage
     }
-} # Function Set-TargetResource
+} # function Set-TargetResource
 
 <#
     .SYNOPSIS
@@ -181,7 +177,7 @@ Function Set-TargetResource
     .OUTPUTS
         Returns true if the ADCS Online Responder is in the desired state.
 #>
-Function Test-TargetResource
+function Test-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
@@ -218,64 +214,56 @@ Function Test-TargetResource
     {
         $null = Install-AdcsOnlineResponder @adcsParameters -WhatIf
         # Online Responder is not installed
-        switch ($Ensure)
+        if ($Ensure -eq 'Present')
         {
-            'Present'
-            {
-                # Online Responder is not installed but should be - change required
-                Write-Verbose -Message ( @(
-                        "$($MyInvocation.MyCommand): "
-                        $($script:localizedData.AdcsOnlineResponderNotInstalledButShouldBeMessage)
-                    ) -join '' )
+            # Online Responder is not installed but should be - change required
+            Write-Verbose -Message ( @(
+                    "$($MyInvocation.MyCommand): "
+                    $($script:localizedData.AdcsOnlineResponderNotInstalledButShouldBeMessage)
+                ) -join '' )
 
-                return $false
-            }
+            return $false
+        }
+        else
+        {
+            # Online Responder is not installed and should not be - change not required
+            Write-Verbose -Message ( @(
+                    "$($MyInvocation.MyCommand): "
+                    $($script:localizedData.AdcsOnlineResponderNotInstalledAndShouldNotBeMessage)
+                ) -join '' )
 
-            'Absent'
-            {
-                # Online Responder is not installed and should not be - change not required
-                Write-Verbose -Message ( @(
-                        "$($MyInvocation.MyCommand): "
-                        $($script:localizedData.AdcsOnlineResponderNotInstalledAndShouldNotBeMessage)
-                    ) -join '' )
-
-                return $true
-            }
-        } # switch
+            return $true
+        }
     }
     catch [Microsoft.CertificateServices.Deployment.Common.OCSP.OnlineResponderSetupException]
     {
         # Online Responder is already installed
-        switch ($Ensure)
+        if ($Ensure -eq 'Present')
         {
-            'Present'
-            {
-                # Online Responder is installed and should be - change not required
-                Write-Verbose -Message ( @(
-                        "$($MyInvocation.MyCommand): "
-                        $($script:localizedData.AdcsOnlineResponderInstalledAndShouldBeMessage)
-                    ) -join '' )
+            # Online Responder is installed and should be - change not required
+            Write-Verbose -Message ( @(
+                    "$($MyInvocation.MyCommand): "
+                    $($script:localizedData.AdcsOnlineResponderInstalledAndShouldBeMessage)
+                ) -join '' )
 
-                return $true
-            }
+            return $true
+        }
+        else
+        {
+            # Online Responder is installed and should not be - change required
+            Write-Verbose -Message ( @(
+                    "$($MyInvocation.MyCommand): "
+                    $($script:localizedData.AdcsOnlineResponderInstalledButShouldNotBeMessage)
+                ) -join '' )
 
-            'Absent'
-            {
-                # Online Responder is installed and should not be - change required
-                Write-Verbose -Message ( @(
-                        "$($MyInvocation.MyCommand): "
-                        $($script:localizedData.AdcsOnlineResponderInstalledButShouldNotBeMessage)
-                    ) -join '' )
-
-                return $false
-            }
-        } # switch
+            return $false
+        }
     }
     catch
     {
         # Something else went wrong
-        Throw $_
+        throw $_
     } # try
-} # Function Test-TargetResource
+} # function Test-TargetResource
 
 Export-ModuleMember -Function *-TargetResource

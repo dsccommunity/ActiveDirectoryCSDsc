@@ -54,10 +54,12 @@ function Get-InvalidOperationRecord
     [CmdletBinding()]
     param
     (
+        [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $Message,
 
+        [Parameter()]
         [ValidateNotNull()]
         [System.Management.Automation.ErrorRecord]
         $ErrorRecord
@@ -129,8 +131,106 @@ function Test-WindowsFeature
     return $True
 } # end function Test-WindowsFeature
 
+<#
+    .SYNOPSIS
+        Create a new local user account to be created and added to the
+        local Administrators group for use by integration tests.
+
+        If the user account already exists but is not in the administrators
+        group then add it to the group and make sure the password is set
+        to the provided value.
+
+    .PARAMETER Username
+        The username of the local user to create and add to the administrators
+        group.
+
+    .PARAMETER Password
+        The password of the local user account.
+#>
+function New-LocalUserInAdministratorsGroup
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Username,
+
+        [Parameter(Mandatory = $true)]
+        [System.Security.SecureString]
+        $Password
+    )
+
+    if (Get-LocalUser -Name $Username -ErrorAction SilentlyContinue)
+    {
+        $null = Set-LocalUser -Name $Username -Password $Password
+    }
+    else
+    {
+        $null = New-LocalUser -Name $Username -Password $Password
+    }
+
+    if (-not (Get-LocalGroupMember -Group 'administrators' -Member $Username -ErrorAction SilentlyContinue))
+    {
+        $null = Add-LocalGroupMember -Group 'administrators' -Member $Username
+    }
+}
+
+<#
+    .SYNOPSIS
+        Returns an object not found exception.
+
+    .PARAMETER Message
+        The message explaining why this error is being thrown.
+
+    .PARAMETER ErrorRecord
+        The error record containing the exception that is causing
+        this terminating error.
+#>
+function Get-ObjectNotFoundException
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $Message,
+
+        [Parameter()]
+        [ValidateNotNull()]
+        [System.Management.Automation.ErrorRecord]
+        $ErrorRecord
+    )
+
+    if ($null -eq $ErrorRecord)
+    {
+        $exception = New-Object -TypeName 'System.Exception' `
+            -ArgumentList @($Message)
+    }
+    else
+    {
+        $exception = New-Object -TypeName 'System.Exception' `
+            -ArgumentList @($Message, $ErrorRecord.Exception)
+    }
+
+    $newObjectParameters = @{
+        TypeName     = 'System.Management.Automation.ErrorRecord'
+        ArgumentList = @(
+            $exception.ToString(),
+            'MachineStateIncorrect',
+            'ObjectNotFound',
+            $null
+        )
+    }
+
+    return New-Object @newObjectParameters
+}
+
 Export-ModuleMember -Function @(
     'Get-InvalidArgumentRecord'
     'Get-InvalidOperationRecord'
     'Test-WindowsFeature'
+    'New-LocalUserInAdministratorsGroup'
+    'Get-ObjectNotFoundException'
 )

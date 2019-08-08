@@ -30,7 +30,7 @@ $script:localizedData = Get-LocalizedData -ResourceName 'MSFT_AdcsWebEnrollment'
     .OUTPUTS
         Returns an object containing the ADCS Web Enrollment state information.
 #>
-Function Get-TargetResource
+function Get-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
@@ -81,7 +81,7 @@ Function Get-TargetResource
     catch
     {
         # Something else went wrong
-        Throw $_
+        throw $_
     }
 
     return @{
@@ -89,7 +89,7 @@ Function Get-TargetResource
         CAConfig   = $CAConfig
         Credential = $Credential
     }
-} # Function Get-TargetResource
+} # function Get-TargetResource
 
 <#
     .SYNOPSIS
@@ -110,7 +110,7 @@ Function Get-TargetResource
     .PARAMETER Ensure
         Specifies whether the Web Enrollment feature should be installed or uninstalled.
 #>
-Function Set-TargetResource
+function Set-TargetResource
 {
     [CmdletBinding()]
     param
@@ -148,34 +148,30 @@ Function Set-TargetResource
 
     $errorMessage = ''
 
-    switch ($Ensure)
+    if ($Ensure -eq 'Present')
     {
-        'Present'
-        {
-            Write-Verbose -Message ( @(
-                    "$($MyInvocation.MyCommand): "
-                    $($script:localizedData.InstallingAdcsWebEnrollmentMessage)
-                ) -join '' )
+        Write-Verbose -Message ( @(
+                "$($MyInvocation.MyCommand): "
+                $($script:localizedData.InstallingAdcsWebEnrollmentMessage)
+            ) -join '' )
 
-            $errorMessage = (Install-AdcsWebEnrollment @adcsParameters -Force).ErrorString
-        }
+        $errorMessage = (Install-AdcsWebEnrollment @adcsParameters -Force).ErrorString
+    }
+    else
+    {
+        Write-Verbose -Message ( @(
+                "$($MyInvocation.MyCommand): "
+                $($script:localizedData.UninstallingAdcsWebEnrollmentMessage)
+            ) -join '' )
 
-        'Absent'
-        {
-            Write-Verbose -Message ( @(
-                    "$($MyInvocation.MyCommand): "
-                    $($script:localizedData.UninstallingAdcsWebEnrollmentMessage)
-                ) -join '' )
-
-            $errorMessage = (Uninstall-AdcsWebEnrollment -Force).ErrorString
-        }
-    } # switch
+        $errorMessage = (Uninstall-AdcsWebEnrollment -Force).ErrorString
+    }
 
     if (-not [System.String]::IsNullOrEmpty($errorMessage))
     {
         New-InvalidOperationException -Message $errorMessage
     }
-} # Function Set-TargetResource
+} # function Set-TargetResource
 
 <#
     .SYNOPSIS
@@ -199,7 +195,7 @@ Function Set-TargetResource
     .OUTPUTS
         Returns true if the ADCS Web Enrollment is in the desired state.
 #>
-Function Test-TargetResource
+function Test-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
@@ -241,64 +237,56 @@ Function Test-TargetResource
     {
         $null = Install-AdcsWebEnrollment @adcsParameters -WhatIf
         # Web Enrollment is not installed
-        switch ($Ensure)
+        if ($Ensure -eq 'Present')
         {
-            'Present'
-            {
-                # Web Enrollment is not installed but should be - change required
-                Write-Verbose -Message ( @(
-                        "$($MyInvocation.MyCommand): "
-                        $($script:localizedData.AdcsWebEnrollmentNotInstalledButShouldBeMessage)
-                    ) -join '' )
+            # Web Enrollment is not installed but should be - change required
+            Write-Verbose -Message ( @(
+                    "$($MyInvocation.MyCommand): "
+                    $($script:localizedData.AdcsWebEnrollmentNotInstalledButShouldBeMessage)
+                ) -join '' )
 
-                return $false
-            }
+            return $false
+        }
+        else
+        {
+            # Web Enrollment is not installed and should not be - change not required
+            Write-Verbose -Message ( @(
+                    "$($MyInvocation.MyCommand): "
+                    $($script:localizedData.AdcsWebEnrollmentNotInstalledAndShouldNotBeMessage)
+                ) -join '' )
 
-            'Absent'
-            {
-                # Web Enrollment is not installed and should not be - change not required
-                Write-Verbose -Message ( @(
-                        "$($MyInvocation.MyCommand): "
-                        $($script:localizedData.AdcsWebEnrollmentNotInstalledAndShouldNotBeMessage)
-                    ) -join '' )
-
-                return $true
-            }
-        } # switch
+            return $true
+        }
     }
     catch [Microsoft.CertificateServices.Deployment.Common.WEP.WebEnrollmentSetupException]
     {
         # Web Enrollment is already installed
-        switch ($Ensure)
+        if ($Ensure -eq 'Present')
         {
-            'Present'
-            {
-                # Web Enrollment is installed and should be - change not required
-                Write-Verbose -Message ( @(
-                        "$($MyInvocation.MyCommand): "
-                        $($script:localizedData.AdcsWebEnrollmentInstalledAndShouldBeMessage)
-                    ) -join '' )
+            # Web Enrollment is installed and should be - change not required
+            Write-Verbose -Message ( @(
+                    "$($MyInvocation.MyCommand): "
+                    $($script:localizedData.AdcsWebEnrollmentInstalledAndShouldBeMessage)
+                ) -join '' )
 
-                return $true
-            }
+            return $true
+        }
+        else
+        {
+            # Web Enrollment is installed and should not be - change required
+            Write-Verbose -Message ( @(
+                    "$($MyInvocation.MyCommand): "
+                    $($script:localizedData.AdcsWebEnrollmentInstalledButShouldNotBeMessage)
+                ) -join '' )
 
-            'Absent'
-            {
-                # Web Enrollment is installed and should not be - change required
-                Write-Verbose -Message ( @(
-                        "$($MyInvocation.MyCommand): "
-                        $($script:localizedData.AdcsWebEnrollmentInstalledButShouldNotBeMessage)
-                    ) -join '' )
-
-                return $false
-            }
-        } # switch
+            return $false
+        }
     }
     catch
     {
         # Something else went wrong
-        Throw $_
+        throw $_
     } # try
-} # Function Test-TargetResource
+} # function Test-TargetResource
 
 Export-ModuleMember -Function *-TargetResource

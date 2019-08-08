@@ -4,8 +4,8 @@ $script:DSCResourceName = 'MSFT_AdcsEnrollmentPolicyWebService'
 Import-Module -Name (Join-Path -Path (Join-Path -Path (Split-Path $PSScriptRoot -Parent) -ChildPath 'TestHelpers') -ChildPath 'CommonTestHelper.psm1') -Global
 
 #region HEADER
-# Integration Test Template Version: 1.1.0
-[String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+# Unit Test Template Version: 1.1.0
+$script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
     (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
 {
@@ -19,10 +19,8 @@ $TestEnvironment = Initialize-TestEnvironment `
     -TestType Unit
 #endregion
 
-# Begin Testing
 try
 {
-    #region Pester Tests
     InModuleScope $script:DSCResourceName {
         if (-not ([System.Management.Automation.PSTypeName]'Microsoft.CertificateServices.Deployment.Commands.CEP.EnrollmentPolicyServiceSetupException').Type)
         {
@@ -38,8 +36,6 @@ namespace Microsoft.CertificateServices.Deployment.Commands.CEP {
 '@
             Add-Type -TypeDefinition $ExceptionDefinition
         }
-
-        $DSCResourceName = 'MSFT_AdcsEnrollmentPolicyWebService'
 
         $dummyCredential = New-Object `
             -TypeName System.Management.Automation.PSCredential `
@@ -142,8 +138,8 @@ namespace Microsoft.CertificateServices.Deployment.Commands.CEP {
             )
         }
 
-        Describe "$DSCResourceName\Get-TargetResource" {
-            Context 'Enrollment Policy Web Service is installed' {
+        Describe 'MSFT_AdcsEnrollmentPolicyWebService\Get-TargetResource' {
+            Context 'When the Enrollment Policy Web Service is installed' {
                 Mock `
                     -CommandName Test-AdcsEnrollmentPolicyWebServiceInstallState `
                     -MockWith { $true }
@@ -164,7 +160,7 @@ namespace Microsoft.CertificateServices.Deployment.Commands.CEP {
                 }
             }
 
-            Context 'Enrollment Policy Web Service is not installed' {
+            Context 'When the Enrollment Policy Web Service is not installed' {
                 Mock `
                     -CommandName Test-AdcsEnrollmentPolicyWebServiceInstallState `
                     -MockWith { $false }
@@ -184,8 +180,8 @@ namespace Microsoft.CertificateServices.Deployment.Commands.CEP {
             }
         }
 
-        Describe "$DSCResourceName\Set-TargetResource" {
-            Context 'Enrollment Policy Web Service is not installed but should be' {
+        Describe 'MSFT_AdcsEnrollmentPolicyWebService\Set-TargetResource' {
+            Context 'When the Enrollment Policy Web Service is not installed but should be' {
                 Mock -CommandName Install-AdcsEnrollmentPolicyWebService
                 Mock -CommandName Uninstall-AdcsEnrollmentPolicyWebService
 
@@ -206,7 +202,7 @@ namespace Microsoft.CertificateServices.Deployment.Commands.CEP {
                 }
             }
 
-            Context 'Enrollment Policy Web Service is not installed but should be but an error string is returned installing it' {
+            Context 'When the Enrollment Policy Web Service is not installed but should be but an error string is returned installing it' {
                 Mock -CommandName Install-AdcsEnrollmentPolicyWebService `
                     -MockWith {
                     [PSObject] @{ ErrorString = 'Something went wrong' }
@@ -233,7 +229,7 @@ namespace Microsoft.CertificateServices.Deployment.Commands.CEP {
                 }
             }
 
-            Context 'Enrollment Policy Web Service is not installed but should be but an exception is thrown installing it' {
+            Context 'When the Enrollment Policy Web Service is not installed but should be but an exception is thrown installing it' {
                 Mock -CommandName Install-AdcsEnrollmentPolicyWebService `
                     -MockWith { throw 'Something went wrong' }
 
@@ -258,7 +254,7 @@ namespace Microsoft.CertificateServices.Deployment.Commands.CEP {
                 }
             }
 
-            Context 'Enrollment Policy Web Service is installed but should not be' {
+            Context 'When the Enrollment Policy Web Service is installed but should not be' {
                 Mock -CommandName Install-AdcsEnrollmentPolicyWebService
                 Mock -CommandName Uninstall-AdcsEnrollmentPolicyWebService
 
@@ -280,9 +276,9 @@ namespace Microsoft.CertificateServices.Deployment.Commands.CEP {
             }
         }
 
-        Describe "$DSCResourceName\Test-TargetResource" {
-            Context 'Enrollment Policy Web Service is installed' {
-                Context 'Enrollment Policy Web Service should be installed' {
+        Describe 'MSFT_AdcsEnrollmentPolicyWebService\Test-TargetResource' {
+            Context 'When the Enrollment Policy Web Service is installed' {
+                Context 'When the Enrollment Policy Web Service should be installed' {
                     Mock `
                         -CommandName Test-AdcsEnrollmentPolicyWebServiceInstallState `
                         -MockWith { $true }
@@ -301,7 +297,7 @@ namespace Microsoft.CertificateServices.Deployment.Commands.CEP {
                     }
                 }
 
-                Context 'Enrollment Policy Web Service should not be installed' {
+                Context 'When the Enrollment Policy Web Service should not be installed' {
                     Mock `
                         -CommandName Test-AdcsEnrollmentPolicyWebServiceInstallState `
                         -MockWith { $true }
@@ -321,8 +317,8 @@ namespace Microsoft.CertificateServices.Deployment.Commands.CEP {
                 }
             }
 
-            Context 'Enrollment Policy Web Service is not installed' {
-                Context 'Enrollment Policy Web Service should be installed' {
+            Context 'When the Enrollment Policy Web Service is not installed' {
+                Context 'When the Enrollment Policy Web Service should be installed' {
                     Mock `
                         -CommandName Test-AdcsEnrollmentPolicyWebServiceInstallState `
                         -MockWith { $false }
@@ -341,7 +337,7 @@ namespace Microsoft.CertificateServices.Deployment.Commands.CEP {
                     }
                 }
 
-                Context 'Enrollment Policy Web Service should not be installed' {
+                Context 'When the Enrollment Policy Web Service should not be installed' {
                     Mock `
                         -CommandName Test-AdcsEnrollmentPolicyWebServiceInstallState `
                         -MockWith { $false }
@@ -362,7 +358,7 @@ namespace Microsoft.CertificateServices.Deployment.Commands.CEP {
             }
         }
 
-        Describe "$DSCResourceName\Test-AdcsEnrollmentPolicyWebServiceInstallState" {
+        Describe 'MSFT_AdcsEnrollmentPolicyWebService\Test-AdcsEnrollmentPolicyWebServiceInstallState' {
             $testAdcsEnrollmentPolicyWebServiceInstallStateTestCases = @(
                 @{
                     AuthenticationType = 'Certificate'
@@ -474,7 +470,7 @@ namespace Microsoft.CertificateServices.Deployment.Commands.CEP {
             }
         }
 
-        Describe "$DSCResourceName\Test-Thumbprint" {
+        Describe 'MSFT_AdcsEnrollmentPolicyWebService\Test-Thumbprint' {
             Context 'When FIPS not set' {
                 Context 'When a single valid thumbrpint by parameter is passed' {
                     $result = Test-Thumbprint -Thumbprint $validThumbprint

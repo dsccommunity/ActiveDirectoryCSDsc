@@ -1,5 +1,3 @@
-$script:modulesFolderPath = Split-Path -Path $PSScriptRoot -Parent
-
 <#
     .SYNOPSIS
         This method is used to compare current and desired values for any DSC resource.
@@ -438,6 +436,16 @@ function New-InvalidResultException
     throw $errorRecordToThrow
 }
 
+<#
+    .SYNOPSIS
+        Creates and throws a not implemented exception.
+
+    .PARAMETER Message
+        The message explaining why this error is being thrown.
+
+    .PARAMETER ErrorRecord
+        The error record containing the exception that is causing this terminating error.
+#>
 function New-NotImplementedException
 {
     [CmdletBinding()]
