@@ -5,7 +5,7 @@ DSC resources, including details of the resources that are available, current
 capabilities and known issues, and information to help plan a DSC based
 implementation of ActiveDirectoryCSDsc.
 
-Please leave comments, feature requests, and bug reports in then
+Please leave comments, feature requests, and bug reports in the
 [issues section](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues) for this module.
 
 ## Getting started
