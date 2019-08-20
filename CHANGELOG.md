@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- AdcsCertificationAuthoritySettings:
+  - Fix grammar in the resource README.md.
+
+## 4.0.0.0
+
 - BREAKING CHANGE: ActiveDirectoryCSDsc module minimum requirements updated
   to WMF 5.0 because newly added AdcsCertificateAuthoritySettings resource
   requires WMF 5.0.
