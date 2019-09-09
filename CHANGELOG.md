@@ -4,6 +4,7 @@
 
 - AdcsCertificationAuthoritySettings:
   - Fix grammar in the resource README.md.
+- Fix minor style issues in statement case.
 
 ## 4.0.0.0
 
