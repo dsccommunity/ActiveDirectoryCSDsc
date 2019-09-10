@@ -443,7 +443,7 @@ function Test-Thumbprint
         $Quiet
     )
 
-    Begin
+    begin
     {
         # Get FIPS registry key
         $fips = [System.Int32] (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\FipsAlgorithmPolicy' -ErrorAction SilentlyContinue).Enabled
@@ -469,6 +469,7 @@ function Test-Thumbprint
 
         # Get a list of all Valid Hash types and lengths into an array
         $validHashes = @()
+
         foreach ($hashProvider in $hashProviders)
         {
             $bitSize = ( New-Object -TypeName $hashProvider ).HashSize
@@ -483,7 +484,7 @@ function Test-Thumbprint
         }
     }
 
-    Process
+    process
     {
         foreach ($hash in $Thumbprint)
         {
