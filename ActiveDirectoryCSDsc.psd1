@@ -39,7 +39,7 @@
     DscResourcesToExport = @(
         'AdcsAuthorityInformationAccess',
         'AdcsCertificationAuthority',
-        'AdcsCertificationAuthoritySettings'
+        'AdcsCertificationAuthoritySettings',
         'AdcsEnrollmentPolicyWebService',
         'AdcsOnlineResponder',
         'AdcsWebEnrollment',
