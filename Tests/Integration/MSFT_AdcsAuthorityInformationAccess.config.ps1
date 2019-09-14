@@ -7,8 +7,8 @@ configuration MSFT_AdcsAuthorityInformationAccess_Config
         AdcsAuthorityInformationAccess Integration_Test
         {
             IsSingleInstance    = 'Yes'
-            AiaList             = $Node.AiaList
-            OcspList            = $Node.OcspList
+            AiaUri              = $Node.AiaUri
+            OcspUri             = $Node.OcspUri
             AllowRestartService = $Node.AllowRestartService
         }
     }

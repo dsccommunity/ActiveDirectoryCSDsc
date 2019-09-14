@@ -192,11 +192,11 @@ try
                 AllNodes = @(
                     @{
                         NodeName            = 'localhost'
-                        AiaList             = @(
+                        AiaUri              = @(
                             'http://primary/Certs/<CATruncatedName>.cer'
                             'http://secondary/Certs/<CATruncatedName>.cer'
                         )
-                        OcspList            = @(
+                        OcspUri             = @(
                             'http://primary-ocsp-responder/ocsp'
                             'http://secondary-ocsp-responder/ocsp'
                         )
