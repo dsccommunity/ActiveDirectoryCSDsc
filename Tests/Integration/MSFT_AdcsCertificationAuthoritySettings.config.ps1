@@ -1,8 +1,11 @@
-configuration MSFT_AdcsCertificationAuthoritySettings_Config {
+configuration MSFT_AdcsCertificationAuthoritySettings_Config
+{
     Import-DscResource -ModuleName ActiveDirectoryCSDsc
 
-    node localhost {
-        AdcsCertificationAuthoritySettings Integration_Test {
+    node localhost
+    {
+        AdcsCertificationAuthoritySettings Integration_Test
+        {
             IsSingleInstance      = 'Yes'
             CACertPublicationURLs = $Node.CACertPublicationURLs
             CRLPublicationURLs    = $Node.CRLPublicationURLs
