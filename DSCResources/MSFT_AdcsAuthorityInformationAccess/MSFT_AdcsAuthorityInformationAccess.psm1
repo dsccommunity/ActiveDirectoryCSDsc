@@ -27,10 +27,7 @@ function Get-TargetResource
         $IsSingleInstance
     )
 
-    Write-Verbose -Message ( @(
-            "$($MyInvocation.MyCommand): "
-            $($script:localizedData.GettingAdcsAiaMessage)
-        ) -join '' )
+    Write-Verbose -Message $script:localizedData.GettingAdcsAiaMessage
 
     return @{
         IsSingleInstance = 'Yes'
@@ -84,23 +81,71 @@ function Set-TargetResource
         $AllowRestartService = $false
     )
 
-    Write-Verbose -Message ( @(
-            "$($MyInvocation.MyCommand): "
-            $script:localizedData.SettingAdcsAiaMessage
-        ) -join '' )
+    Write-Verbose -Message $script:localizedData.SettingAdcsAiaMessage
 
-    $currentSettings = Get-TargetResource `
+    $currentResource = Get-TargetResource `
         -IsSingleInstance $IsSingleInstance `
         -Verbose:$VerbosePreference
 
     $parameterUpdated = $false
 
+    if ($PSBoundParameters.ContainsKey('AiaUri'))
+    {
+        # Add any missing AIA URIs
+        foreach ($desiredAiaUri in $AiaUri)
+        {
+            if ($desiredAiaUri -notin $currentResource.AiaUri)
+            {
+                Write-Verbose -Message ($script:localizedData.AddingAdcsAiaUriMessage -f 'AIA', $desiredAiaUri)
+
+                Add-CAAuthorityInformationAccess -Uri $desiredAiaUri -AddToCertificateAia -Force
+                $parameterUpdated = $true
+            }
+        }
+
+        # Remove any AIA URIs that aren't required
+        foreach ($currentAiaUri in $currentResource.AiaUri)
+        {
+            if ($currentAiaUri -notin $AiaUri)
+            {
+                Write-Verbose -Message ($script:localizedData.RemovingAdcsAiaUriMessage -f 'AIA', $currentAiaUri)
+
+                Remove-CAAuthorityInformationAccess -Uri $currentAiaUri -AddToCertificateAia -Force
+                $parameterUpdated = $true
+            }
+        }
+    }
+
+    if ($PSBoundParameters.ContainsKey('OcspUri'))
+    {
+        # Add any missing OCSP URIs
+        foreach ($desiredOcspUri in $OcspUri)
+        {
+            if ($desiredOcspUri -notin $currentResource.OcspUri)
+            {
+                Write-Verbose -Message ($script:localizedData.AddingAdcsAiaUriMessage -f 'OCSP', $desiredOcspUri)
+
+                Add-CAAuthorityInformationAccess -Uri $desiredOcspUri -AddToCertificateOcsp -Force
+                $parameterUpdated = $true
+            }
+        }
+
+        # Remove any OCSP URIs that aren't required
+        foreach ($currentOcspUri in $currentResource.OcspUri)
+        {
+            if ($currentOcspUri -notin $OcspUri)
+            {
+                Write-Verbose -Message ($script:localizedData.RemovingAdcsAiaUriMessage -f 'OCSP', $currentOcspUri)
+
+                Remove-CAAuthorityInformationAccess -Uri $currentOcspUri -AddToCertificateOcsp -Force
+                $parameterUpdated = $true
+            }
+        }
+    }
+
     if ($parameterUpdated -and $AllowRestartService)
     {
-        Write-Verbose -Message ( @(
-                "$($MyInvocation.MyCommand): "
-                $script:localizedData.RestartingCertSvcMessage
-            ) -join '' )
+        Write-Verbose -Message $script:localizedData.RestartingCertSvcMessage
 
         $null = Restart-ServiceIfExists -Name 'CertSvc'
     }
@@ -151,10 +196,7 @@ function Test-TargetResource
         $AllowRestartService = $false
     )
 
-    Write-Verbose -Message ( @(
-            "$($MyInvocation.MyCommand): "
-            $script:localizedData.TestingAdcsAiaMessage
-        ) -join '' )
+    Write-Verbose -Message $script:localizedData.TestingAdcsAiaMessage
 
     $currentSettings = Get-TargetResource `
         -IsSingleInstance $IsSingleInstance `
