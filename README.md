@@ -16,6 +16,9 @@ website that provides confidential information to be accessed from computers tha
 are members of an Active Directory domain, AD CS can provide a source for the SSL
 certificates that will automatically be trusted.
 
+- **AdcsAuthorityInformationAccess**: This resource can be used to configure the
+  URIs in the Authority Information Access and Online Responder OCSP extensions
+  of certificates issued by an Active Directory Certificate Authority.
 - **AdcsCertificationAuthority**: This resource can be used to install the ADCS
   Certificate Authority after the feature has been installed on the server.
 - **AdcsEnrollmentPolicyWebService**: This resource can be used to
@@ -25,9 +28,6 @@ certificates that will automatically be trusted.
   Responder after the feature has been installed on the server.
 - **AdcsWebEnrollment**: This resource can be used to install the ADCS Web
   Enrollment service after the feature has been installed on the server.
-- **AdcsOcspExtension**: This resource can be used to configure OCSP URI
-  extensions on a Certificate Authority after the feature has been installed
-  on the server.
 - **AdcsTemplate**: This resource can be used to add or remove Certificate
   Authority templates to an Enterprise CA, after the feature has been installed
   on the server and the `AdcsCertificationAuthority` resource installed with a

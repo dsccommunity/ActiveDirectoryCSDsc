@@ -37,12 +37,12 @@
 
     # DSC resources to export from this module
     DscResourcesToExport = @(
+        'AdcsAuthorityInformationAccess',
         'AdcsCertificationAuthority',
         'AdcsCertificationAuthoritySettings'
         'AdcsEnrollmentPolicyWebService',
         'AdcsOnlineResponder',
         'AdcsWebEnrollment',
-        'AdcsOcspExtension',
         'AdscTemplate'
         )
 
