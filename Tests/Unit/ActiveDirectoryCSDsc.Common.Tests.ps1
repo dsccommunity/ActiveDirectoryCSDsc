@@ -5,307 +5,1052 @@ $script:modulesFolderPath = Join-Path -Path $script:resourceModulePath -ChildPat
 Import-Module -Name (Join-Path -Path $script:modulesFolderPath -ChildPath 'ActiveDirectoryCSDsc.Common.psm1') -Force
 
 InModuleScope 'ActiveDirectoryCSDsc.Common' {
-    Describe 'ActiveDirectoryCSDsc.Common\Test-DscParameterState' -Tag TestDscParameterState {
-        Context -Name 'When passing values' -Fixture {
-            It 'Should return true for two identical tables' {
-                $mockDesiredValues = @{ Example = 'test' }
-
-                $testParameters = @{
-                    CurrentValues = $mockDesiredValues
-                    DesiredValues = $mockDesiredValues
-                }
-
-                Test-DscParameterState @testParameters | Should -Be $true
-            }
-
-            It 'Should return false when a value is different for [System.String]' {
-                $mockCurrentValues = @{ Example = [System.String] 'something' }
-                $mockDesiredValues = @{ Example = [System.String] 'test' }
-
-                $testParameters = @{
-                    CurrentValues = $mockCurrentValues
-                    DesiredValues = $mockDesiredValues
-                }
-
-                Test-DscParameterState @testParameters | Should -Be $false
-            }
-
-            It 'Should return false when a value is different for [System.Int32]' {
-                $mockCurrentValues = @{ Example = [System.Int32] 1 }
-                $mockDesiredValues = @{ Example = [System.Int32] 2 }
-
-                $testParameters = @{
-                    CurrentValues = $mockCurrentValues
-                    DesiredValues = $mockDesiredValues
-                }
-
-                Test-DscParameterState @testParameters | Should -Be $false
-            }
-
-            It 'Should return false when a value is different for [Int16]' {
-                $mockCurrentValues = @{ Example = [System.Int16] 1 }
-                $mockDesiredValues = @{ Example = [System.Int16] 2 }
-
-                $testParameters = @{
-                    CurrentValues = $mockCurrentValues
-                    DesiredValues = $mockDesiredValues
-                }
-
-                Test-DscParameterState @testParameters | Should -Be $false
-            }
-
-            It 'Should return false when a value is different for [UInt16]' {
-                $mockCurrentValues = @{ Example = [System.UInt16] 1 }
-                $mockDesiredValues = @{ Example = [System.UInt16] 2 }
-
-                $testParameters = @{
-                    CurrentValues = $mockCurrentValues
-                    DesiredValues = $mockDesiredValues
-                }
-
-                Test-DscParameterState @testParameters | Should -Be $false
-            }
-
-            It 'Should return false when a value is different for [Boolean]' {
-                $mockCurrentValues = @{ Example = [System.Boolean] $true }
-                $mockDesiredValues = @{ Example = [System.Boolean] $false }
-
-                $testParameters = @{
-                    CurrentValues = $mockCurrentValues
-                    DesiredValues = $mockDesiredValues
-                }
-
-                Test-DscParameterState @testParameters | Should -Be $false
-            }
-
-            It 'Should return false when a value is missing' {
-                $mockCurrentValues = @{ }
-                $mockDesiredValues = @{ Example = 'test' }
-
-                $testParameters = @{
-                    CurrentValues = $mockCurrentValues
-                    DesiredValues = $mockDesiredValues
-                }
-
-                Test-DscParameterState @testParameters | Should -Be $false
-            }
-
-            It 'Should return true when only a specified value matches, but other non-listed values do not' {
-                $mockCurrentValues = @{ Example = 'test'; SecondExample = 'true' }
-                $mockDesiredValues = @{ Example = 'test'; SecondExample = 'false'  }
-
-                $testParameters = @{
-                    CurrentValues = $mockCurrentValues
-                    DesiredValues = $mockDesiredValues
-                    ValuesToCheck = @('Example')
-                }
-
-                Test-DscParameterState @testParameters | Should -Be $true
-            }
-
-            It 'Should return false when only specified values do not match, but other non-listed values do ' {
-                $mockCurrentValues = @{ Example = 'test'; SecondExample = 'true' }
-                $mockDesiredValues = @{ Example = 'test'; SecondExample = 'false'  }
-
-                $testParameters = @{
-                    CurrentValues = $mockCurrentValues
-                    DesiredValues = $mockDesiredValues
-                    ValuesToCheck = @('SecondExample')
-                }
-
-                Test-DscParameterState @testParameters | Should -Be $false
-            }
-
-            It 'Should return false when an empty hash table is used in the current values' {
-                $mockCurrentValues = @{ }
-                $mockDesiredValues = @{ Example = 'test'; SecondExample = 'false'  }
-
-                $testParameters = @{
-                    CurrentValues = $mockCurrentValues
-                    DesiredValues = $mockDesiredValues
-                }
-
-                Test-DscParameterState @testParameters | Should -Be $false
-            }
-
-            It 'Should return true when evaluating a table against a CimInstance' {
-                $mockCurrentValues = @{ Handle = '0'; ProcessId = '1000'  }
-
-                $mockWin32ProcessProperties = @{
-                    Handle = 0
-                    ProcessId = 1000
-                }
-
-                $mockNewCimInstanceParameters = @{
-                    ClassName = 'Win32_Process'
-                    Property = $mockWin32ProcessProperties
-                    Key = 'Handle'
-                    ClientOnly = $true
-                }
-
-                $mockDesiredValues = New-CimInstance @mockNewCimInstanceParameters
-
-                $testParameters = @{
-                    CurrentValues = $mockCurrentValues
-                    DesiredValues = $mockDesiredValues
-                    ValuesToCheck = @('Handle','ProcessId')
-                }
-
-                Test-DscParameterState @testParameters | Should -Be $true
-            }
-
-            It 'Should return false when evaluating a table against a CimInstance and a value is wrong' {
-                $mockCurrentValues = @{ Handle = '1'; ProcessId = '1000'  }
-
-                $mockWin32ProcessProperties = @{
-                    Handle = 0
-                    ProcessId = 1000
-                }
-
-                $mockNewCimInstanceParameters = @{
-                    ClassName = 'Win32_Process'
-                    Property = $mockWin32ProcessProperties
-                    Key = 'Handle'
-                    ClientOnly = $true
-                }
-
-                $mockDesiredValues = New-CimInstance @mockNewCimInstanceParameters
-
-                $testParameters = @{
-                    CurrentValues = $mockCurrentValues
-                    DesiredValues = $mockDesiredValues
-                    ValuesToCheck = @('Handle','ProcessId')
-                }
-
-                Test-DscParameterState @testParameters | Should -Be $false
-            }
-
-            It 'Should return true when evaluating a hash table containing an array' {
-                $mockCurrentValues = @{ Example = 'test'; SecondExample = @('1','2') }
-                $mockDesiredValues = @{ Example = 'test'; SecondExample = @('1','2')  }
-
-                $testParameters = @{
-                    CurrentValues = $mockCurrentValues
-                    DesiredValues = $mockDesiredValues
-                }
-
-                Test-DscParameterState @testParameters | Should -Be $true
-            }
-
-            It 'Should return false when evaluating a hash table containing an array with wrong values' {
-                $mockCurrentValues = @{ Example = 'test'; SecondExample = @('A','B') }
-                $mockDesiredValues = @{ Example = 'test'; SecondExample = @('1','2')  }
-
-                $testParameters = @{
-                    CurrentValues = $mockCurrentValues
-                    DesiredValues = $mockDesiredValues
-                }
-
-                Test-DscParameterState @testParameters | Should -Be $false
-            }
-
-            It 'Should return false when evaluating a hash table containing an array, but the CurrentValues are missing an array' {
-                $mockCurrentValues = @{ Example = 'test' }
-                $mockDesiredValues = @{ Example = 'test'; SecondExample = @('1','2')  }
-
-                $testParameters = @{
-                    CurrentValues = $mockCurrentValues
-                    DesiredValues = $mockDesiredValues
-                }
-
-                Test-DscParameterState @testParameters | Should -Be $false
-            }
-
-            It 'Should return false when evaluating a hash table containing an array, but the property i CurrentValues is $null' {
-                $mockCurrentValues = @{ Example = 'test'; SecondExample = $null }
-                $mockDesiredValues = @{ Example = 'test'; SecondExample = @('1','2')  }
-
-                $testParameters = @{
-                    CurrentValues = $mockCurrentValues
-                    DesiredValues = $mockDesiredValues
-                }
-
-                Test-DscParameterState @testParameters | Should -Be $false
-            }
+    Describe 'ActiveDirectoryCSDsc.Common\Remove-CommonParameter' {
+        $removeCommonParameter = @{
+            Parameter1          = 'value1'
+            Parameter2          = 'value2'
+            Verbose             = $true
+            Debug               = $true
+            ErrorAction         = 'Stop'
+            WarningAction       = 'Stop'
+            InformationAction   = 'Stop'
+            ErrorVariable       = 'errorVariable'
+            WarningVariable     = 'warningVariable'
+            OutVariable         = 'outVariable'
+            OutBuffer           = 'outBuffer'
+            PipelineVariable    = 'pipelineVariable'
+            InformationVariable = 'informationVariable'
+            WhatIf              = $true
+            Confirm             = $true
+            UseTransaction      = $true
         }
 
-        Context -Name 'When passing invalid types for DesiredValues' -Fixture {
-            It 'Should throw the correct error when DesiredValues is of wrong type' {
-                $mockCurrentValues = @{ Example = 'something' }
-                $mockDesiredValues = 'NotHashTable'
-
-                $testParameters = @{
-                    CurrentValues = $mockCurrentValues
-                    DesiredValues = $mockDesiredValues
-                }
-
-                $mockCorrectErrorMessage = ($script:localizedData.PropertyTypeInvalidForDesiredValues -f $testParameters.DesiredValues.GetType().Name)
-                { Test-DscParameterState @testParameters } | Should -Throw $mockCorrectErrorMessage
+        Context 'Hashtable contains all common parameters' {
+            It 'Should not throw exception' {
+                { $script:result = Remove-CommonParameter -Hashtable $removeCommonParameter -Verbose } | Should -Not -Throw
             }
 
-            It 'Should write a warning when DesiredValues contain an unsupported type' {
-                Mock -CommandName Write-Warning -Verifiable
+            It 'Should have retained parameters in the hashtable' {
+                $script:result.Contains('Parameter1') | Should -BeTrue
+                $script:result.Contains('Parameter2') | Should -BeTrue
+            }
 
-                # This is a dummy type to test with a type that could never be a correct one.
-                class MockUnknownType
-                {
-                    [ValidateNotNullOrEmpty()]
-                    [System.String]
-                    $Property1
+            It 'Should have removed the common parameters from the hashtable' {
+                $script:result.Contains('Verbose') | Should -BeFalse
+                $script:result.Contains('Debug') | Should -BeFalse
+                $script:result.Contains('ErrorAction') | Should -BeFalse
+                $script:result.Contains('WarningAction') | Should -BeFalse
+                $script:result.Contains('InformationAction') | Should -BeFalse
+                $script:result.Contains('ErrorVariable') | Should -BeFalse
+                $script:result.Contains('WarningVariable') | Should -BeFalse
+                $script:result.Contains('OutVariable') | Should -BeFalse
+                $script:result.Contains('OutBuffer') | Should -BeFalse
+                $script:result.Contains('PipelineVariable') | Should -BeFalse
+                $script:result.Contains('InformationVariable') | Should -BeFalse
+                $script:result.Contains('WhatIf') | Should -BeFalse
+                $script:result.Contains('Confirm') | Should -BeFalse
+                $script:result.Contains('UseTransaction') | Should -BeFalse
+            }
+        }
+    }
 
-                    [ValidateNotNullOrEmpty()]
-                    [System.String]
-                    $Property2
+    Describe 'ActiveDirectoryCSDsc.Common\Test-DscParameterState' {
+        $verbose = $true
 
-                    MockUnknownType()
-                    {
+        Context 'When testing single values' {
+            $currentValues = @{
+                String    = 'a string'
+                Bool      = $true
+                Int       = 99
+                Array     = 'a', 'b', 'c'
+                Hashtable = @{
+                    k1 = 'Test'
+                    k2 = 123
+                    k3 = 'v1', 'v2', 'v3'
+                }
+            }
+
+            Context 'When all values match' {
+                $desiredValues = [PSObject] @{
+                    String    = 'a string'
+                    Bool      = $true
+                    Int       = 99
+                    Array     = 'a', 'b', 'c'
+                    Hashtable = @{
+                        k1 = 'Test'
+                        k2 = 123
+                        k3 = 'v1', 'v2', 'v3'
                     }
                 }
 
-                $mockCurrentValues = @{ Example = New-Object -TypeName MockUnknownType }
-                $mockDesiredValues = @{ Example = New-Object -TypeName MockUnknownType }
-
-                $testParameters = @{
-                    CurrentValues = $mockCurrentValues
-                    DesiredValues = $mockDesiredValues
+                It 'Should not throw exception' {
+                    { $script:result = Test-DscParameterState `
+                            -CurrentValues $currentValues `
+                            -DesiredValues $desiredValues `
+                            -Verbose:$verbose } | Should -Not -Throw
                 }
 
-                Test-DscParameterState @testParameters | Should -Be $false
+                It 'Should return $true' {
+                    $script:result | Should -Be $true
+                }
+            }
 
-                Assert-MockCalled -CommandName Write-Warning -Exactly -Times 1
+            Context 'When a string is mismatched' {
+                $desiredValues = [PSObject] @{
+                    String    = 'different string'
+                    Bool      = $true
+                    Int       = 99
+                    Array     = 'a', 'b', 'c'
+                    Hashtable = @{
+                        k1 = 'Test'
+                        k2 = 123
+                        k3 = 'v1', 'v2', 'v3'
+                    }
+                }
+
+                It 'Should not throw exception' {
+                    { $script:result = Test-DscParameterState `
+                            -CurrentValues $currentValues `
+                            -DesiredValues $desiredValues `
+                            -Verbose:$verbose } | Should -Not -Throw
+                }
+
+                It 'Should return $false' {
+                    $script:result | Should -Be $false
+                }
+            }
+
+            Context 'When a boolean is mismatched' {
+                $desiredValues = [PSObject] @{
+                    String    = 'a string'
+                    Bool      = $false
+                    Int       = 99
+                    Array     = 'a', 'b', 'c'
+                    Hashtable = @{
+                        k1 = 'Test'
+                        k2 = 123
+                        k3 = 'v1', 'v2', 'v3'
+                    }
+                }
+
+                It 'Should not throw exception' {
+                    { $script:result = Test-DscParameterState `
+                            -CurrentValues $currentValues `
+                            -DesiredValues $desiredValues `
+                            -Verbose:$verbose } | Should -Not -Throw
+                }
+
+                It 'Should return $false' {
+                    $script:result | Should -Be $false
+                }
+            }
+
+            Context 'When an int is mismatched' {
+                $desiredValues = [PSObject] @{
+                    String    = 'a string'
+                    Bool      = $true
+                    Int       = 1
+                    Array     = 'a', 'b', 'c'
+                    Hashtable = @{
+                        k1 = 'Test'
+                        k2 = 123
+                        k3 = 'v1', 'v2', 'v3'
+                    }
+                }
+
+                It 'Should not throw exception' {
+                    { $script:result = Test-DscParameterState `
+                            -CurrentValues $currentValues `
+                            -DesiredValues $desiredValues `
+                            -Verbose:$verbose } | Should -Not -Throw
+                }
+
+                It 'Should return $false' {
+                    $script:result | Should -Be $false
+                }
+            }
+
+            Context 'When a type is mismatched' {
+                $desiredValues = [PSObject] @{
+                    String = 'a string'
+                    Bool   = $true
+                    Int    = '99'
+                    Array  = 'a', 'b', 'c'
+                }
+
+                It 'Should not throw exception' {
+                    { $script:result = Test-DscParameterState `
+                            -CurrentValues $currentValues `
+                            -DesiredValues $desiredValues `
+                            -Verbose:$verbose } | Should -Not -Throw
+                }
+
+                It 'Should return $false' {
+                    $script:result | Should -Be $false
+                }
+            }
+
+            Context 'When a type is mismatched but TurnOffTypeChecking is used' {
+                $desiredValues = [PSObject] @{
+                    String = 'a string'
+                    Bool   = $true
+                    Int    = '99'
+                    Array  = 'a', 'b', 'c'
+                }
+
+                It 'Should not throw exception' {
+                    { $script:result = Test-DscParameterState `
+                            -CurrentValues $currentValues `
+                            -DesiredValues $desiredValues `
+                            -TurnOffTypeChecking `
+                            -Verbose:$verbose } | Should -Not -Throw
+                }
+
+                It 'Should return $true' {
+                    $script:result | Should -Be $true
+                }
+            }
+
+            Context 'When a value is mismatched but valuesToCheck is used to exclude them' {
+                $desiredValues = [PSObject] @{
+                    String = 'a string'
+                    Bool   = $false
+                    Int    = 1
+                    Array  = @( 'a', 'b' )
+                }
+
+                $valuesToCheck = @(
+                    'String'
+                )
+
+                It 'Should not throw exception' {
+                    { $script:result = Test-DscParameterState `
+                            -CurrentValues $currentValues `
+                            -DesiredValues $desiredValues `
+                            -ValuesToCheck $valuesToCheck `
+                            -Verbose:$verbose } | Should -Not -Throw
+                }
+
+                It 'Should return $true' {
+                    $script:result | Should -Be $true
+                }
             }
         }
 
-        Context -Name 'When passing an CimInstance as DesiredValue and ValuesToCheck is $null' -Fixture {
-            It 'Should throw the correct error' {
-                $mockCurrentValues = @{ Example = 'something' }
+        Context 'When testing array values' {
+            BeforeAll {
+                $currentValues = @{
+                    String    = 'a string'
+                    Bool      = $true
+                    Int       = 99
+                    Array     = 'a', 'b', 'c', 1
+                    Hashtable = @{
+                        k1 = 'Test'
+                        k2 = 123
+                        k3 = 'v1', 'v2', 'v3'
+                    }
+                }
+            }
 
-                $mockWin32ProcessProperties = @{
-                    Handle = 0
-                    ProcessId = 1000
+            Context 'When array is missing a value' {
+                $desiredValues = [PSObject]@{
+                    String    = 'a string'
+                    Bool      = $true
+                    Int       = 1
+                    Array     = 'a', 'b', 'c'
+                    Hashtable = @{
+                        k1 = 'Test'
+                        k2 = 123
+                        k3 = 'v1', 'v2', 'v3'
+                    }
                 }
 
-                $mockNewCimInstanceParameters = @{
-                    ClassName = 'Win32_Process'
-                    Property = $mockWin32ProcessProperties
-                    Key = 'Handle'
-                    ClientOnly = $true
+                It 'Should not throw exception' {
+                    { $script:result = Test-DscParameterState `
+                            -CurrentValues $currentValues `
+                            -DesiredValues $desiredValues `
+                            -Verbose:$verbose } | Should -Not -Throw
                 }
 
-                $mockDesiredValues = New-CimInstance @mockNewCimInstanceParameters
+                It 'Should return $false' {
+                    $script:result | Should -Be $false
+                }
+            }
 
-                $testParameters = @{
-                    CurrentValues = $mockCurrentValues
-                    DesiredValues = $mockDesiredValues
-                    ValuesToCheck = $null
+            Context 'When array has an additional value' {
+                $desiredValues = [PSObject] @{
+                    String = 'a string'
+                    Bool   = $true
+                    Int    = 1
+                    Array  = 'a', 'b', 'c', 1, 2
                 }
 
-                $mockCorrectErrorMessage = $script:localizedData.PropertyTypeInvalidForValuesToCheck
-                { Test-DscParameterState @testParameters } | Should -Throw $mockCorrectErrorMessage
+                It 'Should not throw exception' {
+                    { $script:result = Test-DscParameterState `
+                            -CurrentValues $currentValues `
+                            -DesiredValues $desiredValues `
+                            -Verbose:$verbose } | Should -Not -Throw
+                }
+
+                It 'Should return $false' {
+                    $script:result | Should -Be $false
+                }
+            }
+
+            Context 'When array has a different value' {
+                $desiredValues = [PSObject] @{
+                    String = 'a string'
+                    Bool   = $true
+                    Int    = 1
+                    Array  = 'a', 'x', 'c', 1
+                }
+
+                It 'Should not throw exception' {
+                    { $script:result = Test-DscParameterState `
+                            -CurrentValues $currentValues `
+                            -DesiredValues $desiredValues `
+                            -Verbose:$verbose } | Should -Not -Throw
+                }
+
+                It 'Should return $false' {
+                    $script:result | Should -Be $false
+                }
+            }
+
+            Context 'When array has different order' {
+                $desiredValues = [PSObject] @{
+                    String = 'a string'
+                    Bool   = $true
+                    Int    = 1
+                    Array  = 'c', 'b', 'a', 1
+                }
+
+                It 'Should not throw exception' {
+                    { $script:result = Test-DscParameterState `
+                            -CurrentValues $currentValues `
+                            -DesiredValues $desiredValues `
+                            -Verbose:$verbose } | Should -Not -Throw
+                }
+
+                It 'Should return $false' {
+                    $script:result | Should -Be $false
+                }
+            }
+
+            Context 'When array has different order but SortArrayValues is used' {
+                $desiredValues = [PSObject] @{
+                    String = 'a string'
+                    Bool   = $true
+                    Int    = 1
+                    Array  = 'c', 'b', 'a', 1
+                }
+
+                It 'Should not throw exception' {
+                    { $script:result = Test-DscParameterState `
+                            -CurrentValues $currentValues `
+                            -DesiredValues $desiredValues `
+                            -SortArrayValues `
+                            -Verbose:$verbose } | Should -Not -Throw
+                }
+
+                It 'Should return $false' {
+                    $script:result | Should -Be $false
+                }
+            }
+
+
+            Context 'When array has a value with a different type' {
+                $desiredValues = [PSObject] @{
+                    String = 'a string'
+                    Bool   = $true
+                    Int    = 99
+                    Array  = 'a', 'b', 'c', '1'
+                }
+
+                It 'Should not throw exception' {
+                    { $script:result = Test-DscParameterState `
+                            -CurrentValues $currentValues `
+                            -DesiredValues $desiredValues `
+                            -Verbose:$verbose } | Should -Not -Throw
+                }
+
+                It 'Should return $false' {
+                    $script:result | Should -Be $false
+                }
+            }
+
+            Context 'When array has a value with a different type but TurnOffTypeChecking is used' {
+                $desiredValues = [PSObject] @{
+                    String = 'a string'
+                    Bool   = $true
+                    Int    = 99
+                    Array  = 'a', 'b', 'c', '1'
+                }
+
+                It 'Should not throw exception' {
+                    { $script:result = Test-DscParameterState `
+                            -CurrentValues $currentValues `
+                            -DesiredValues $desiredValues `
+                            -TurnOffTypeChecking `
+                            -Verbose:$verbose } | Should -Not -Throw
+                }
+
+                It 'Should return $true' {
+                    $script:result | Should -Be $true
+                }
+            }
+
+            Context 'When both arrays are empty' {
+                $currentValues = @{
+                    String    = 'a string'
+                    Bool      = $true
+                    Int       = 99
+                    Array     = @()
+                    Hashtable = @{
+                        k1 = 'Test'
+                        k2 = 123
+                        k3 = @()
+                    }
+                }
+
+                $desiredValues = [PSObject]@{
+                    String    = 'a string'
+                    Bool      = $true
+                    Int       = 99
+                    Array     = @()
+                    Hashtable = @{
+                        k1 = 'Test'
+                        k2 = 123
+                        k3 = @()
+                    }
+                }
+
+                It 'Should not throw exception' {
+                    { $script:result = Test-DscParameterState `
+                            -CurrentValues $currentValues `
+                            -DesiredValues $desiredValues `
+                            -Verbose:$verbose } | Should -Not -Throw
+                }
+
+                It 'Should return $true' {
+                    $script:result | Should -Be $true
+                }
             }
         }
 
-        Assert-VerifiableMock
+        Context 'When testing hashtables' {
+            $currentValues = @{
+                String    = 'a string'
+                Bool      = $true
+                Int       = 99
+                Array     = 'a', 'b', 'c'
+                Hashtable = @{
+                    k1 = 'Test'
+                    k2 = 123
+                    k3 = 'v1', 'v2', 'v3', 99
+                }
+            }
+
+            Context 'When hashtable is missing a value' {
+                $desiredValues = [PSObject]@{
+                    String    = 'a string'
+                    Bool      = $true
+                    Int       = 99
+                    Array     = 'a', 'b', 'c'
+                    Hashtable = @{
+                        k1 = 'Test'
+                        k2 = 123
+                        k3 = 'v1', 'v2', 'v3'
+                    }
+                }
+
+                It 'Should not throw exception' {
+                    { $script:result = Test-DscParameterState `
+                            -CurrentValues $currentValues `
+                            -DesiredValues $desiredValues `
+                            -Verbose:$verbose } | Should -Not -Throw
+                }
+
+                It 'Should return $false' {
+                    $script:result | Should -Be $false
+                }
+            }
+
+            Context 'When hashtable has an additional value' {
+                $desiredValues = [PSObject]@{
+                    String    = 'a string'
+                    Bool      = $true
+                    Int       = 99
+                    Array     = 'a', 'b', 'c'
+                    Hashtable = @{
+                        k1 = 'Test'
+                        k2 = 123
+                        k3 = 'v1', 'v2', 'v3', 99, 100
+                    }
+                }
+
+                It 'Should not throw exception' {
+                    { $script:result = Test-DscParameterState `
+                            -CurrentValues $currentValues `
+                            -DesiredValues $desiredValues `
+                            -Verbose:$verbose } | Should -Not -Throw
+                }
+
+                It 'Should return $false' {
+                    $script:result | Should -Be $false
+                }
+            }
+
+            Context 'When hashtable has a different value' {
+                $desiredValues = [PSObject]@{
+                    String    = 'a string'
+                    Bool      = $true
+                    Int       = 99
+                    Array     = 'a', 'b', 'c'
+                    Hashtable = @{
+                        k1 = 'Test'
+                        k2 = 123
+                        k3 = 'xx', 'v2', 'v3', 99
+                    }
+                }
+
+                It 'Should not throw exception' {
+                    { $script:result = Test-DscParameterState `
+                            -CurrentValues $currentValues `
+                            -DesiredValues $desiredValues `
+                            -Verbose:$verbose } | Should -Not -Throw
+                }
+
+                It 'Should return $false' {
+                    $script:result | Should -Be $false
+                }
+            }
+
+            Context 'When an array in hashtable has different order' {
+                $desiredValues = [PSObject]@{
+                    String    = 'a string'
+                    Bool      = $true
+                    Int       = 99
+                    Array     = 'a', 'b', 'c'
+                    Hashtable = @{
+                        k1 = 'Test'
+                        k2 = 123
+                        k3 = 'v3', 'v2', 'v1', 99
+                    }
+                }
+
+                It 'Should not throw exception' {
+                    { $script:result = Test-DscParameterState `
+                            -CurrentValues $currentValues `
+                            -DesiredValues $desiredValues `
+                            -Verbose:$verbose } | Should -Not -Throw
+                }
+
+                It 'Should return $false' {
+                    $script:result | Should -Be $false
+                }
+            }
+
+            Context 'When an array in hashtable has different order but SortArrayValues is used' {
+                $desiredValues = [PSObject]@{
+                    String    = 'a string'
+                    Bool      = $true
+                    Int       = 99
+                    Array     = 'a', 'b', 'c'
+                    Hashtable = @{
+                        k1 = 'Test'
+                        k2 = 123
+                        k3 = 'v3', 'v2', 'v1', 99
+                    }
+                }
+
+                It 'Should not throw exception' {
+                    { $script:result = Test-DscParameterState `
+                            -CurrentValues $currentValues `
+                            -DesiredValues $desiredValues `
+                            -SortArrayValues `
+                            -Verbose:$verbose } | Should -Not -Throw
+                }
+
+                It 'Should return $true' {
+                    $script:result | Should -Be $true
+                }
+            }
+
+
+            Context 'When hashtable has a value with a different type' {
+                $desiredValues = [PSObject]@{
+                    String    = 'a string'
+                    Bool      = $true
+                    Int       = 99
+                    Array     = 'a', 'b', 'c'
+                    Hashtable = @{
+                        k1 = 'Test'
+                        k2 = 123
+                        k3 = 'v1', 'v2', 'v3', '99'
+                    }
+                }
+
+                It 'Should not throw exception' {
+                    { $script:result = Test-DscParameterState `
+                            -CurrentValues $currentValues `
+                            -DesiredValues $desiredValues `
+                            -Verbose:$verbose } | Should -Not -Throw
+                }
+
+                It 'Should return $false' {
+                    $script:result | Should -Be $false
+                }
+            }
+
+            Context 'When hashtable has a value with a different type but TurnOffTypeChecking is used' {
+                $desiredValues = [PSObject]@{
+                    String    = 'a string'
+                    Bool      = $true
+                    Int       = 99
+                    Array     = 'a', 'b', 'c'
+                    Hashtable = @{
+                        k1 = 'Test'
+                        k2 = 123
+                        k3 = 'v1', 'v2', 'v3', 99
+                    }
+                }
+
+                It 'Should not throw exception' {
+                    { $script:result = Test-DscParameterState `
+                            -CurrentValues $currentValues `
+                            -DesiredValues $desiredValues `
+                            -TurnOffTypeChecking `
+                            -Verbose:$verbose } | Should -Not -Throw
+                }
+
+                It 'Should return $true' {
+                    $script:result | Should -Be $true
+                }
+            }
+        }
+
+        Context 'When testing CimInstances / hashtables' {
+            $currentValues = @{
+                String       = 'a string'
+                Bool         = $true
+                Int          = 99
+                Array        = 'a', 'b', 'c'
+                Hashtable    = @{
+                    k1 = 'Test'
+                    k2 = 123
+                    k3 = 'v1', 'v2', 'v3', 99
+                }
+                CimInstances = [CimInstance[]](ConvertTo-CimInstance -Hashtable @{
+                        String = 'a string'
+                        Bool   = $true
+                        Int    = 99
+                        Array  = 'a, b, c'
+                    })
+            }
+
+            Context 'When everything matches' {
+                $desiredValues = [PSObject]@{
+                    String       = 'a string'
+                    Bool         = $true
+                    Int          = 99
+                    Array        = 'a', 'b', 'c'
+                    Hashtable    = @{
+                        k1 = 'Test'
+                        k2 = 123
+                        k3 = 'v1', 'v2', 'v3', 99
+                    }
+                    CimInstances = [CimInstance[]](ConvertTo-CimInstance -Hashtable @{
+                            String = 'a string'
+                            Bool   = $true
+                            Int    = 99
+                            Array  = 'a, b, c'
+                        })
+                }
+
+                It 'Should not throw exception' {
+                    { $script:result = Test-DscParameterState `
+                            -CurrentValues $currentValues `
+                            -DesiredValues $desiredValues `
+                            -Verbose:$verbose } | Should -Not -Throw
+                }
+
+                It 'Should return $true' {
+                    $script:result | Should -Be $true
+                }
+            }
+
+            Context 'When CimInstances missing a value in the desired state (not recognized)' {
+                $desiredValues = [PSObject]@{
+                    String       = 'a string'
+                    Bool         = $true
+                    Int          = 99
+                    Array        = 'a', 'b', 'c'
+                    Hashtable    = @{
+                        k1 = 'Test'
+                        k2 = 123
+                        k3 = 'v1', 'v2', 'v3', 99
+                    }
+                    CimInstances = @{
+                        String = 'a string'
+                        Bool   = $true
+                        Array  = 'a, b, c'
+                    }
+                }
+
+                It 'Should not throw exception' {
+                    { $script:result = Test-DscParameterState `
+                            -CurrentValues $currentValues `
+                            -DesiredValues $desiredValues `
+                            -Verbose:$verbose } | Should -Not -Throw
+                }
+
+                It 'Should return $true' {
+                    $script:result | Should -Be $true
+                }
+            }
+
+            Context 'When CimInstances missing a value in the desired state (recognized using ReverseCheck)' {
+                $desiredValues = [PSObject]@{
+                    String       = 'a string'
+                    Bool         = $true
+                    Int          = 99
+                    Array        = 'a', 'b', 'c'
+                    Hashtable    = @{
+                        k1 = 'Test'
+                        k2 = 123
+                        k3 = 'v1', 'v2', 'v3', 99
+                    }
+                    CimInstances = @{
+                        String = 'a string'
+                        Bool   = $true
+                        Array  = 'a, b, c'
+                    }
+                }
+
+                It 'Should not throw exception' {
+                    { $script:result = Test-DscParameterState `
+                            -CurrentValues $currentValues `
+                            -DesiredValues $desiredValues `
+                            -ReverseCheck `
+                            -Verbose:$verbose } | Should -Not -Throw
+                }
+
+                It 'Should return $false' {
+                    $script:result | Should -Be $false
+                }
+            }
+
+            Context 'When CimInstances have an additional value' {
+                $desiredValues = [PSObject]@{
+                    String       = 'a string'
+                    Bool         = $true
+                    Int          = 99
+                    Array        = 'a', 'b', 'c'
+                    Hashtable    = @{
+                        k1 = 'Test'
+                        k2 = 123
+                        k3 = 'v1', 'v2', 'v3', 99
+                    }
+                    CimInstances = @{
+                        String = 'a string'
+                        Bool   = $true
+                        Int    = 99
+                        Array  = 'a, b, c'
+                        Test   = 'Some string'
+                    }
+                }
+
+                It 'Should not throw exception' {
+                    { $script:result = Test-DscParameterState `
+                            -CurrentValues $currentValues `
+                            -DesiredValues $desiredValues `
+                            -Verbose:$verbose } | Should -Not -Throw
+                }
+
+                It 'Should return $false' {
+                    $script:result | Should -Be $false
+                }
+            }
+
+            Context 'When CimInstances have a different value' {
+                $desiredValues = [PSObject]@{
+                    String       = 'a string'
+                    Bool         = $true
+                    Int          = 99
+                    Array        = 'a', 'b', 'c'
+                    Hashtable    = @{
+                        k1 = 'Test'
+                        k2 = 123
+                        k3 = 'v1', 'v2', 'v3', 99
+                    }
+                    CimInstances = @{
+                        String = 'some other string'
+                        Bool   = $true
+                        Int    = 99
+                        Array  = 'a, b, c'
+                    }
+                }
+
+                It 'Should not throw exception' {
+                    { $script:result = Test-DscParameterState `
+                            -CurrentValues $currentValues `
+                            -DesiredValues $desiredValues `
+                            -Verbose:$verbose } | Should -Not -Throw
+                }
+
+                It 'Should return $false' {
+                    $script:result | Should -Be $false
+                }
+            }
+
+            Context 'When CimInstances have a value with a different type' {
+                $desiredValues = [PSObject]@{
+                    String       = 'a string'
+                    Bool         = $true
+                    Int          = 99
+                    Array        = 'a', 'b', 'c'
+                    Hashtable    = @{
+                        k1 = 'Test'
+                        k2 = 123
+                        k3 = 'v1', 'v2', 'v3', 99
+                    }
+                    CimInstances = @{
+                        String = 'a string'
+                        Bool   = $true
+                        Int    = '99'
+                        Array  = 'a, b, c'
+                    }
+                }
+
+                It 'Should not throw exception' {
+                    { $script:result = Test-DscParameterState `
+                            -CurrentValues $currentValues `
+                            -DesiredValues $desiredValues `
+                            -Verbose:$verbose } | Should -Not -Throw
+                }
+
+                It 'Should return $false' {
+                    $script:result | Should -Be $false
+                }
+            }
+
+            Context 'When CimInstances have a value with a different type but TurnOffTypeChecking is used' {
+                $desiredValues = [PSObject]@{
+                    String       = 'a string'
+                    Bool         = $true
+                    Int          = 99
+                    Array        = 'a', 'b', 'c'
+                    Hashtable    = @{
+                        k1 = 'Test'
+                        k2 = 123
+                        k3 = 'v1', 'v2', 'v3', 99
+                    }
+                    CimInstances = @{
+                        String = 'a string'
+                        Bool   = $true
+                        Int    = '99'
+                        Array  = 'a, b, c'
+                    }
+                }
+
+                It 'Should not throw exception' {
+                    { $script:result = Test-DscParameterState `
+                            -CurrentValues $currentValues `
+                            -DesiredValues $desiredValues `
+                            -TurnOffTypeChecking `
+                            -Verbose:$verbose } | Should -Not -Throw
+                }
+
+                It 'Should return $true' {
+                    $script:result | Should -Be $true
+                }
+            }
+        }
+
+        Context 'When reverse checking' {
+            $currentValues = @{
+                String    = 'a string'
+                Bool      = $true
+                Int       = 99
+                Array     = 'a', 'b', 'c', 1
+                Hashtable = @{
+                    k1 = 'Test'
+                    k2 = 123
+                    k3 = 'v1', 'v2', 'v3'
+                }
+            }
+
+            Context 'When even if missing property in the desired state' {
+                $desiredValues = [PSObject] @{
+                    Array     = 'a', 'b', 'c', 1
+                    Hashtable = @{
+                        k1 = 'Test'
+                        k2 = 123
+                        k3 = 'v1', 'v2', 'v3'
+                    }
+                }
+
+                It 'Should not throw exception' {
+                    { $script:result = Test-DscParameterState `
+                            -CurrentValues $currentValues `
+                            -DesiredValues $desiredValues `
+                            -Verbose:$verbose } | Should -Not -Throw
+                }
+
+                It 'Should return $true' {
+                    $script:result | Should -Be $true
+                }
+            }
+
+            Context 'When missing property in the desired state' {
+                $currentValues = @{
+                    String = 'a string'
+                    Bool   = $true
+                }
+
+                $desiredValues = [PSObject] @{
+                    String = 'a string'
+                }
+
+                It 'Should not throw exception' {
+                    { $script:result = Test-DscParameterState `
+                            -CurrentValues $currentValues `
+                            -DesiredValues $desiredValues `
+                            -ReverseCheck `
+                            -Verbose:$verbose } | Should -Not -Throw
+                }
+
+                It 'Should return $false' {
+                    $script:result | Should -Be $false
+                }
+            }
+        }
+
+        Context 'When testing parameter types' {
+            Context 'When desired value is of the wrong type' {
+                $currentValues = @{
+                    String = 'a string'
+                }
+
+                $desiredValues = 1, 2, 3
+
+                It 'Should throw exception' {
+                    { $script:result = Test-DscParameterState `
+                            -CurrentValues $currentValues `
+                            -DesiredValues $desiredValues `
+                            -Verbose:$verbose } | Should -Throw
+                }
+            }
+
+            Context 'When current value is of the wrong type' {
+                $currentValues = 1, 2, 3
+
+                $desiredValues = @{
+                    String = 'a string'
+                }
+
+                It 'Should throw exception' {
+                    { $script:result = Test-DscParameterState `
+                            -CurrentValues $currentValues `
+                            -DesiredValues $desiredValues `
+                            -Verbose:$verbose } | Should -Throw
+                }
+            }
+        }
+    }
+
+    Describe 'ActiveDirectoryCSDsc.Common\Test-DscObjectHasProperty' {
+        # Use the Get-Verb cmdlet to just get a simple object fast
+        $testDscObject = (Get-Verb)[0]
+
+        Context 'When the object contains the expected property' {
+            It 'Should not throw exception' {
+                { $script:result = Test-DscObjectHasProperty -Object $testDscObject -PropertyName 'Verb' -Verbose } | Should -Not -Throw
+            }
+
+            It 'Should return $true' {
+                $script:result | Should -Be $true
+            }
+        }
+
+        Context 'When the object does not contain the expected property' {
+            It 'Should not throw exception' {
+                { $script:result = Test-DscObjectHasProperty -Object $testDscObject -PropertyName 'Missing' -Verbose } | Should -Not -Throw
+            }
+
+            It 'Should return $false' {
+                $script:result | Should -Be $false
+            }
+        }
+    }
+
+    Describe 'ActiveDirectoryCSDsc.Common\ConvertTo-CimInstance' {
+        $hashtable = @{
+            k1 = 'v1'
+            k2 = 100
+            k3 = 1, 2, 3
+        }
+
+        Context 'When the array contains the expected record count' {
+            It 'Should not throw exception' {
+                { $script:result = [CimInstance[]]($hashtable | ConvertTo-CimInstance) } | Should -Not -Throw
+            }
+
+            It "Should record count should be $($hashTable.Count)" {
+                $script:result.Count | Should -Be $hashtable.Count
+            }
+
+            It 'Should return result of type CimInstance[]' {
+                $script:result.GetType().Name | Should -Be 'CimInstance[]'
+            }
+
+            It 'Should return value "k1" in the CimInstance array should be "v1"' {
+                ($script:result | Where-Object Key -eq k1).Value | Should -Be 'v1'
+            }
+
+            It 'Should return value "k2" in the CimInstance array should be "100"' {
+                ($script:result | Where-Object Key -eq k2).Value | Should -Be 100
+            }
+
+            It 'Should return value "k3" in the CimInstance array should be "1,2,3"' {
+                ($script:result | Where-Object Key -eq k3).Value | Should -Be '1,2,3'
+            }
+        }
+    }
+
+    Describe 'ActiveDirectoryCSDsc.Common\ConvertTo-HashTable' {
+        [CimInstance[]]$cimInstances = ConvertTo-CimInstance -Hashtable @{
+            k1 = 'v1'
+            k2 = 100
+            k3 = 1, 2, 3
+        }
+
+        Context 'When the array contains the expected record count' {
+            It 'Should not throw exception' {
+                { $script:result = $cimInstances | ConvertTo-HashTable } | Should -Not -Throw
+            }
+
+            It "Should return record count of $($cimInstances.Count)" {
+                $script:result.Count | Should -Be $cimInstances.Count
+            }
+
+            It 'Should return result of type [System.Collections.Hashtable]' {
+                $script:result | Should -BeOfType [System.Collections.Hashtable]
+            }
+
+            It 'Should return value "k1" in the hashtable should be "v1"' {
+                $script:result.k1 | Should -Be 'v1'
+            }
+
+            It 'Should return value "k2" in the hashtable should be "100"' {
+                $script:result.k2 | Should -Be 100
+            }
+
+            It 'Should return value "k3" in the hashtable should be "1,2,3"' {
+                $script:result.k3 | Should -Be '1,2,3'
+            }
+        }
     }
 
     Describe 'ActiveDirectoryCSDsc.Common\Get-LocalizedData' {
