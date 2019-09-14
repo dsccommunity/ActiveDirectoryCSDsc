@@ -87,7 +87,7 @@ function Get-TargetResource
                 }
                 else
                 {
-                    $parameterValue = @()
+                    $parameterValue = [System.String[]] @()
                 }
                 break
             }
@@ -96,13 +96,19 @@ function Get-TargetResource
             {
                 if ($null -ne $currentcertificateAuthoritySettings.AuditFilter)
                 {
-                    $parameterValue = Convert-AuditFilterToStringArray `
-                        -AuditFilter $currentcertificateAuthoritySettings.AuditFilter
+                    $parameterValue = [System.String[]] (Convert-AuditFilterToStringArray `
+                        -AuditFilter $currentcertificateAuthoritySettings.AuditFilter)
                 }
                 else
                 {
-                    $parameterValue = 0
+                    $parameterValue = [System.String[]] @()
                 }
+                break
+            }
+
+            'Uint32'
+            {
+                $parameterValue = [System.Uint32] $currentcertificateAuthoritySettings.$($parameter.Name)
                 break
             }
 

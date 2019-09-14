@@ -25,291 +25,902 @@ Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'Tests\TestHelpers\
 try
 {
     InModuleScope $script:DSCResourceName {
-        $script:testOcspUri = @(
+        $script:AiaList = [System.String[]] @(
+            'http://primary/Certs/<CATruncatedName>.cer'
+            'http://secondary/Certs/<CATruncatedName>.cer'
+        )
+        $script:getCaAiaUriListAiaMock = {
+            $script:AiaList
+        }
+        $script:getCaAiaUriListAiaParameterFilter = {
+            $ExtensionType -eq 'AddToCertificateAia'
+        }
+        $script:OcspList = [System.String[]] @(
             'http://primary-ocsp-responder/ocsp'
             'http://secondary-ocsp-responder/ocsp'
-            'http://tertiary-ocsp-responder/ocsp'
         )
-
-        $script:testAiaUri = @(
-            'http://primary-ocsp-responder/ocsp'
-            'http://secondary-ocsp-responder/ocsp'
-            'http://tertiary-ocsp-responder/ocsp'
-        )
-
-        $presentParams = @{
-            OcspUriPath      = $ocspUriPathList
-            Ensure           = 'Present'
-            IsSingleInstance = 'Yes'
-            RestartService   = $true
+        $script:getCaAiaUriListOcspMock = {
+            $script:OcspList
+        }
+        $script:getCaAiaUriListOcspParameterFilter = {
+            $ExtensionType -eq 'AddToCertificateOcsp'
+        }
+        $script:getTargetResourceMock = {
+            @{
+                IsSingleInstance    = 'Yes'
+                AiaUri              = $script:AiaList
+                OcspUri             = $script:OcspList
+                AllowRestartService = $false
+            }
         }
 
-        $setRestartServiceFalsePresentParams = @{
-            OcspUriPath      = $ocspUriPathList
-            Ensure           = 'Present'
-            IsSingleInstance = 'Yes'
-            RestartService   = $false
-        }
+        Describe 'MSFT_AdcsAuthorityInformationAccess\Get-TargetResource' -Tag 'Get' {
+            $script:getTargetResourceParameters = @{
+                IsSingleInstance = 'Yes'
+                Verbose          = $true
+            }
 
-        $absentParams = @{
-            OcspUriPath      = $ocspUriPathList
-            Ensure           = 'Absent'
-            IsSingleInstance = 'Yes'
-            RestartService   = $true
-        }
+            Context 'When there are no AIA or OCSP URIs set' {
+                Mock -CommandName Get-CaAiaUriList `
+                    -ModuleName MSFT_AdcsAuthorityInformationAccess `
+                    -MockWith { @() } `
+                    -ParameterFilter $script:getCaAiaUriListOcspParameterFilter
 
-        $setRestartServiceFalseAbsentParams = @{
-            OcspUriPath      = $ocspUriPathList
-            Ensure           = 'Absent'
-            IsSingleInstance = 'Yes'
-            RestartService   = $false
-        }
+                Mock -CommandName Get-CaAiaUriList `
+                    -ModuleName MSFT_AdcsAuthorityInformationAccess `
+                    -MockWith { @() } `
+                    -ParameterFilter $script:getCaAiaUriListAiaParameterFilter
 
-        Describe 'MSFT_AdcsOcspExtension\Get-TargetResource' -Tag 'Get' {
-            Context 'When the CA is installed and the Get-CAAuthorityInformationAccess cmdlet returns the OCSP URI path list' {
-                $retreivedGetTargetValue = @{
-                    AddToCertificateAia  = 'false'
-                    AddToCertificateOcsp = 'true'
-                    Uri                  = 'http://primary-ocsp-responder/ocsp'
+                It 'Should not throw an exception' {
+                    {
+                        $script:getTargetResourceResult = Get-TargetResource @script:getTargetResourceParameters
+                    } | Should -Not -Throw
                 }
 
-                Mock -CommandName 'Get-CAAuthorityInformationAccess' -Mockwith { $retreivedGetTargetValue }
+                It 'Should return expected hash table' {
+                    $script:getTargetResourceResult.IsSingleInstance | Should -BeExactly 'Yes'
+                    $script:getTargetResourceResult.AiaUri | Should -BeNullOrEmpty
+                    $script:getTargetResourceResult.OcspUri | Should -BeNullOrEmpty
+                    $script:getTargetResourceResult.AllowRestartService | Should -BeFalse
+                }
+            }
 
-                It 'Should return a hashtable with the expected properties.' {
-                    $result = Get-TargetResource @presentParams
+            Context 'When there are AIA and OCSP URIs set' {
+                Mock -CommandName Get-CaAiaUriList `
+                    -ModuleName MSFT_AdcsAuthorityInformationAccess `
+                    -MockWith $script:getCaAiaUriListOcspMock `
+                    -ParameterFilter $script:getCaAiaUriListOcspParameterFilter
 
-                    $result                  | Should -Be System.Collections.Hashtable
-                    $result.OcspUriPath      | Should -Be $retreivedGetTargetValue.Uri
-                    $result.Ensure           | Should -Be $presentParams.Ensure
-                    $result.IsSingleInstance | Should -Be $presentParams.IsSingleInstance
-                    $result.RestartService   | Should -Be $presentParams.RestartService
+                Mock -CommandName Get-CaAiaUriList `
+                    -ModuleName MSFT_AdcsAuthorityInformationAccess `
+                    -MockWith $script:getCaAiaUriListAiaMock `
+                    -ParameterFilter $script:getCaAiaUriListAiaParameterFilter
+
+                It 'Should not throw an exception' {
+                    {
+                        $script:getTargetResourceResult = Get-TargetResource @script:getTargetResourceParameters
+                    } | Should -Not -Throw
+                }
+
+                It 'Should return expected hash table' {
+                    $script:getTargetResourceResult.IsSingleInstance | Should -BeExactly 'Yes'
+                    $script:getTargetResourceResult.AiaUri | Should -BeExactly $script:AiaList
+                    $script:getTargetResourceResult.OcspUri | Should -BeExactly $script:OcspList
+                    $script:getTargetResourceResult.AllowRestartService | Should -BeFalse
                 }
             }
         }
 
-        Describe 'MSFT_AdcsOcspExtension\Set-TargetResource' -Tag 'Set' {
-            Mock -CommandName Remove-CAAuthorityInformationAccess
-            Mock -CommandName Add-CAAuthorityInformationAccess
-            Mock -CommandName Restart-ServiceIfExists
+        Describe 'MSFT_AdcsAuthorityInformationAccess\Set-TargetResource' -Tag 'Set' {
+            BeforeAll {
+                Mock -CommandName Add-CAAuthorityInformationAccess `
+                    -ModuleName MSFT_AdcsAuthorityInformationAccess
 
-            Context 'When ensure equals present, and OCSP record is missing, and $RestartService equals $true' {
-                $missingOcspUriPath = @{
-                    OcspUriPath      = @(
-                        'http://primary-ocsp-responder/ocsp'
-                        'http://secondary-ocsp-responder/ocsp'
+                Mock -CommandName Remove-CAAuthorityInformationAccess `
+                    -ModuleName MSFT_AdcsAuthorityInformationAccess
+
+                Mock -CommandName Restart-ServiceIfExists `
+                    -ModuleName MSFT_AdcsAuthorityInformationAccess
+            }
+
+            Context 'When AllowRestartService is true' {
+                Context 'When AIA and OCSP are passed but are both in the correct state' {
+                    $setTargetResourceParameters = @{
+                        IsSingleInstance    = 'Yes'
+                        AiaUri              = $script:AiaList
+                        OcspUri             = $script:OcspList
+                        AllowRestartService = $true
+                        Verbose             = $true
+                    }
+
+                    Mock -CommandName Get-TargetResource `
+                        -ModuleName MSFT_AdcsAuthorityInformationAccess `
+                        -MockWith $script:getTargetResourceMock
+
+                    It 'Should not throw an exception' {
+                        {
+                            Set-TargetResource @setTargetResourceParameters
+                        } | Should -Not -Throw
+                    }
+
+                    It 'Should call expected mocks' {
+                        Assert-MockCalled `
+                            -CommandName Add-CAAuthorityInformationAccess `
+                            -Exactly -Times 0
+
+                        Assert-MockCalled `
+                            -CommandName Remove-CAAuthorityInformationAccess `
+                            -Exactly -Times 0
+
+                        Assert-MockCalled `
+                            -CommandName Restart-ServiceIfExists `
+                            -Exactly -Times 0
+                    }
+                }
+
+                Context 'When AIA and OCSP are passed but OCSP is missing a URI' {
+                    $setTargetResourceParameters = @{
+                        IsSingleInstance    = 'Yes'
+                        AiaUri              = $script:AiaList + ('http://tertiary/Certs/<CATruncatedName>.cer')
+                        OcspUri             = $script:OcspList
+                        AllowRestartService = $true
+                        Verbose             = $true
+                    }
+
+                    Mock -CommandName Get-TargetResource `
+                        -ModuleName MSFT_AdcsAuthorityInformationAccess `
+                        -MockWith $script:getTargetResourceMock
+
+                    It 'Should not throw an exception' {
+                        {
+                            Set-TargetResource @setTargetResourceParameters
+                        } | Should -Not -Throw
+                    }
+
+                    It 'Should call expected mocks' {
+                        Assert-MockCalled `
+                            -CommandName Add-CAAuthorityInformationAccess `
+                            -ParameterFilter {
+                                $Uri -eq 'http://tertiary/Certs/<CATruncatedName>.cer' -and `
+                                $AddToCertificateAia -eq $true
+                            } `
+                            -Exactly -Times 1
+
+                        Assert-MockCalled `
+                            -CommandName Remove-CAAuthorityInformationAccess `
+                            -Exactly -Times 0
+
+                        Assert-MockCalled `
+                            -CommandName Restart-ServiceIfExists `
+                            -ParameterFilter {
+                                $Name -eq 'CertSvc'
+                            } `
+                            -Exactly -Times 1
+                    }
+                }
+
+                Context 'When AIA and OCSP are passed but AIA is missing a URI' {
+                    $setTargetResourceParameters = @{
+                        IsSingleInstance    = 'Yes'
+                        AiaUri              = $script:AiaList
+                        OcspUri             = $script:OcspList + @('http://tertiary-ocsp-responder/ocsp')
+                        AllowRestartService = $true
+                        Verbose             = $true
+                    }
+
+                    Mock -CommandName Get-TargetResource `
+                        -ModuleName MSFT_AdcsAuthorityInformationAccess `
+                        -MockWith $script:getTargetResourceMock
+
+                    It 'Should not throw an exception' {
+                        {
+                            Set-TargetResource @setTargetResourceParameters
+                        } | Should -Not -Throw
+                    }
+
+                    It 'Should call expected mocks' {
+                        Assert-MockCalled `
+                            -CommandName Add-CAAuthorityInformationAccess `
+                            -ParameterFilter {
+                                $Uri -eq 'http://tertiary-ocsp-responder/ocsp' -and `
+                                $AddToCertificateOcsp -eq $true
+                            } `
+                            -Exactly -Times 1
+
+                        Assert-MockCalled `
+                            -CommandName Remove-CAAuthorityInformationAccess `
+                            -Exactly -Times 0
+
+                        Assert-MockCalled `
+                            -CommandName Restart-ServiceIfExists `
+                            -ParameterFilter {
+                                $Name -eq 'CertSvc'
+                            } `
+                            -Exactly -Times 1
+                    }
+                }
+
+                Context 'When AIA and OCSP are passed but OCSP has an extra URI' {
+                    $setTargetResourceParameters = @{
+                        IsSingleInstance    = 'Yes'
+                        AiaUri              = [System.String[]] @('http://primary/Certs/<CATruncatedName>.cer')
+                        OcspUri             = $script:OcspList
+                        AllowRestartService = $true
+                        Verbose             = $true
+                    }
+
+                    Mock -CommandName Get-TargetResource `
+                        -ModuleName MSFT_AdcsAuthorityInformationAccess `
+                        -MockWith $script:getTargetResourceMock
+
+                    It 'Should not throw an exception' {
+                        {
+                            Set-TargetResource @setTargetResourceParameters
+                        } | Should -Not -Throw
+                    }
+
+                    It 'Should call expected mocks' {
+                        Assert-MockCalled `
+                            -CommandName Add-CAAuthorityInformationAccess `
+                            -Exactly -Times 0
+
+                        Assert-MockCalled `
+                            -CommandName Remove-CAAuthorityInformationAccess `
+                            -ParameterFilter {
+                                $Uri -eq 'http://secondary/Certs/<CATruncatedName>.cer' -and `
+                                $AddToCertificateAia -eq $true
+                            } `
+                            -Exactly -Times 1
+
+                        Assert-MockCalled `
+                            -CommandName Restart-ServiceIfExists `
+                            -ParameterFilter {
+                                $Name -eq 'CertSvc'
+                            } `
+                            -Exactly -Times 1
+                    }
+                }
+
+                Context 'When AIA and OCSP are passed but AIA has an extra URI' {
+                    $setTargetResourceParameters = @{
+                        IsSingleInstance    = 'Yes'
+                        AiaUri              = $script:AiaList
+                        OcspUri             = [System.String[]] @('http://primary-ocsp-responder/ocsp')
+                        AllowRestartService = $true
+                        Verbose             = $true
+                    }
+
+                    Mock -CommandName Get-TargetResource `
+                        -ModuleName MSFT_AdcsAuthorityInformationAccess `
+                        -MockWith $script:getTargetResourceMock
+
+                    It 'Should not throw an exception' {
+                        {
+                            Set-TargetResource @setTargetResourceParameters
+                        } | Should -Not -Throw
+                    }
+
+                    It 'Should call expected mocks' {
+                        Assert-MockCalled `
+                            -CommandName Add-CAAuthorityInformationAccess `
+                            -Exactly -Times 0
+
+                        Assert-MockCalled `
+                            -CommandName Remove-CAAuthorityInformationAccess `
+                            -ParameterFilter {
+                                $Uri -eq 'http://secondary-ocsp-responder/ocsp' -and `
+                                $AddToCertificateOcsp -eq $true
+                            } `
+                            -Exactly -Times 1
+
+                        Assert-MockCalled `
+                            -CommandName Restart-ServiceIfExists `
+                            -ParameterFilter {
+                                $Name -eq 'CertSvc'
+                            } `
+                            -Exactly -Times 1
+                    }
+                }
+
+                Context 'When only AIA is passed but has different values' {
+                    $setTargetResourceParameters = @{
+                        IsSingleInstance    = 'Yes'
+                        AiaUri              = [System.String[]] @(
+                            'http://secondary/Certs/<CATruncatedName>.cer'
+                            'http://tertiary/Certs/<CATruncatedName>.cer'
+                        )
+                        AllowRestartService = $true
+                        Verbose             = $true
+                    }
+
+                    Mock -CommandName Get-TargetResource `
+                        -ModuleName MSFT_AdcsAuthorityInformationAccess `
+                        -MockWith $script:getTargetResourceMock
+
+                    It 'Should not throw an exception' {
+                        {
+                            Set-TargetResource @setTargetResourceParameters
+                        } | Should -Not -Throw
+                    }
+
+                    It 'Should call expected mocks' {
+                        Assert-MockCalled `
+                            -CommandName Add-CAAuthorityInformationAccess `
+                            -ParameterFilter {
+                                $Uri -eq 'http://tertiary/Certs/<CATruncatedName>.cer' -and `
+                                $AddToCertificateAia -eq $true
+                            } `
+                            -Exactly -Times 1
+
+                        Assert-MockCalled `
+                            -CommandName Remove-CAAuthorityInformationAccess `
+                            -ParameterFilter {
+                                $Uri -eq 'http://primary/Certs/<CATruncatedName>.cer' -and `
+                                $AddToCertificateAia -eq $true
+                            } `
+                            -Exactly -Times 1
+
+                        Assert-MockCalled `
+                            -CommandName Restart-ServiceIfExists `
+                            -ParameterFilter {
+                                $Name -eq 'CertSvc'
+                            } `
+                            -Exactly -Times 1
+                    }
+                }
+
+                Context 'When only OCSP is passed but has different values' {
+                    $setTargetResourceParameters = @{
+                        IsSingleInstance    = 'Yes'
+                        OcspUri             = [System.String[]] @(
+                            'http://secondary-ocsp-responder/ocsp'
+                            'http://tertiary-ocsp-responder/ocsp'
+                        )
+                        AllowRestartService = $true
+                        Verbose             = $true
+                    }
+
+                    Mock -CommandName Get-TargetResource `
+                        -ModuleName MSFT_AdcsAuthorityInformationAccess `
+                        -MockWith $script:getTargetResourceMock
+
+                    It 'Should not throw an exception' {
+                        {
+                            Set-TargetResource @setTargetResourceParameters
+                        } | Should -Not -Throw
+                    }
+
+                    It 'Should call expected mocks' {
+                        Assert-MockCalled `
+                            -CommandName Add-CAAuthorityInformationAccess `
+                            -ParameterFilter {
+                                $Uri -eq 'http://tertiary-ocsp-responder/ocsp' -and `
+                                $AddToCertificateOcsp -eq $true
+                            } `
+                            -Exactly -Times 1
+
+                        Assert-MockCalled `
+                            -CommandName Remove-CAAuthorityInformationAccess `
+                            -ParameterFilter {
+                                $Uri -eq 'http://primary-ocsp-responder/ocsp' -and `
+                                $AddToCertificateOcsp -eq $true
+                            } `
+                            -Exactly -Times 1
+
+                        Assert-MockCalled `
+                            -CommandName Restart-ServiceIfExists `
+                            -ParameterFilter {
+                                $Name -eq 'CertSvc'
+                            } `
+                            -Exactly -Times 1
+                    }
+                }
+            }
+
+            Context 'When AllowRestartService is false' {
+                Context 'When only AIA is passed but has different values' {
+                    $setTargetResourceParameters = @{
+                        IsSingleInstance    = 'Yes'
+                        AiaUri              = [System.String[]] @(
+                            'http://secondary/Certs/<CATruncatedName>.cer'
+                            'http://tertiary/Certs/<CATruncatedName>.cer'
+                        )
+                        AllowRestartService = $false
+                        Verbose             = $true
+                    }
+
+                    Mock -CommandName Get-TargetResource `
+                        -ModuleName MSFT_AdcsAuthorityInformationAccess `
+                        -MockWith $script:getTargetResourceMock
+
+                    It 'Should not throw an exception' {
+                        {
+                            Set-TargetResource @setTargetResourceParameters
+                        } | Should -Not -Throw
+                    }
+
+                    It 'Should call expected mocks' {
+                        Assert-MockCalled `
+                            -CommandName Add-CAAuthorityInformationAccess `
+                            -ParameterFilter {
+                                $Uri -eq 'http://tertiary/Certs/<CATruncatedName>.cer' -and `
+                                $AddToCertificateAia -eq $true
+                            } `
+                            -Exactly -Times 1
+
+                        Assert-MockCalled `
+                            -CommandName Remove-CAAuthorityInformationAccess `
+                            -ParameterFilter {
+                                $Uri -eq 'http://primary/Certs/<CATruncatedName>.cer' -and `
+                                $AddToCertificateAia -eq $true
+                            } `
+                            -Exactly -Times 1
+
+                        Assert-MockCalled `
+                            -CommandName Restart-ServiceIfExists `
+                            -Exactly -Times 0
+                    }
+                }
+
+                Context 'When only OCSP is passed but has different values' {
+                    $setTargetResourceParameters = @{
+                        IsSingleInstance    = 'Yes'
+                        OcspUri             = [System.String[]] @(
+                            'http://secondary-ocsp-responder/ocsp'
+                            'http://tertiary-ocsp-responder/ocsp'
+                        )
+                        AllowRestartService = $false
+                        Verbose             = $true
+                    }
+
+                    Mock -CommandName Get-TargetResource `
+                        -ModuleName MSFT_AdcsAuthorityInformationAccess `
+                        -MockWith $script:getTargetResourceMock
+
+                    It 'Should not throw an exception' {
+                        {
+                            Set-TargetResource @setTargetResourceParameters
+                        } | Should -Not -Throw
+                    }
+
+                    It 'Should call expected mocks' {
+                        Assert-MockCalled `
+                            -CommandName Add-CAAuthorityInformationAccess `
+                            -ParameterFilter {
+                                $Uri -eq 'http://tertiary-ocsp-responder/ocsp' -and `
+                                $AddToCertificateOcsp -eq $true
+                            } `
+                            -Exactly -Times 1
+
+                        Assert-MockCalled `
+                            -CommandName Remove-CAAuthorityInformationAccess `
+                            -ParameterFilter {
+                                $Uri -eq 'http://primary-ocsp-responder/ocsp' -and `
+                                $AddToCertificateOcsp -eq $true
+                            } `
+                            -Exactly -Times 1
+
+                        Assert-MockCalled `
+                            -CommandName Restart-ServiceIfExists `
+                            -Exactly -Times 0
+                    }
+                }
+            }
+        }
+
+        Describe 'MSFT_AdcsAuthorityInformationAccess\Test-TargetResource' -Tag 'Test' {
+            Context 'When AIA and OCSP are passed and in the desired state' {
+                $testTargetResourceParameters = @{
+                    IsSingleInstance    = 'Yes'
+                    AiaUri              = $script:AiaList
+                    OcspUri             = $script:OcspList
+                    AllowRestartService = $false
+                    Verbose             = $true
+                }
+
+                Mock -CommandName Get-TargetResource `
+                    -ModuleName MSFT_AdcsAuthorityInformationAccess `
+                    -MockWith $script:getTargetResourceMock
+
+                It 'Should not throw an exception' {
+                    {
+                        $script:testTargetResourceResult = Test-TargetResource @testTargetResourceParameters
+                    } | Should -Not -Throw
+                }
+
+                It 'Should return true' {
+                    $script:testTargetResourceResult | Should -BeTrue
+                }
+            }
+
+            Context 'When AIA and OCSP are passed and OCSP contains an extra value' {
+                $testTargetResourceParameters = @{
+                    IsSingleInstance    = 'Yes'
+                    AiaUri              = $script:AiaList
+                    OcspUri             = $script:OcspList + @('http://tertiary-ocsp-responder/ocsp')
+                    AllowRestartService = $false
+                    Verbose             = $true
+                }
+
+                Mock -CommandName Get-TargetResource `
+                    -ModuleName MSFT_AdcsAuthorityInformationAccess `
+                    -MockWith $script:getTargetResourceMock
+
+                It 'Should not throw an exception' {
+                    {
+                        $script:testTargetResourceResult = Test-TargetResource @testTargetResourceParameters
+                    } | Should -Not -Throw
+                }
+
+                It 'Should return false' {
+                    $script:testTargetResourceResult | Should -BeFalse
+                }
+            }
+
+            Context 'When AIA and OCSP are passed and AIA contains an extra value' {
+                $testTargetResourceParameters = @{
+                    IsSingleInstance    = 'Yes'
+                    AiaUri              = $script:AiaList + ('http://tertiary/Certs/<CATruncatedName>.cer')
+                    OcspUri             = $script:OcspList
+                    AllowRestartService = $false
+                    Verbose             = $true
+                }
+
+                Mock -CommandName Get-TargetResource `
+                    -ModuleName MSFT_AdcsAuthorityInformationAccess `
+                    -MockWith $script:getTargetResourceMock
+
+                It 'Should not throw an exception' {
+                    {
+                        $script:testTargetResourceResult = Test-TargetResource @testTargetResourceParameters
+                    } | Should -Not -Throw
+                }
+
+                It 'Should return false' {
+                    $script:testTargetResourceResult | Should -BeFalse
+                }
+            }
+
+            Context 'When AIA and OCSP are passed and both AIA and OCSP contains extra values' {
+                $testTargetResourceParameters = @{
+                    IsSingleInstance    = 'Yes'
+                    AiaUri              = $script:AiaList + ('http://tertiary/Certs/<CATruncatedName>.cer')
+                    OcspUri             = $script:OcspList + @('http://tertiary-ocsp-responder/ocsp')
+                    AllowRestartService = $false
+                    Verbose             = $true
+                }
+
+                Mock -CommandName Get-TargetResource `
+                    -ModuleName MSFT_AdcsAuthorityInformationAccess `
+                    -MockWith $script:getTargetResourceMock
+
+                It 'Should not throw an exception' {
+                    {
+                        $script:testTargetResourceResult = Test-TargetResource @testTargetResourceParameters
+                    } | Should -Not -Throw
+                }
+
+                It 'Should return false' {
+                    $script:testTargetResourceResult | Should -BeFalse
+                }
+            }
+
+            Context 'When AIA and OCSP are passed and OCSP is empty' {
+                $testTargetResourceParameters = @{
+                    IsSingleInstance    = 'Yes'
+                    AiaUri              = $script:AiaList
+                    OcspUri             = [System.String[]] @()
+                    AllowRestartService = $false
+                    Verbose             = $true
+                }
+
+                Mock -CommandName Get-TargetResource `
+                    -ModuleName MSFT_AdcsAuthorityInformationAccess `
+                    -MockWith $script:getTargetResourceMock
+
+                It 'Should not throw an exception' {
+                    {
+                        $script:testTargetResourceResult = Test-TargetResource @testTargetResourceParameters
+                    } | Should -Not -Throw
+                }
+
+                It 'Should return false' {
+                    $script:testTargetResourceResult | Should -BeFalse
+                }
+            }
+
+            Context 'When AIA and OCSP are passed and AIA is empty' {
+                $testTargetResourceParameters = @{
+                    IsSingleInstance    = 'Yes'
+                    AiaUri              = [System.String[]] @()
+                    OcspUri             = $script:OcspList
+                    AllowRestartService = $false
+                    Verbose             = $true
+                }
+
+                Mock -CommandName Get-TargetResource `
+                    -ModuleName MSFT_AdcsAuthorityInformationAccess `
+                    -MockWith $script:getTargetResourceMock
+
+                It 'Should not throw an exception' {
+                    {
+                        $script:testTargetResourceResult = Test-TargetResource @testTargetResourceParameters
+                    } | Should -Not -Throw
+                }
+
+                It 'Should return false' {
+                    $script:testTargetResourceResult | Should -BeFalse
+                }
+            }
+
+            Context 'When AIA and OCSP are passed and both AIA and OCSP are empty' {
+                $testTargetResourceParameters = @{
+                    IsSingleInstance    = 'Yes'
+                    AiaUri              = [System.String[]] @()
+                    OcspUri             = [System.String[]] @()
+                    AllowRestartService = $false
+                    Verbose             = $true
+                }
+
+                Mock -CommandName Get-TargetResource `
+                    -ModuleName MSFT_AdcsAuthorityInformationAccess `
+                    -MockWith $script:getTargetResourceMock
+
+                It 'Should not throw an exception' {
+                    {
+                        $script:testTargetResourceResult = Test-TargetResource @testTargetResourceParameters
+                    } | Should -Not -Throw
+                }
+
+                It 'Should return false' {
+                    $script:testTargetResourceResult | Should -BeFalse
+                }
+            }
+
+            Context 'When only AIA is passed and is in desired state' {
+                $testTargetResourceParameters = @{
+                    IsSingleInstance    = 'Yes'
+                    AiaUri              = $script:AiaList
+                    AllowRestartService = $false
+                    Verbose             = $true
+                }
+
+                Mock -CommandName Get-TargetResource `
+                    -ModuleName MSFT_AdcsAuthorityInformationAccess `
+                    -MockWith $script:getTargetResourceMock
+
+                It 'Should not throw an exception' {
+                    {
+                        $script:testTargetResourceResult = Test-TargetResource @testTargetResourceParameters
+                    } | Should -Not -Throw
+                }
+
+                It 'Should return true' {
+                    $script:testTargetResourceResult | Should -BeTrue
+                }
+            }
+
+            Context 'When only OCSP is passed and is in desired state' {
+                $testTargetResourceParameters = @{
+                    IsSingleInstance    = 'Yes'
+                    OcspUri             = $script:OcspList
+                    AllowRestartService = $false
+                    Verbose             = $true
+                }
+
+                Mock -CommandName Get-TargetResource `
+                    -ModuleName MSFT_AdcsAuthorityInformationAccess `
+                    -MockWith $script:getTargetResourceMock
+
+                It 'Should not throw an exception' {
+                    {
+                        $script:testTargetResourceResult = Test-TargetResource @testTargetResourceParameters
+                    } | Should -Not -Throw
+                }
+
+                It 'Should return true' {
+                    $script:testTargetResourceResult | Should -BeTrue
+                }
+            }
+        }
+
+        Describe 'MSFT_AdcsAuthorityInformationAccess\Get-CaAiaUriList' {
+            Context 'When ExtensionType is AddToCertificateAia and there are only AddToCertificateOcsp URIs' {
+                $getCAAuthorityInformationAccessMock = {
+                    @(
+                        [PSCustomObject] @{
+                            AddToCertificateAia  = $false
+                            AddToCertificateOcsp = $true
+                            Uri                  = 'http://primary-ocsp-responder/ocsp'
+                        }
                     )
-                    Ensure           = 'Present'
-                    IsSingleInstance = 'Yes'
-                    RestartService   = $true
                 }
 
-                Mock -CommandName Get-TargetResource -MockWith { $missingOcspUriPath }
+                Mock `
+                    -CommandName Get-CAAuthorityInformationAccess `
+                    -ModuleName MSFT_AdcsAuthorityInformationAccess `
+                    -MockWith $getCAAuthorityInformationAccessMock
 
-                It 'Should call the expected mocks' {
-                    Set-TargetResource @presentParams
+                It 'Should not throw an exception' {
+                    {
+                        $script:getCaAiaUriListResult = Get-CaAiaUriList -ExtensionType 'AddToCertificateAia' -Verbose
+                    } | Should -Not -Throw
+                }
 
-                    Assert-MockCalled -CommandName Remove-CAAuthorityInformationAccess -Exactly -Times 2 -Scope It -ParameterFilter { $OcspUriPath -eq $presentParams.OcspUriPathList }
-                    Assert-MockCalled -CommandName Add-CAAuthorityInformationAccess -Exactly -Times 3 -Scope It -ParameterFilter { $OcspUriPath -eq $presentParams.OcspUriPathList }
-                    Assert-MockCalled -CommandName Restart-ServiceIfExists -Exactly -Times 1 -Scope It -ParameterFilter { $Name -eq 'CertSvc' }
+                It 'Should return null' {
+                    $script:getCaAiaUriListResult | Should -BeNullOrEmpty
                 }
             }
 
-            Context 'When ensure equals present, and OCSP record is missing, and $RestartService equals $false' {
-                $missingOcspUriPathRestartServiceFalse = @{
-                    OcspUriPath      = @(
-                        'http://primary-ocsp-responder/ocsp'
-                        'http://secondary-ocsp-responder/ocsp'
+            Context 'When ExtensionType is AddToCertificateAia and there is AddToCertificateAia URI and one AddToCertificateOcsp URI' {
+                $getCAAuthorityInformationAccessMock = {
+                    @(
+                        [PSCustomObject] @{
+                            AddToCertificateAia  = $false
+                            AddToCertificateOcsp = $true
+                            Uri                  = 'http://primary-ocsp-responder/ocsp'
+                        },
+                        [PSCustomObject] @{
+                            AddToCertificateAia  = $true
+                            AddToCertificateOcsp = $false
+                            Uri                  = 'http://primary/Certs/<CATruncatedName>.cer'
+                        }
                     )
-                    Ensure           = 'Present'
-                    IsSingleInstance = 'Yes'
-                    RestartService   = $false
                 }
 
-                Mock -CommandName Get-TargetResource -MockWith { $missingOcspUriPathRestartServiceFalse }
+                Mock `
+                    -CommandName Get-CAAuthorityInformationAccess `
+                    -ModuleName MSFT_AdcsAuthorityInformationAccess `
+                    -MockWith $getCAAuthorityInformationAccessMock
 
-                It 'Should call the expected mocks' {
-                    Set-TargetResource @setRestartServiceFalsePresentParams
-
-                    Assert-MockCalled -CommandName Remove-CAAuthorityInformationAccess -Exactly -Times 2 -Scope It -ParameterFilter { $OcspUriPath -eq $setRestartServiceFalsePresentParams.OcspUriPathList }
-                    Assert-MockCalled -CommandName Add-CAAuthorityInformationAccess -Exactly -Times 3 -Scope It -ParameterFilter { $OcspUriPath -eq $setRestartServiceFalsePresentParams.OcspUriPathList }
-                    Assert-MockCalled -CommandName Restart-ServiceIfExists -Exactly -Times 0 -Scope It -ParameterFilter { $Name -eq 'CertSvc' }
+                It 'Should not throw an exception' {
+                    {
+                        $script:getCaAiaUriListResult = Get-CaAiaUriList -ExtensionType 'AddToCertificateAia' -Verbose
+                    } | Should -Not -Throw
                 }
-            }
 
-            Context 'When ensure equals absent, and OCSP records are present, and $RestartService equals $true' {
-                Mock -CommandName Get-TargetResource -MockWith { $presentParams }
-
-                It 'Should call the expected mocks' {
-                    Set-TargetResource @absentParams
-
-                    Assert-MockCalled -CommandName Remove-CAAuthorityInformationAccess -Exactly -Times 3 -Scope It -ParameterFilter { $OcspUriPath -eq $absentParams.OcspUriPathList }
-                    Assert-MockCalled -CommandName Add-CAAuthorityInformationAccess -Exactly -Times 0 -Scope It -ParameterFilter { $OcspUriPath -eq $absentParams.OcspUriPathList }
-                    Assert-MockCalled -CommandName Restart-ServiceIfExists -Exactly -Times 1 -Scope It -ParameterFilter { $Name -eq 'CertSvc' }
+                It 'Should return null' {
+                    $script:getCaAiaUriListResult | Should -BeExactly 'http://primary/Certs/<CATruncatedName>.cer'
                 }
             }
 
-            Context 'When ensure equals absent, and OCSP records are present, and $RestartService equals $false' {
-                Mock -CommandName Get-TargetResource -MockWith { $setRestartServiceFalsePresentParams }
-
-                It 'Should call the expected mocks' {
-                    Set-TargetResource @setRestartServiceFalseAbsentParams
-
-                    Assert-MockCalled -CommandName Remove-CAAuthorityInformationAccess -Exactly -Times 3 -Scope It -ParameterFilter { $OcspUriPath -eq $setRestartServiceFalseAbsentParams.OcspUriPathList }
-                    Assert-MockCalled -CommandName Add-CAAuthorityInformationAccess -Exactly -Times 0 -Scope It -ParameterFilter { $OcspUriPath -eq $setRestartServiceFalseAbsentParams.OcspUriPathList }
-                    Assert-MockCalled -CommandName Restart-ServiceIfExists -Exactly -Times 0 -Scope It -ParameterFilter { $Name -eq 'CertSvc' }
+            Context 'When ExtensionType is AddToCertificateAia and there is AddToCertificateAia URI and two AddToCertificateOcsp URIs' {
+                $getCAAuthorityInformationAccessMock = {
+                    @(
+                        [PSCustomObject] @{
+                            AddToCertificateAia  = $false
+                            AddToCertificateOcsp = $true
+                            Uri                  = 'http://primary-ocsp-responder/ocsp'
+                        },
+                        [PSCustomObject] @{
+                            AddToCertificateAia  = $true
+                            AddToCertificateOcsp = $false
+                            Uri                  = 'http://primary/Certs/<CATruncatedName>.cer'
+                        },
+                        [PSCustomObject] @{
+                            AddToCertificateAia  = $true
+                            AddToCertificateOcsp = $false
+                            Uri                  = 'http://secondary/Certs/<CATruncatedName>.cer'
+                        }
+                    )
                 }
-            }
-        }
 
-        Describe 'MSFT_AdcsOcspExtension\Test-TargetResource' -Tag 'Test' {
-            Context 'When ensure equals present and in desired state' {
-                $desiredStateRecordReturned = @(
-                    @{
-                        AddToCertificateAia  = 'false'
-                        AddToCertificateOcsp = 'true'
-                        Uri                  = 'http://primary-ocsp-responder/ocsp'
-                    }
-                    @{
-                        AddToCertificateAia  = 'false'
-                        AddToCertificateOcsp = 'true'
-                        Uri                  = 'http://secondary-ocsp-responder/ocsp'
-                    }
-                    @{
-                        AddToCertificateAia  = 'false'
-                        AddToCertificateOcsp = 'true'
-                        Uri                  = 'http://tertiary-ocsp-responder/ocsp'
-                    }
-                )
+                Mock `
+                    -CommandName Get-CAAuthorityInformationAccess `
+                    -ModuleName MSFT_AdcsAuthorityInformationAccess `
+                    -MockWith $getCAAuthorityInformationAccessMock
 
-                Mock -CommandName 'Get-CAAuthorityInformationAccess' -MockWith { $desiredStateRecordReturned }
+                It 'Should not throw an exception' {
+                    {
+                        $script:getCaAiaUriListResult = Get-CaAiaUriList -ExtensionType 'AddToCertificateAia' -Verbose
+                    } | Should -Not -Throw
+                }
 
-                It 'Should return $true' {
-                    $result = Test-TargetResource @presentParams
-
-                    $result | Should -Be $true
+                It 'Should return null' {
+                    $script:getCaAiaUriListResult[0] | Should -BeExactly 'http://primary/Certs/<CATruncatedName>.cer'
+                    $script:getCaAiaUriListResult[1] | Should -BeExactly 'http://secondary/Certs/<CATruncatedName>.cer'
                 }
             }
 
-            Context 'When ensure equals absent and in desired state' {
-                $absentStateRecordReturned = @()
+            Context 'When ExtensionType is AddToCertificateOcsp and there are only AddToCertificateAia URIs' {
+                $getCAAuthorityInformationAccessMock = {
+                    @(
+                        [PSCustomObject] @{
+                            AddToCertificateAia  = $true
+                            AddToCertificateOcsp = $false
+                            Uri                  = 'http://primary/Certs/<CATruncatedName>.cer'
+                        }
+                    )
+                }
 
-                Mock -CommandName 'Get-CAAuthorityInformationAccess' -MockWith { $absentStateRecordReturned }
+                Mock `
+                    -CommandName Get-CAAuthorityInformationAccess `
+                    -ModuleName MSFT_AdcsAuthorityInformationAccess `
+                    -MockWith $getCAAuthorityInformationAccessMock
 
-                It 'Should return $true' {
-                    $result = Test-TargetResource @absentParams
+                It 'Should not throw an exception' {
+                    {
+                        $script:getCaAiaUriListResult = Get-CaAiaUriList -ExtensionType 'AddToCertificateOcsp' -Verbose
+                    } | Should -Not -Throw
+                }
 
-                    $result | Should -Be $true
+                It 'Should return null' {
+                    $script:getCaAiaUriListResult | Should -BeNullOrEmpty
                 }
             }
 
-            Context 'When ensure equals present, but not in desired state, and no values stored in OCSP records when passing in a value for OCSP' {
-                Mock -CommandName 'Get-CAAuthorityInformationAccess'
+            Context 'When ExtensionType is AddToCertificateOcsp and there is AddToCertificateOcsp URI and one AddToCertificateAia URI' {
+                $getCAAuthorityInformationAccessMock = {
+                    @(
+                        [PSCustomObject] @{
+                            AddToCertificateAia  = $false
+                            AddToCertificateOcsp = $true
+                            Uri                  = 'http://primary-ocsp-responder/ocsp'
+                        },
+                        [PSCustomObject] @{
+                            AddToCertificateAia  = $true
+                            AddToCertificateOcsp = $false
+                            Uri                  = 'http://primary/Certs/<CATruncatedName>.cer'
+                        }
+                    )
+                }
 
-                It 'Should return $false' {
-                    $result = Test-TargetResource @presentParams
+                Mock `
+                    -CommandName Get-CAAuthorityInformationAccess `
+                    -ModuleName MSFT_AdcsAuthorityInformationAccess `
+                    -MockWith $getCAAuthorityInformationAccessMock
 
-                    $result | Should -Be $false
+                It 'Should not throw an exception' {
+                    {
+                        $script:getCaAiaUriListResult = Get-CaAiaUriList -ExtensionType 'AddToCertificateOcsp' -Verbose
+                    } | Should -Not -Throw
+                }
+
+                It 'Should return null' {
+                    $script:getCaAiaUriListResult | Should -BeExactly 'http://primary-ocsp-responder/ocsp'
                 }
             }
 
-            Context 'When ensure equals present, but not in desired state, and different values are stored in OCSP records when passing in a value for OCSP' {
-                $singleRecordReturned = @{
-                    AddToCertificateAia  = 'false'
-                    AddToCertificateOcsp = 'true'
-                    Uri                  = 'http://secondary-ocsp-responder/ocsp'
+            Context 'When ExtensionType is AddToCertificateOcsp and there is AddToCertificateOcsp URI and two AddToCertificateAia URIs' {
+                $getCAAuthorityInformationAccessMock = {
+                    @(
+                        [PSCustomObject] @{
+                            AddToCertificateAia  = $false
+                            AddToCertificateOcsp = $true
+                            Uri                  = 'http://primary-ocsp-responder/ocsp'
+                        },
+                        [PSCustomObject] @{
+                            AddToCertificateAia  = $false
+                            AddToCertificateOcsp = $true
+                            Uri                  = 'http://secondary-ocsp-responder/ocsp'
+                        },
+                        [PSCustomObject] @{
+                            AddToCertificateAia  = $true
+                            AddToCertificateOcsp = $false
+                            Uri                  = 'http://primary/Certs/<CATruncatedName>.cer'
+                        }
+                    )
                 }
 
-                Mock -CommandName 'Get-CAAuthorityInformationAccess' -MockWith { $singleRecordReturned }
+                Mock `
+                    -CommandName Get-CAAuthorityInformationAccess `
+                    -ModuleName MSFT_AdcsAuthorityInformationAccess `
+                    -MockWith $getCAAuthorityInformationAccessMock
 
-                It 'Should return $false' {
-                    $result = Test-TargetResource @presentParams
-
-                    $result | Should -Be $false
+                It 'Should not throw an exception' {
+                    {
+                        $script:getCaAiaUriListResult = Get-CaAiaUriList -ExtensionType 'AddToCertificateOcsp' -Verbose
+                    } | Should -Not -Throw
                 }
-            }
 
-            Context 'When ensure equals absent, but not in desired state, and OCSP record is returned' {
-                $ocspRecordReturned = @(
-                    @{
-                        AddToCertificateAia  = 'false'
-                        AddToCertificateOcsp = 'true'
-                        Uri                  = 'http://secondary-ocsp-responder/ocsp'
-                    }
-                )
-
-                Mock -CommandName 'Get-CAAuthorityInformationAccess' -MockWith { $ocspRecordReturned }
-
-                It 'Should return $false' {
-                    $result = Test-TargetResource @absentParams
-
-                    $result | Should -Be $false
-                }
-            }
-
-            Context 'When ensure equals present, but not in desired state, and OCSP record # 3 contains a typographical error' {
-                $wrongOcspRecordReturned = @(
-                    @{
-                        AddToCertificateAia  = 'false'
-                        AddToCertificateOcsp = 'true'
-                        Uri                  = 'http://primary-ocsp-responder/ocsp'
-                    }
-                    @{
-                        AddToCertificateAia  = 'false'
-                        AddToCertificateOcsp = 'true'
-                        Uri                  = 'http://secondary-ocsp-responder/ocsp'
-                    }
-                    @{
-                        AddToCertificateAia  = 'false'
-                        AddToCertificateOcsp = 'true'
-                        Uri                  = 'http://tertiaryyy-ocsp-responder/ocsp'
-                    }
-                )
-
-                Mock -CommandName 'Get-CAAuthorityInformationAccess' -MockWith { $wrongOcspRecordReturned }
-
-                It 'Should return $false' {
-                    $result = Test-TargetResource @presentParams
-
-                    $result | Should -Be $false
-                }
-            }
-
-            Context 'When ensure equals present, but not in desired state, and counts do not match, and additional OCSP URI record returned' {
-                $additionalOcspRecordReturned = @(
-                    @{
-                        AddToCertificateAia  = 'false'
-                        AddToCertificateOcsp = 'true'
-                        Uri                  = 'http://primary-ocsp-responder/ocsp'
-                    }
-                    @{
-                        AddToCertificateAia  = 'false'
-                        AddToCertificateOcsp = 'true'
-                        Uri                  = 'http://secondary-ocsp-responder/ocsp'
-                    }
-                    @{
-                        AddToCertificateAia  = 'false'
-                        AddToCertificateOcsp = 'true'
-                        Uri                  = 'http://tertiaryyy-ocsp-responder/ocsp'
-                    }
-                    @{
-                        AddToCertificateAia  = 'false'
-                        AddToCertificateOcsp = 'true'
-                        Uri                  = 'http://rogue-ocsp-responder/ocsp'
-                    }
-                )
-
-                Mock -CommandName 'Get-CAAuthorityInformationAccess' -MockWith { $additionalOcspRecordReturned }
-
-                It 'Should return $false' {
-                    $result = Test-TargetResource @presentParams
-
-                    $result | Should -Be $false
+                It 'Should return null' {
+                    $script:getCaAiaUriListResult[0] | Should -BeExactly 'http://primary-ocsp-responder/ocsp'
+                    $script:getCaAiaUriListResult[1] | Should -BeExactly 'http://secondary-ocsp-responder/ocsp'
                 }
             }
         }
     }
 }
-
 finally
 {
     Restore-TestEnvironment -TestEnvironment $TestEnvironment
