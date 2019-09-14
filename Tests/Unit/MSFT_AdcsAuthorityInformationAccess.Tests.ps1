@@ -1,7 +1,7 @@
 Set-StrictMode -Version Latest
 
 $script:DSCModuleName = 'ActiveDirectoryCSDsc'
-$script:DSCResourceName = 'MSFT_AdcsOcspExtension'
+$script:DSCResourceName = 'MSFT_AdcsAuthorityInformationAccess'
 
 #region HEADER
 # Unit Test Template Version: 1.1.0
@@ -25,7 +25,13 @@ Import-Module (Join-Path -Path $script:moduleRoot -ChildPath 'Tests\TestHelpers\
 try
 {
     InModuleScope $script:DSCResourceName {
-        $ocspUriPathList = @(
+        $script:testOcspUri = @(
+            'http://primary-ocsp-responder/ocsp'
+            'http://secondary-ocsp-responder/ocsp'
+            'http://tertiary-ocsp-responder/ocsp'
+        )
+
+        $script:testAiaUri = @(
             'http://primary-ocsp-responder/ocsp'
             'http://secondary-ocsp-responder/ocsp'
             'http://tertiary-ocsp-responder/ocsp'

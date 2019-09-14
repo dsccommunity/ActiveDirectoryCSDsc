@@ -7,6 +7,10 @@
 - AdcsCertificationAuthoritySettings:
   - Fix grammar in the resource README.md.
 - Fix minor style issues in statement case.
+- Updated common function `Test-DscParameterState` to support ordered comparison
+  of arrays by copying function and tests from `ComputerManagementDsc`.
+- BREAKING CHANGE: Deprecate AdcsOcspExtension. This has been superceeded by
+  AdcsAuthorityInformationAccess
 
 ## 4.0.0.0
 

@@ -1,6 +1,6 @@
 <#PSScriptInfo
 .VERSION 1.0.0
-.GUID 93c71497-c4ac-452e-baf1-aff17bd4ecac
+.GUID 7469f3d7-a801-49cc-877a-97d47f12603e
 .AUTHOR Microsoft Corporation
 .COMPANYNAME Microsoft Corporation
 .COPYRIGHT
@@ -19,19 +19,25 @@
 
 <#
     .DESCRIPTION
-        A DSC configuration script to add desired OCSP URI path extensions for a Certificate Authority.
-        This will remove all existing OCSP URI paths from the Certificate Authority.
+        This example will set the Authority Information Access and Online Responder
+        OCSP URIs to be included in the AIA and OCSP extensions respectively.
 #>
-configuration AdcsOcspExtension_AddOcspPath_Config
+configuration AdcsAuthorityInformationAccess_SetAiaAndOcsp_Config
 {
     Import-DscResource -ModuleName ActiveDirectoryCSDsc
 
     node localhost
     {
-        AdcsOcspExtension AddOcspUriPath
+        AdcsAuthorityInformationAccess SetAiaAndOcsp
         {
             IsSingleInstance = 'Yes'
-            OcspUriPath      = @(
+            AiaUri           = @(
+                'http://setAIATest1/Certs/<CATruncatedName>.cer'
+                'http://setAIATest2/Certs/<CATruncatedName>.cer'
+                'http://setAIATest3/Certs/<CATruncatedName>.cer'
+                'file://<ServerDNSName>/CertEnroll/<ServerDNSName>_<CAName><CertificateName>.crt'
+            )
+            OcspUri          = @(
                 'http://primary-ocsp-responder/ocsp'
                 'http://secondary-ocsp-responder/ocsp'
                 'http://tertiary-ocsp-responder/ocsp'
