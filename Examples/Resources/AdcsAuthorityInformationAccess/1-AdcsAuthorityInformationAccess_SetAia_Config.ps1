@@ -30,15 +30,15 @@ configuration AdcsAuthorityInformationAccess_SetAia_Config
     {
         AdcsAuthorityInformationAccess SetAia
         {
-            IsSingleInstance = 'Yes'
-            AiaUri           = @(
+            IsSingleInstance    = 'Yes'
+            AiaUri              = @(
                 'http://setAIATest1/Certs/<CATruncatedName>.cer'
                 'http://setAIATest2/Certs/<CATruncatedName>.cer'
                 'http://setAIATest3/Certs/<CATruncatedName>.cer'
                 'file://<ServerDNSName>/CertEnroll/<ServerDNSName>_<CAName><CertificateName>.crt'
             )
-            RestartService   = $true
-            Ensure           = 'Present'
+            AllowRestartService = $true
+            Ensure              = 'Present'
         }
     }
 }

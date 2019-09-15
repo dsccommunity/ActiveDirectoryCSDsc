@@ -30,20 +30,20 @@ configuration AdcsAuthorityInformationAccess_SetAiaAndOcsp_Config
     {
         AdcsAuthorityInformationAccess SetAiaAndOcsp
         {
-            IsSingleInstance = 'Yes'
-            AiaUri           = @(
+            IsSingleInstance    = 'Yes'
+            AiaUri              = @(
                 'http://setAIATest1/Certs/<CATruncatedName>.cer'
                 'http://setAIATest2/Certs/<CATruncatedName>.cer'
                 'http://setAIATest3/Certs/<CATruncatedName>.cer'
                 'file://<ServerDNSName>/CertEnroll/<ServerDNSName>_<CAName><CertificateName>.crt'
             )
-            OcspUri          = @(
+            OcspUri             = @(
                 'http://primary-ocsp-responder/ocsp'
                 'http://secondary-ocsp-responder/ocsp'
                 'http://tertiary-ocsp-responder/ocsp'
             )
-            RestartService   = $true
-            Ensure           = 'Present'
+            AllowRestartService = $true
+            Ensure              = 'Present'
         }
     }
 }
