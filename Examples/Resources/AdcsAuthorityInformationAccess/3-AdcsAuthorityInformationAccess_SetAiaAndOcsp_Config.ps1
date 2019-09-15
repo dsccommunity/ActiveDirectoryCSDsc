@@ -43,7 +43,6 @@ configuration AdcsAuthorityInformationAccess_SetAiaAndOcsp_Config
                 'http://tertiary-ocsp-responder/ocsp'
             )
             AllowRestartService = $true
-            Ensure              = 'Present'
         }
     }
 }

@@ -38,7 +38,6 @@ configuration AdcsAuthorityInformationAccess_SetAia_Config
                 'file://<ServerDNSName>/CertEnroll/<ServerDNSName>_<CAName><CertificateName>.crt'
             )
             AllowRestartService = $true
-            Ensure              = 'Present'
         }
     }
 }
