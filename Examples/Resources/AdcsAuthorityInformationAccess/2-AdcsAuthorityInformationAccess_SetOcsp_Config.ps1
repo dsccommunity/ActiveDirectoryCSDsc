@@ -30,14 +30,14 @@ configuration AdcsAuthorityInformationAccess_SetOcsp_Config
     {
         AdcsAuthorityInformationAccess SetOcsp
         {
-            IsSingleInstance = 'Yes'
-            OcspUri          = @(
+            IsSingleInstance    = 'Yes'
+            OcspUri             = @(
                 'http://primary-ocsp-responder/ocsp'
                 'http://secondary-ocsp-responder/ocsp'
                 'http://tertiary-ocsp-responder/ocsp'
             )
-            RestartService   = $true
-            Ensure           = 'Present'
+            AllowRestartService = $true
+            Ensure              = 'Present'
         }
     }
 }
