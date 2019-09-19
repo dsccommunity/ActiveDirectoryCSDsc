@@ -1,6 +1,6 @@
 # Description
 
-This resource can be used to install configure advanced settings in an Active
+This resource can be used to configure the advanced settings of an Active
 Directory Certificate Services instance. The Active Directory Certificate Services
 feature should have been enabled and a Certificate Authority installed.
 
