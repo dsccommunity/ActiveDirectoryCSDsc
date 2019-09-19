@@ -64,10 +64,31 @@
             # IconUri = ''
 
             # ReleaseNotes of this module
+<<<<<<< HEAD
         ReleaseNotes = '- AdcsCertificationAuthoritySettings:
   - Fix grammar in the resource README.md.
 - Fix minor style issues in statement case.
 
+=======
+            ReleaseNotes = '- BREAKING CHANGE: ActiveDirectoryCSDsc module minimum requirements updated
+  to WMF 5.0 because newly added AdcsCertificateAuthoritySettings resource
+  requires WMF 5.0.
+- Added new resource AdcsCertificateAuthoritySettings - see
+  [Issue 13](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/13).
+- Added new resource AdcsTemplate.
+- Replaced `switch` blocks with `if` blocks for evaluating "Ensure" parameter
+  because switch was missing `break` - fixes [Issue 87](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/87).
+- Added Comment Based Help for `New-NotImplementedException` common function.
+- Moved code to create the user account for use in integration test into a
+  `CommonTestHelper.psm1` function.
+- Removed user account creation code from `AppVeyor.yml` and into integration
+  tests themselves to make tests execution easier.
+- Updated user account creation code to use local user/group management Powershell
+  cmdlets available in WMF 5.1 - fixes [Issue 24](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/24).
+- AdcsCertificationAuthority:
+  - Integration tests updated to create test user account in administrators
+    group to make test execution easier.
+>>>>>>> 2d0bde664857373faf6e98c6c3a5a0e6ab75f3fd
 '
         } # End of PSData hashtable
     } # End of PrivateData hashtable
