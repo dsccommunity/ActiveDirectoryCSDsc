@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+- Updated common function `Test-DscParameterState` to support ordered comparison
+  of arrays by copying function and tests from `ComputerManagementDsc`.
+- Added new resource AdcsAuthorityInformationAccess - see
+  [Issue #101](https://github.com/PowerShell/ActiveDirectoryCSDsc/issues/101).
+- BREAKING CHANGE: Deprecate AdcsOcspExtension. This has been superceeded by
+  AdcsAuthorityInformationAccess.
+- AdcsCertificateAuthoritySettings:
+  - Correct types returned by `CRLPeriodUnits` and `AuditFilter` properties
+    from Get-TargetResource.
+- Updated module ownership to DSC Community.
+
 ## 4.1.0.0
 
 - AdcsCertificationAuthoritySettings:
