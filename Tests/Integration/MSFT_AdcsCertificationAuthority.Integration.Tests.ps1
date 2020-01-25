@@ -187,7 +187,7 @@ try
         $configFile = Join-Path -Path $PSScriptRoot -ChildPath 'MSFT_AdcsAuthorityInformationAccess.config.ps1'
         . $configFile -Verbose -ErrorAction Stop
 
-        Context 'Configure ADCS Certification Authority Authority Information Access' {
+        Context 'Set ADCS Certification Authority Authority Information Access' {
             $configData = @{
                 AllNodes = @(
                     @{
@@ -232,6 +232,49 @@ try
                 $current.IsSingleInstance | Should -BeExactly 'Yes'
                 $current.AiaList | Should -BeExactly $configData.AllNodes[0].AiaList
                 $current.OcspList | Should -BeExactly $configData.AllNodes[0].OcspList
+                $current.AllowRestartService | Should -BeFalse
+            }
+        }
+
+        Context 'Clear ADCS Certification Authority Authority Information Access' {
+            $configData = @{
+                AllNodes = @(
+                    @{
+                        NodeName            = 'localhost'
+                        AiaUri              = @()
+                        OcspUri             = @()
+                        AllowRestartService = $true
+                    }
+                )
+            }
+
+            It 'Should compile and apply the MOF without throwing' {
+                {
+                    & "MSFT_AdcsAuthorityInformationAccess_Config" `
+                        -OutputPath $TestDrive `
+                        -ConfigurationData $configData
+
+                    Start-DscConfiguration `
+                        -Path $TestDrive `
+                        -ComputerName localhost `
+                        -Wait `
+                        -Verbose `
+                        -Force `
+                        -ErrorAction Stop
+                } | Should -Not -Throw
+            }
+
+            It 'Should be able to call Get-DscConfiguration without throwing' {
+                { Get-DscConfiguration -Verbose -ErrorAction Stop } | Should -Not -Throw
+            }
+
+            It 'Should have set the resource and all the parameters should match' {
+                $current = Get-DscConfiguration | Where-Object -FilterScript {
+                    $_.ConfigurationName -eq 'MSFT_AdcsAuthorityInformationAccess_Config'
+                }
+                $current.IsSingleInstance | Should -BeExactly 'Yes'
+                $current.AiaList | Should -BeNullOrEmpty
+                $current.OcspList | Should -BeNullOrEmpty
                 $current.AllowRestartService | Should -BeFalse
             }
         }

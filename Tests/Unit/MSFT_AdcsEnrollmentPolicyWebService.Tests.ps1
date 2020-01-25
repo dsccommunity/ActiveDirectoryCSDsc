@@ -286,7 +286,7 @@ namespace Microsoft.CertificateServices.Deployment.Commands.CEP {
                     $result = Test-TargetResource @testParametersPresent
 
                     It 'Should return true' {
-                        $result | Should -Be $True
+                        $result | Should -BeTrue
                     }
 
                     It 'Should call expected mocks' {
@@ -305,7 +305,7 @@ namespace Microsoft.CertificateServices.Deployment.Commands.CEP {
                     $result = Test-TargetResource @testParametersAbsent
 
                     It 'Should return false' {
-                        $result | Should -Be $False
+                        $result | Should -BeFalse
                     }
 
                     It 'Should call expected mocks' {
@@ -326,7 +326,7 @@ namespace Microsoft.CertificateServices.Deployment.Commands.CEP {
                     $result = Test-TargetResource @testParametersPresent
 
                     It 'Should return false' {
-                        $result | Should -Be $false
+                        $result | Should -BeFalse
                     }
 
                     It 'Should call expected mocks' {
@@ -345,7 +345,7 @@ namespace Microsoft.CertificateServices.Deployment.Commands.CEP {
                     $result = Test-TargetResource @testParametersAbsent
 
                     It 'Should return true' {
-                        $result | Should -Be $True
+                        $result | Should -BeTrue
                     }
 
                     It 'Should call expected mocks' {
@@ -432,7 +432,7 @@ namespace Microsoft.CertificateServices.Deployment.Commands.CEP {
                         -KeyBasedRenewal:$KeyBasedRenewal `
                         -Verbose
 
-                    $result | Should -Be $true
+                    $result | Should -BeTrue
                 }
             }
 
@@ -465,7 +465,7 @@ namespace Microsoft.CertificateServices.Deployment.Commands.CEP {
                         -KeyBasedRenewal:$KeyBasedRenewal `
                         -Verbose
 
-                    $result | Should -Be $false
+                    $result | Should -BeFalse
                 }
             }
         }
@@ -476,7 +476,7 @@ namespace Microsoft.CertificateServices.Deployment.Commands.CEP {
                     $result = Test-Thumbprint -Thumbprint $validThumbprint
                     It 'Should return true' {
                         $result | Should -BeOfType [System.Boolean]
-                        $result | Should -Be $true
+                        $result | Should -BeTrue
                     }
                 }
 
@@ -490,7 +490,7 @@ namespace Microsoft.CertificateServices.Deployment.Commands.CEP {
                     $result = Test-Thumbprint $invalidThumbprint -Quiet
                     It 'Should return false' {
                         $result | Should -BeOfType [System.Boolean]
-                        $result | Should -Be $false
+                        $result | Should -BeFalse
                     }
                 }
 
@@ -498,7 +498,7 @@ namespace Microsoft.CertificateServices.Deployment.Commands.CEP {
                     $result = $validThumbprint | Test-Thumbprint
                     It 'Should return true' {
                         $result | Should -BeOfType [System.Boolean]
-                        $result | Should -Be $true
+                        $result | Should -BeTrue
                     }
                 }
 
@@ -512,7 +512,7 @@ namespace Microsoft.CertificateServices.Deployment.Commands.CEP {
                     $result = $invalidThumbprint | Test-Thumbprint -Quiet
                     It 'Should return false' {
                         $result | Should -BeOfType [System.Boolean]
-                        $result | Should -Be $false
+                        $result | Should -BeFalse
                     }
                 }
             }
@@ -524,7 +524,7 @@ namespace Microsoft.CertificateServices.Deployment.Commands.CEP {
                     $result = Test-Thumbprint -Thumbprint $validFipsThumbprint
                     It 'Should return true' {
                         $result | Should -BeOfType [System.Boolean]
-                        $result | Should -Be $true
+                        $result | Should -BeTrue
                     }
                 }
 
@@ -538,7 +538,7 @@ namespace Microsoft.CertificateServices.Deployment.Commands.CEP {
                     $result = Test-Thumbprint $validThumbprint -Quiet
                     It 'Should return false' {
                         $result | Should -BeOfType [System.Boolean]
-                        $result | Should -Be $false
+                        $result | Should -BeFalse
                     }
                 }
 
@@ -546,7 +546,7 @@ namespace Microsoft.CertificateServices.Deployment.Commands.CEP {
                     $result = $validFipsThumbprint | Test-Thumbprint
                     It 'Should return true' {
                         $result | Should -BeOfType [System.Boolean]
-                        $result | Should -Be $true
+                        $result | Should -BeTrue
                     }
                 }
 
@@ -560,7 +560,7 @@ namespace Microsoft.CertificateServices.Deployment.Commands.CEP {
                     $result = $validThumbprint | Test-Thumbprint -Quiet
                     It 'Should return false' {
                         $result | Should -BeOfType [System.Boolean]
-                        $result | Should -Be $false
+                        $result | Should -BeFalse
                     }
                 }
             }

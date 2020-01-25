@@ -106,9 +106,9 @@ function Get-TargetResource
                 break
             }
 
-            'Uint32'
+            'UInt32'
             {
-                $parameterValue = [System.Uint32] $currentcertificateAuthoritySettings.$($parameter.Name)
+                $parameterValue = [System.UInt32] $currentcertificateAuthoritySettings.$($parameter.Name)
                 break
             }
 

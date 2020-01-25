@@ -200,7 +200,7 @@ Try
                 $result = Test-TargetResource @testTemplatePresent -Ensure 'Present'
 
                 It 'Should return true' {
-                    $result | Should -Be $true
+                    $result | Should -BeTrue
                 }
 
                 It 'Should call expected mock' {
@@ -218,7 +218,7 @@ Try
                 $result = Test-TargetResource @testTemplatePresent -Ensure 'Absent'
 
                 It 'Should return false' {
-                    $result | Should -Be $false
+                    $result | Should -BeFalse
                 }
 
                 It 'Should call expected mock' {
@@ -236,7 +236,7 @@ Try
                 $result = Test-TargetResource @testTemplateNotPresent -Ensure 'Present'
 
                 It 'Should return false' {
-                    $result | Should -Be $false
+                    $result | Should -BeFalse
                 }
 
                 It 'Should call expected mock' {
@@ -254,7 +254,7 @@ Try
                 $result = Test-TargetResource @testTemplateNotPresent -Ensure 'Absent'
 
                 It 'Should return true' {
-                    $result | Should -Be $true
+                    $result | Should -BeTrue
                 }
 
                 It 'Should call expected mock' {

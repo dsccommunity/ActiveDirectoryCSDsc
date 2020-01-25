@@ -91,7 +91,7 @@ InModuleScope 'ActiveDirectoryCSDsc.Common' {
                 }
 
                 It 'Should return $true' {
-                    $script:result | Should -Be $true
+                    $script:result | Should -BeTrue
                 }
             }
 
@@ -116,7 +116,7 @@ InModuleScope 'ActiveDirectoryCSDsc.Common' {
                 }
 
                 It 'Should return $false' {
-                    $script:result | Should -Be $false
+                    $script:result | Should -BeFalse
                 }
             }
 
@@ -141,7 +141,7 @@ InModuleScope 'ActiveDirectoryCSDsc.Common' {
                 }
 
                 It 'Should return $false' {
-                    $script:result | Should -Be $false
+                    $script:result | Should -BeFalse
                 }
             }
 
@@ -166,7 +166,7 @@ InModuleScope 'ActiveDirectoryCSDsc.Common' {
                 }
 
                 It 'Should return $false' {
-                    $script:result | Should -Be $false
+                    $script:result | Should -BeFalse
                 }
             }
 
@@ -186,7 +186,7 @@ InModuleScope 'ActiveDirectoryCSDsc.Common' {
                 }
 
                 It 'Should return $false' {
-                    $script:result | Should -Be $false
+                    $script:result | Should -BeFalse
                 }
             }
 
@@ -207,7 +207,7 @@ InModuleScope 'ActiveDirectoryCSDsc.Common' {
                 }
 
                 It 'Should return $true' {
-                    $script:result | Should -Be $true
+                    $script:result | Should -BeTrue
                 }
             }
 
@@ -232,7 +232,7 @@ InModuleScope 'ActiveDirectoryCSDsc.Common' {
                 }
 
                 It 'Should return $true' {
-                    $script:result | Should -Be $true
+                    $script:result | Should -BeTrue
                 }
             }
         }
@@ -273,7 +273,7 @@ InModuleScope 'ActiveDirectoryCSDsc.Common' {
                 }
 
                 It 'Should return $false' {
-                    $script:result | Should -Be $false
+                    $script:result | Should -BeFalse
                 }
             }
 
@@ -293,7 +293,7 @@ InModuleScope 'ActiveDirectoryCSDsc.Common' {
                 }
 
                 It 'Should return $false' {
-                    $script:result | Should -Be $false
+                    $script:result | Should -BeFalse
                 }
             }
 
@@ -313,7 +313,7 @@ InModuleScope 'ActiveDirectoryCSDsc.Common' {
                 }
 
                 It 'Should return $false' {
-                    $script:result | Should -Be $false
+                    $script:result | Should -BeFalse
                 }
             }
 
@@ -333,7 +333,7 @@ InModuleScope 'ActiveDirectoryCSDsc.Common' {
                 }
 
                 It 'Should return $false' {
-                    $script:result | Should -Be $false
+                    $script:result | Should -BeFalse
                 }
             }
 
@@ -354,7 +354,7 @@ InModuleScope 'ActiveDirectoryCSDsc.Common' {
                 }
 
                 It 'Should return $false' {
-                    $script:result | Should -Be $false
+                    $script:result | Should -BeFalse
                 }
             }
 
@@ -375,7 +375,7 @@ InModuleScope 'ActiveDirectoryCSDsc.Common' {
                 }
 
                 It 'Should return $false' {
-                    $script:result | Should -Be $false
+                    $script:result | Should -BeFalse
                 }
             }
 
@@ -396,7 +396,7 @@ InModuleScope 'ActiveDirectoryCSDsc.Common' {
                 }
 
                 It 'Should return $true' {
-                    $script:result | Should -Be $true
+                    $script:result | Should -BeTrue
                 }
             }
 
@@ -433,7 +433,7 @@ InModuleScope 'ActiveDirectoryCSDsc.Common' {
                 }
 
                 It 'Should return $true' {
-                    $script:result | Should -Be $true
+                    $script:result | Should -BeTrue
                 }
             }
         }
@@ -472,7 +472,7 @@ InModuleScope 'ActiveDirectoryCSDsc.Common' {
                 }
 
                 It 'Should return $false' {
-                    $script:result | Should -Be $false
+                    $script:result | Should -BeFalse
                 }
             }
 
@@ -497,7 +497,7 @@ InModuleScope 'ActiveDirectoryCSDsc.Common' {
                 }
 
                 It 'Should return $false' {
-                    $script:result | Should -Be $false
+                    $script:result | Should -BeFalse
                 }
             }
 
@@ -522,7 +522,7 @@ InModuleScope 'ActiveDirectoryCSDsc.Common' {
                 }
 
                 It 'Should return $false' {
-                    $script:result | Should -Be $false
+                    $script:result | Should -BeFalse
                 }
             }
 
@@ -547,7 +547,7 @@ InModuleScope 'ActiveDirectoryCSDsc.Common' {
                 }
 
                 It 'Should return $false' {
-                    $script:result | Should -Be $false
+                    $script:result | Should -BeFalse
                 }
             }
 
@@ -573,7 +573,7 @@ InModuleScope 'ActiveDirectoryCSDsc.Common' {
                 }
 
                 It 'Should return $true' {
-                    $script:result | Should -Be $true
+                    $script:result | Should -BeTrue
                 }
             }
 
@@ -599,7 +599,7 @@ InModuleScope 'ActiveDirectoryCSDsc.Common' {
                 }
 
                 It 'Should return $false' {
-                    $script:result | Should -Be $false
+                    $script:result | Should -BeFalse
                 }
             }
 
@@ -625,7 +625,7 @@ InModuleScope 'ActiveDirectoryCSDsc.Common' {
                 }
 
                 It 'Should return $true' {
-                    $script:result | Should -Be $true
+                    $script:result | Should -BeTrue
                 }
             }
         }
@@ -676,7 +676,7 @@ InModuleScope 'ActiveDirectoryCSDsc.Common' {
                 }
 
                 It 'Should return $true' {
-                    $script:result | Should -Be $true
+                    $script:result | Should -BeTrue
                 }
             }
 
@@ -706,7 +706,7 @@ InModuleScope 'ActiveDirectoryCSDsc.Common' {
                 }
 
                 It 'Should return $true' {
-                    $script:result | Should -Be $true
+                    $script:result | Should -BeTrue
                 }
             }
 
@@ -737,7 +737,7 @@ InModuleScope 'ActiveDirectoryCSDsc.Common' {
                 }
 
                 It 'Should return $false' {
-                    $script:result | Should -Be $false
+                    $script:result | Should -BeFalse
                 }
             }
 
@@ -769,7 +769,7 @@ InModuleScope 'ActiveDirectoryCSDsc.Common' {
                 }
 
                 It 'Should return $false' {
-                    $script:result | Should -Be $false
+                    $script:result | Should -BeFalse
                 }
             }
 
@@ -800,7 +800,7 @@ InModuleScope 'ActiveDirectoryCSDsc.Common' {
                 }
 
                 It 'Should return $false' {
-                    $script:result | Should -Be $false
+                    $script:result | Should -BeFalse
                 }
             }
 
@@ -831,7 +831,7 @@ InModuleScope 'ActiveDirectoryCSDsc.Common' {
                 }
 
                 It 'Should return $false' {
-                    $script:result | Should -Be $false
+                    $script:result | Should -BeFalse
                 }
             }
 
@@ -863,7 +863,7 @@ InModuleScope 'ActiveDirectoryCSDsc.Common' {
                 }
 
                 It 'Should return $true' {
-                    $script:result | Should -Be $true
+                    $script:result | Should -BeTrue
                 }
             }
         }
@@ -899,7 +899,7 @@ InModuleScope 'ActiveDirectoryCSDsc.Common' {
                 }
 
                 It 'Should return $true' {
-                    $script:result | Should -Be $true
+                    $script:result | Should -BeTrue
                 }
             }
 
@@ -922,7 +922,7 @@ InModuleScope 'ActiveDirectoryCSDsc.Common' {
                 }
 
                 It 'Should return $false' {
-                    $script:result | Should -Be $false
+                    $script:result | Should -BeFalse
                 }
             }
         }
@@ -970,7 +970,7 @@ InModuleScope 'ActiveDirectoryCSDsc.Common' {
             }
 
             It 'Should return $true' {
-                $script:result | Should -Be $true
+                $script:result | Should -BeTrue
             }
         }
 
@@ -980,7 +980,7 @@ InModuleScope 'ActiveDirectoryCSDsc.Common' {
             }
 
             It 'Should return $false' {
-                $script:result | Should -Be $false
+                $script:result | Should -BeFalse
             }
         }
     }

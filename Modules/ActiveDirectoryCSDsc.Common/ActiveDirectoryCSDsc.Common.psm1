@@ -23,7 +23,9 @@ function Remove-CommonParameter
     $commonParameters = [System.Management.Automation.PSCmdlet]::CommonParameters
     $commonParameters += [System.Management.Automation.PSCmdlet]::OptionalCommonParameters
 
-    $Hashtable.Keys | Where-Object -FilterScript { $_ -in $commonParameters } | ForEach-Object -Process {
+    $Hashtable.Keys | Where-Object -FilterScript {
+        $_ -in $commonParameters
+    } | ForEach-Object -Process {
         $inputClone.Remove($_)
     }
 
