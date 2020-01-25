@@ -212,7 +212,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.WEP {
                     $result = Test-TargetResource @testParametersPresent
 
                     It 'Should return true' {
-                        $result | Should -Be $True
+                        $result | Should -BeTrue
                     }
 
                     It 'Should call expected mocks' {
@@ -234,7 +234,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.WEP {
                     $result = Test-TargetResource @testParametersAbsent
 
                     It 'Should return false' {
-                        $result | Should -Be $False
+                        $result | Should -BeFalse
                     }
 
                     It 'Should call expected mocks' {
@@ -255,7 +255,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.WEP {
                     $result = Test-TargetResource @testParametersPresent
 
                     It 'Should return false' {
-                        $result | Should -Be $false
+                        $result | Should -BeFalse
                     }
 
                     It 'Should call expected mocks' {
@@ -274,7 +274,7 @@ namespace Microsoft.CertificateServices.Deployment.Common.WEP {
                     $result = Test-TargetResource @testParametersAbsent
 
                     It 'Should return true' {
-                        $result | Should -Be $True
+                        $result | Should -BeTrue
                     }
 
                     It 'Should call expected mocks' {

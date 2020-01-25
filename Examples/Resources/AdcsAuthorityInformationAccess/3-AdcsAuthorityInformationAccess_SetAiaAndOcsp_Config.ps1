@@ -1,6 +1,6 @@
 <#PSScriptInfo
 .VERSION 1.0.0
-.GUID 95bd5fea-6d07-4c27-bda5-bdaa9bf08437
+.GUID 7469f3d7-a801-49cc-877a-97d47f12603e
 .AUTHOR Microsoft Corporation
 .COMPANYNAME Microsoft Corporation
 .COPYRIGHT
@@ -19,25 +19,30 @@
 
 <#
     .DESCRIPTION
-        A DSC configuration script to remove desired OCSP URI path extensions for a Certificate Authority.
-        No previously configured OCSP URI paths will be removed.
+        This example will set the Authority Information Access and Online Responder
+        OCSP URIs to be included in the AIA and OCSP extensions respectively.
 #>
-configuration AdcsOcspExtension_RemoveOcspPath_Config
+configuration AdcsAuthorityInformationAccess_SetAiaAndOcsp_Config
 {
     Import-DscResource -ModuleName ActiveDirectoryCSDsc
 
     node localhost
     {
-        AdcsOcspExtension RemoveOcspUriPath
+        AdcsAuthorityInformationAccess SetAiaAndOcsp
         {
-            IsSingleInstance = 'Yes'
-            OcspUriPath      = @(
+            IsSingleInstance    = 'Yes'
+            AiaUri              = @(
+                'http://setAIATest1/Certs/<CATruncatedName>.cer'
+                'http://setAIATest2/Certs/<CATruncatedName>.cer'
+                'http://setAIATest3/Certs/<CATruncatedName>.cer'
+                'file://<ServerDNSName>/CertEnroll/<ServerDNSName>_<CAName><CertificateName>.crt'
+            )
+            OcspUri             = @(
                 'http://primary-ocsp-responder/ocsp'
                 'http://secondary-ocsp-responder/ocsp'
                 'http://tertiary-ocsp-responder/ocsp'
             )
-            RestartService   = $true
-            Ensure           = 'Absent'
+            AllowRestartService = $true
         }
     }
 }

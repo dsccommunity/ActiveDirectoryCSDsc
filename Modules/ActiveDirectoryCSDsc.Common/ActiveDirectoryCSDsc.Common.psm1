@@ -1,16 +1,61 @@
 <#
     .SYNOPSIS
-        This method is used to compare current and desired values for any DSC resource.
+        Removes common parameters from a hashtable
+
+    .DESCRIPTION
+        This function serves the purpose of removing common parameters and option common parameters from a parameter hashtable
+
+    .PARAMETER Hashtable
+        The parameter hashtable that should be pruned
+#>
+function Remove-CommonParameter
+{
+    [OutputType([System.Collections.Hashtable])]
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.Collections.Hashtable]
+        $Hashtable
+    )
+
+    $inputClone = $Hashtable.Clone()
+    $commonParameters = [System.Management.Automation.PSCmdlet]::CommonParameters
+    $commonParameters += [System.Management.Automation.PSCmdlet]::OptionalCommonParameters
+
+    $Hashtable.Keys | Where-Object -FilterScript {
+        $_ -in $commonParameters
+    } | ForEach-Object -Process {
+        $inputClone.Remove($_)
+    }
+
+    return $inputClone
+}
+
+<#
+    .SYNOPSIS
+        Tests the status of DSC resource parameters.
+
+    .DESCRIPTION
+        This function tests the parameter status of DSC resource parameters against the current values present on the system.
 
     .PARAMETER CurrentValues
-        This is hash table of the current values that are applied to the resource.
+        A hashtable with the current values on the system, obtained by e.g. Get-TargetResource.
 
     .PARAMETER DesiredValues
-        This is a PSBoundParametersDictionary of the desired values for the resource.
+        The hashtable of desired values.
 
     .PARAMETER ValuesToCheck
-        This is a list of which properties in the desired values list should be checked.
-        If this is empty then all values in DesiredValues are checked.
+        The values to check if not all values should be checked.
+
+    .PARAMETER TurnOffTypeChecking
+        Indicates that the type of the parameter should not be checked.
+
+    .PARAMETER ReverseCheck
+        Indicates that a reverse check should be done. The current and desired state are swapped for another test.
+
+    .PARAMETER SortArrayValues
+        If the sorting of array values does not matter, values are sorted internally before doing the comparison.
 #>
 function Test-DscParameterState
 {
@@ -18,7 +63,7 @@ function Test-DscParameterState
     param
     (
         [Parameter(Mandatory = $true)]
-        [System.Collections.Hashtable]
+        [System.Object]
         $CurrentValues,
 
         [Parameter(Mandatory = $true)]
@@ -26,155 +71,417 @@ function Test-DscParameterState
         $DesiredValues,
 
         [Parameter()]
-        [System.Array]
-        $ValuesToCheck
+        [System.String[]]
+        $ValuesToCheck,
+
+        [Parameter()]
+        [switch]
+        $TurnOffTypeChecking,
+
+        [Parameter()]
+        [switch]
+        $ReverseCheck,
+
+        [Parameter()]
+        [switch]
+        $SortArrayValues
     )
 
     $returnValue = $true
 
-    if (($DesiredValues.GetType().Name -ne 'HashTable') `
-        -and ($DesiredValues.GetType().Name -ne 'CimInstance') `
-        -and ($DesiredValues.GetType().Name -ne 'PSBoundParametersDictionary'))
+    if ($CurrentValues -is [Microsoft.Management.Infrastructure.CimInstance] -or
+        $CurrentValues -is [Microsoft.Management.Infrastructure.CimInstance[]])
     {
-        $errorMessage = $script:localizedData.PropertyTypeInvalidForDesiredValues -f $($DesiredValues.GetType().Name)
-        New-InvalidArgumentException -ArgumentName 'DesiredValues' -Message $errorMessage
+        $CurrentValues = ConvertTo-HashTable -CimInstance $CurrentValues
     }
 
-    if (($DesiredValues.GetType().Name -eq 'CimInstance') -and ($null -eq $ValuesToCheck))
+    if ($DesiredValues -is [Microsoft.Management.Infrastructure.CimInstance] -or
+        $DesiredValues -is [Microsoft.Management.Infrastructure.CimInstance[]])
     {
-        $errorMessage = $script:localizedData.PropertyTypeInvalidForValuesToCheck
-        New-InvalidArgumentException -ArgumentName 'ValuesToCheck' -Message $errorMessage
+        $DesiredValues = ConvertTo-HashTable -CimInstance $DesiredValues
     }
 
-    if (($null -eq $ValuesToCheck) -or ($ValuesToCheck.Count -lt 1))
+    $types = 'System.Management.Automation.PSBoundParametersDictionary', 'System.Collections.Hashtable', 'Microsoft.Management.Infrastructure.CimInstance'
+
+    if ($DesiredValues.GetType().FullName -notin $types)
     {
-        $keyList = $DesiredValues.Keys
+        New-InvalidArgumentException `
+            -Message ($script:localizedData.InvalidDesiredValuesError -f $DesiredValues.GetType().FullName) `
+            -ArgumentName 'DesiredValues'
+    }
+
+    if ($CurrentValues.GetType().FullName -notin $types)
+    {
+        New-InvalidArgumentException `
+            -Message ($script:localizedData.InvalidCurrentValuesError -f $CurrentValues.GetType().FullName) `
+            -ArgumentName 'CurrentValues'
+    }
+
+    if ($DesiredValues -is [Microsoft.Management.Infrastructure.CimInstance] -and -not $ValuesToCheck)
+    {
+        New-InvalidArgumentException `
+            -Message $script:localizedData.InvalidValuesToCheckError `
+            -ArgumentName 'ValuesToCheck'
+    }
+
+    $desiredValuesClean = Remove-CommonParameter -Hashtable $DesiredValues
+
+    if (-not $ValuesToCheck)
+    {
+        $keyList = $desiredValuesClean.Keys
     }
     else
     {
         $keyList = $ValuesToCheck
     }
 
-    $keyList | ForEach-Object -Process {
-        if (($_ -ne 'Verbose'))
+    foreach ($key in $keyList)
+    {
+        $desiredValue = $desiredValuesClean.$key
+        $currentValue = $CurrentValues.$key
+
+        if ($desiredValue -is [Microsoft.Management.Infrastructure.CimInstance] -or
+            $desiredValue -is [Microsoft.Management.Infrastructure.CimInstance[]])
         {
-            if (($CurrentValues.ContainsKey($_) -eq $false) `
-            -or ($CurrentValues.$_ -ne $DesiredValues.$_) `
-            -or (($DesiredValues.GetType().Name -ne 'CimInstance' -and $DesiredValues.ContainsKey($_) -eq $true) -and ($null -ne $DesiredValues.$_ -and $DesiredValues.$_.GetType().IsArray)))
+            $desiredValue = ConvertTo-HashTable -CimInstance $desiredValue
+        }
+        if ($currentValue -is [Microsoft.Management.Infrastructure.CimInstance] -or
+            $currentValue -is [Microsoft.Management.Infrastructure.CimInstance[]])
+        {
+            $currentValue = ConvertTo-HashTable -CimInstance $currentValue
+        }
+
+        if ($null -ne $desiredValue)
+        {
+            $desiredType = $desiredValue.GetType()
+        }
+        else
+        {
+            $desiredType = @{
+                Name = 'Unknown'
+            }
+        }
+
+        if ($null -ne $currentValue)
+        {
+            $currentType = $currentValue.GetType()
+        }
+        else
+        {
+            $currentType = @{
+                Name = 'Unknown'
+            }
+        }
+
+        if ($currentType.Name -ne 'Unknown' -and $desiredType.Name -eq 'PSCredential')
+        {
+            # This is a credential object. Compare only the user name
+            if ($currentType.Name -eq 'PSCredential' -and $currentValue.UserName -eq $desiredValue.UserName)
             {
-                if ($DesiredValues.GetType().Name -eq 'HashTable' -or `
-                    $DesiredValues.GetType().Name -eq 'PSBoundParametersDictionary')
+                Write-Verbose -Message ($script:localizedData.MatchPsCredentialUsernameMessage -f $currentValue.UserName, $desiredValue.UserName)
+                continue
+            }
+            else
+            {
+                Write-Verbose -Message ($script:localizedData.NoMatchPsCredentialUsernameMessage -f $currentValue.UserName, $desiredValue.UserName)
+                $returnValue = $false
+            }
+
+            # Assume the string is our username when the matching desired value is actually a credential
+            if ($currentType.Name -eq 'string' -and $currentValue -eq $desiredValue.UserName)
+            {
+                Write-Verbose -Message ($script:localizedData.MatchPsCredentialUsernameMessage -f $currentValue, $desiredValue.UserName)
+                continue
+            }
+            else
+            {
+                Write-Verbose -Message ($script:localizedData.NoMatchPsCredentialUsernameMessage -f $currentValue, $desiredValue.UserName)
+                $returnValue = $false
+            }
+        }
+
+        if (-not $TurnOffTypeChecking)
+        {
+            if (($desiredType.Name -ne 'Unknown' -and $currentType.Name -ne 'Unknown') -and
+                $desiredType.FullName -ne $currentType.FullName)
+            {
+                Write-Verbose -Message ($script:localizedData.NoMatchTypeMismatchMessage -f $key, $currentType.FullName, $desiredType.FullName)
+                $returnValue = $false
+                continue
+            }
+        }
+
+        if ($currentValue -eq $desiredValue -and -not $desiredType.IsArray)
+        {
+            Write-Verbose -Message ($script:localizedData.MatchValueMessage -f $desiredType.FullName, $key, $currentValue, $desiredValue)
+            continue
+        }
+
+        if ($desiredValuesClean.GetType().Name -in 'HashTable', 'PSBoundParametersDictionary')
+        {
+            $checkDesiredValue = $desiredValuesClean.ContainsKey($key)
+        }
+        else
+        {
+            $checkDesiredValue = Test-DscObjectHasProperty -Object $desiredValuesClean -PropertyName $key
+        }
+
+        if (-not $checkDesiredValue)
+        {
+            Write-Verbose -Message ($script:localizedData.MatchValueMessage -f $desiredType.FullName, $key, $currentValue, $desiredValue)
+            continue
+        }
+
+        if ($desiredType.IsArray)
+        {
+            Write-Verbose -Message ($script:localizedData.TestDscParameterCompareMessage -f $key, $desiredType.FullName)
+
+            if (-not $currentValue -and -not $desiredValue)
+            {
+                Write-Verbose -Message ($script:localizedData.MatchValueMessage -f $desiredType.FullName, $key, 'empty array', 'empty array')
+                continue
+            }
+            elseif (-not $currentValue)
+            {
+                Write-Verbose -Message ($script:localizedData.NoMatchValueMessage -f $desiredType.FullName, $key, $currentValue, $desiredValue)
+                $returnValue = $false
+                continue
+            }
+            elseif ($currentValue.Count -ne $desiredValue.Count)
+            {
+                Write-Verbose -Message ($script:localizedData.NoMatchValueDifferentCountMessage -f $desiredType.FullName, $key, $currentValue.Count, $desiredValue.Count)
+                $returnValue = $false
+                continue
+            }
+            else
+            {
+                $desiredArrayValues = $desiredValue
+                $currentArrayValues = $currentValue
+
+                if ($SortArrayValues)
                 {
-                    $checkDesiredValue = $DesiredValues.ContainsKey($_)
+                    $desiredArrayValues = $desiredArrayValues | Sort-Object
+                    $currentArrayValues = $currentArrayValues | Sort-Object
                 }
-                else
+
+                for ($i = 0; $i -lt $desiredArrayValues.Count; $i++)
                 {
-                    # If DesiredValue is a CimInstance.
-                    $checkDesiredValue = $false
-                    if (([System.Boolean]($DesiredValues.PSObject.Properties.Name -contains $_)) -eq $true)
+                    if ($null -ne $desiredArrayValues[$i])
                     {
-                        if ($null -ne $DesiredValues.$_)
-                        {
-                            $checkDesiredValue = $true
-                        }
-                    }
-                }
-
-                if ($checkDesiredValue)
-                {
-                    $desiredType = $DesiredValues.$_.GetType()
-                    $fieldName = $_
-                    if ($desiredType.IsArray -eq $true)
-                    {
-                        if (($CurrentValues.ContainsKey($fieldName) -eq $false) `
-                        -or ($null -eq $CurrentValues.$fieldName))
-                        {
-                            Write-Verbose -Message ($script:localizedData.PropertyValidationError -f $fieldName) -Verbose
-
-                            $returnValue = $false
-                        }
-                        else
-                        {
-                            $arrayCompare = Compare-Object -ReferenceObject $CurrentValues.$fieldName `
-                                                           -DifferenceObject $DesiredValues.$fieldName
-                            if ($null -ne $arrayCompare)
-                            {
-                                Write-Verbose -Message ($script:localizedData.PropertiesDoesNotMatch -f $fieldName) -Verbose
-
-                                $arrayCompare | ForEach-Object -Process {
-                                    Write-Verbose -Message ($script:localizedData.PropertyThatDoesNotMatch -f $_.InputObject, $_.SideIndicator) -Verbose
-                                }
-
-                                $returnValue = $false
-                            }
-                        }
+                        $desiredType = $desiredArrayValues[$i].GetType()
                     }
                     else
                     {
-                        switch ($desiredType.Name)
-                        {
-                            'String'
-                            {
-                                if (-not [System.String]::IsNullOrEmpty($CurrentValues.$fieldName) -or `
-                                    -not [System.String]::IsNullOrEmpty($DesiredValues.$fieldName))
-                                {
-                                    Write-Verbose -Message ($script:localizedData.ValueOfTypeDoesNotMatch `
-                                        -f $desiredType.Name, $fieldName, $($CurrentValues.$fieldName), $($DesiredValues.$fieldName)) -Verbose
-
-                                    $returnValue = $false
-                                }
-                            }
-
-                            'Int32'
-                            {
-                                if (-not ($DesiredValues.$fieldName -eq 0) -or `
-                                    -not ($null -eq $CurrentValues.$fieldName))
-                                {
-                                    Write-Verbose -Message ($script:localizedData.ValueOfTypeDoesNotMatch `
-                                        -f $desiredType.Name, $fieldName, $($CurrentValues.$fieldName), $($DesiredValues.$fieldName)) -Verbose
-
-                                    $returnValue = $false
-                                }
-                            }
-
-                            { $_ -eq 'Int16' -or $_ -eq 'UInt16' -or $_ -eq 'Single' }
-                            {
-                                if (-not ($DesiredValues.$fieldName -eq 0) -or `
-                                    -not ($null -eq $CurrentValues.$fieldName))
-                                {
-                                    Write-Verbose -Message ($script:localizedData.ValueOfTypeDoesNotMatch `
-                                        -f $desiredType.Name, $fieldName, $($CurrentValues.$fieldName), $($DesiredValues.$fieldName)) -Verbose
-
-                                    $returnValue = $false
-                                }
-                            }
-
-                            'Boolean'
-                            {
-                                if ($CurrentValues.$fieldName -ne $DesiredValues.$fieldName)
-                                {
-                                    Write-Verbose -Message ($script:localizedData.ValueOfTypeDoesNotMatch `
-                                        -f $desiredType.Name, $fieldName, $($CurrentValues.$fieldName), $($DesiredValues.$fieldName)) -Verbose
-
-                                    $returnValue = $false
-                                }
-                            }
-
-                            default
-                            {
-                                Write-Warning -Message ($script:localizedData.UnableToCompareProperty `
-                                    -f $fieldName, $desiredType.Name)
-
-                                $returnValue = $false
-                            }
+                        $desiredType = @{
+                            Name = 'Unknown'
                         }
                     }
+
+                    if ($null -ne $currentArrayValues[$i])
+                    {
+                        $currentType = $currentArrayValues[$i].GetType()
+                    }
+                    else
+                    {
+                        $currentType = @{
+                            Name = 'Unknown'
+                        }
+                    }
+
+                    if (-not $TurnOffTypeChecking)
+                    {
+                        if (($desiredType.Name -ne 'Unknown' -and $currentType.Name -ne 'Unknown') -and
+                            $desiredType.FullName -ne $currentType.FullName)
+                        {
+                            Write-Verbose -Message ($script:localizedData.NoMatchElementTypeMismatchMessage -f $key, $i, $currentType.FullName, $desiredType.FullName)
+                            $returnValue = $false
+                            continue
+                        }
+                    }
+
+                    if ($desiredArrayValues[$i] -ne $currentArrayValues[$i])
+                    {
+                        Write-Verbose -Message ($script:localizedData.NoMatchElementValueMismatchMessage -f $i, $desiredType.FullName, $key, $currentArrayValues[$i], $desiredArrayValues[$i])
+                        $returnValue = $false
+                        continue
+                    }
+                    else
+                    {
+                        Write-Verbose -Message ($script:localizedData.MatchElementValueMessage -f $i, $desiredType.FullName, $key, $currentArrayValues[$i], $desiredArrayValues[$i])
+                        continue
+                    }
                 }
+
+            }
+        }
+        elseif ($desiredType -eq [System.Collections.Hashtable] -and $currentType -eq [System.Collections.Hashtable])
+        {
+            $param = $PSBoundParameters
+            $param.CurrentValues = $currentValue
+            $param.DesiredValues = $desiredValue
+            $null = $param.Remove('ValuesToCheck')
+
+            if ($returnValue)
+            {
+                $returnValue = Test-DscParameterState @param
+            }
+            else
+            {
+                Test-DscParameterState @param | Out-Null
+            }
+            continue
+        }
+        else
+        {
+            if ($desiredValue -ne $currentValue)
+            {
+                Write-Verbose -Message ($script:localizedData.NoMatchValueMessage -f $desiredType.FullName, $key, $currentValue, $desiredValue)
+                $returnValue = $false
             }
         }
     }
 
+    if ($ReverseCheck)
+    {
+        Write-Verbose -Message $script:localizedData.StartingReverseCheck
+        $reverseCheckParameters = $PSBoundParameters
+        $reverseCheckParameters.CurrentValues = $DesiredValues
+        $reverseCheckParameters.DesiredValues = $CurrentValues
+        $null = $reverseCheckParameters.Remove('ReverseCheck')
+
+        if ($returnValue)
+        {
+            $returnValue = Test-DscParameterState @reverseCheckParameters
+        }
+        else
+        {
+            $null = Test-DscParameterState @reverseCheckParameters
+        }
+    }
+
+    Write-Verbose -Message ($script:localizedData.TestDscParameterResultMessage -f $returnValue)
     return $returnValue
+}
+
+<#
+    .SYNOPSIS
+        Tests of an object has a property
+
+    .PARAMETER Object
+        The object to test
+
+    .PARAMETER PropertyName
+        The property name
+#>
+function Test-DscObjectHasProperty
+{
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.Object]
+        $Object,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $PropertyName
+    )
+
+    if ($Object.PSObject.Properties.Name -contains $PropertyName)
+    {
+        return [System.Boolean] $Object.$PropertyName
+    }
+
+    return $false
+}
+
+<#
+    .SYNOPSIS
+        Converts a hashtable into a CimInstance array.
+
+    .DESCRIPTION
+        This function is used to convert a hashtable into MSFT_KeyValuePair objects. These are stored as an CimInstance array.
+        DSC cannot handle hashtables but CimInstances arrays storing MSFT_KeyValuePair.
+
+    .PARAMETER Hashtable
+        A hashtable with the values to convert.
+
+    .OUTPUTS
+        An object array with CimInstance objects.
+#>
+function ConvertTo-CimInstance
+{
+    [CmdletBinding()]
+    [OutputType([System.Object[]])]
+    param
+    (
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
+        [System.Collections.Hashtable]
+        $Hashtable
+    )
+
+    process
+    {
+        foreach ($item in $Hashtable.GetEnumerator())
+        {
+            New-CimInstance -ClassName MSFT_KeyValuePair -Namespace root/microsoft/Windows/DesiredStateConfiguration -Property @{
+                Key   = $item.Key
+                Value = if ($item.Value -is [array])
+                {
+                    $item.Value -join ','
+                }
+                else
+                {
+                    $item.Value
+                }
+            } -ClientOnly
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Converts CimInstances into a hashtable.
+
+    .DESCRIPTION
+        This function is used to convert a CimInstance array containing MSFT_KeyValuePair objects into a hashtable.
+
+    .PARAMETER CimInstance
+        An array of CimInstances or a single CimInstance object to convert.
+
+    .OUTPUTS
+        Hashtable
+#>
+function ConvertTo-HashTable
+{
+    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
+    param
+    (
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
+        [AllowEmptyCollection()]
+        [Microsoft.Management.Infrastructure.CimInstance[]]
+        $CimInstance
+    )
+
+    begin
+    {
+        $result = @{ }
+    }
+
+    process
+    {
+        foreach ($ci in $CimInstance)
+        {
+            $result.Add($ci.Key, $ci.Value)
+        }
+    }
+
+    end
+    {
+        $result
+    }
 }
 
 <#

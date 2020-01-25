@@ -1,6 +1,6 @@
 <#PSScriptInfo
 .VERSION 1.0.0
-.GUID 93c71497-c4ac-452e-baf1-aff17bd4ecac
+.GUID a6255023-06d8-420d-9407-b575f079b314
 .AUTHOR Microsoft Corporation
 .COMPANYNAME Microsoft Corporation
 .COPYRIGHT
@@ -19,25 +19,24 @@
 
 <#
     .DESCRIPTION
-        A DSC configuration script to add desired OCSP URI path extensions for a Certificate Authority.
-        This will remove all existing OCSP URI paths from the Certificate Authority.
+        This example will set the Online Responder OCSP URIs
+        to be included in the OCSP extension.
 #>
-configuration AdcsOcspExtension_AddOcspPath_Config
+configuration AdcsAuthorityInformationAccess_SetOcsp_Config
 {
     Import-DscResource -ModuleName ActiveDirectoryCSDsc
 
     node localhost
     {
-        AdcsOcspExtension AddOcspUriPath
+        AdcsAuthorityInformationAccess SetOcsp
         {
-            IsSingleInstance = 'Yes'
-            OcspUriPath      = @(
+            IsSingleInstance    = 'Yes'
+            OcspUri             = @(
                 'http://primary-ocsp-responder/ocsp'
                 'http://secondary-ocsp-responder/ocsp'
                 'http://tertiary-ocsp-responder/ocsp'
             )
-            RestartService   = $true
-            Ensure           = 'Present'
+            AllowRestartService = $true
         }
     }
 }
