@@ -144,6 +144,14 @@ stages:
               pwsh: false
 
           - task: PowerShell@2
+            name: configureWinRM
+            displayName: 'Install ADCS Features'
+            inputs:
+              targetType: 'inline'
+              script: 'Install-WindowsFeature -Name ADCS-Cert-Authority, RSAT-ADCS'
+              pwsh: false
+
+          - task: PowerShell@2
             name: test
             displayName: 'Run Integration Test'
             inputs:
@@ -224,6 +232,14 @@ stages:
             inputs:
               targetType: 'inline'
               script: 'winrm quickconfig -quiet'
+              pwsh: false
+
+          - task: PowerShell@2
+            name: configureWinRM
+            displayName: 'Install ADCS Features'
+            inputs:
+              targetType: 'inline'
+              script: 'Install-WindowsFeature -Name ADCS-Cert-Authority, RSAT-ADCS'
               pwsh: false
 
           - task: PowerShell@2
