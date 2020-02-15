@@ -5,27 +5,27 @@
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
 param ()
 
-$script:DSCModuleName = 'ActiveDirectoryCSDsc'
-$script:DSCResourceName = 'DSC_AdcsEnrollmentPolicyWebService'
-Import-Module -Name (Join-Path -Path (Join-Path -Path (Split-Path $PSScriptRoot -Parent) -ChildPath 'TestHelpers') -ChildPath 'CommonTestHelper.psm1') -Global
-
 #region HEADER
-# Integration Test Template Version: 1.1.1
-[String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
-    (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
+$script:dscModuleName = 'ActiveDirectoryCSDsc'
+$script:dscResourceName = 'DSC_AdcsEnrollmentPolicyWebService'
+
+try
 {
-    & git @('clone', 'https://github.com/PowerShell/DscResource.Tests.git', (Join-Path -Path $script:moduleRoot -ChildPath '\DSCResource.Tests\'))
+    Import-Module -Name DscResource.Test -Force -ErrorAction 'Stop'
+}
+catch [System.IO.FileNotFoundException]
+{
+    throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -Tasks build" first.'
 }
 
-Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
-$TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName $script:DSCModuleName `
-    -DSCResourceName $script:DSCResourceName `
-    -TestType Integration
-#endregion
+$script:testEnvironment = Initialize-TestEnvironment `
+    -DSCModuleName $script:dscModuleName `
+    -DSCResourceName $script:dscResourceName `
+    -ResourceType 'Mof' `
+    -TestType 'Integration'
 
-# Using try/finally to always cleanup even if something awful happens.
+Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
+
 try
 {
     <#
@@ -71,9 +71,9 @@ try
         -DnsName $ENV:ComputerName `
         -CertStoreLocation Cert:\LocalMachine\My
 
-    Describe "$($script:DSCResourceName) integration test" {
-        $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName).config.ps1"
-        . $configFile -Verbose -ErrorAction Stop
+    Describe "$($script:dscResourceName) integration test" {
+        $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName).Config.ps1"
+        . $configFile
 
         # These are the test cases to run integration tests for
         $testAdcsEnrollmentPolicyWebServiceTestCases = @(
@@ -121,7 +121,7 @@ try
                             )
                         }
 
-                        & "$($script:DSCResourceName)_Config" `
+                        & "$($script:dscResourceName)_Config" `
                             -OutputPath $TestDrive `
                             -ConfigurationData $ConfigData
 
@@ -141,7 +141,7 @@ try
 
                 It 'Should have set the resource and all the parameters should match' {
                     $current = Get-DscConfiguration | Where-Object {
-                        $_.ConfigurationName -eq "$($script:DSCResourceName)_Config"
+                        $_.ConfigurationName -eq "$($script:dscResourceName)_Config"
                     }
                     $current.Ensure | Should -Be 'Present'
                 }
@@ -164,7 +164,7 @@ try
                             )
                         }
 
-                        & "$($script:DSCResourceName)_Config" `
+                        & "$($script:dscResourceName)_Config" `
                             -OutputPath $TestDrive `
                             -ConfigurationData $ConfigData `
                             -ErrorAction Stop
@@ -185,7 +185,7 @@ try
 
                 It 'Should have set the resource and all the parameters should match' {
                     $current = Get-DscConfiguration | Where-Object {
-                        $_.ConfigurationName -eq "$($script:DSCResourceName)_Config"
+                        $_.ConfigurationName -eq "$($script:dscResourceName)_Config"
                     }
                     $current.Ensure | Should -Be 'Absent'
                 }
@@ -195,7 +195,6 @@ try
 }
 finally
 {
-    #region FOOTER
     # Remove the SSL certificate created for the Web Service
     if ($certificate)
     {
@@ -204,6 +203,5 @@ finally
             -Force
     }
 
-    Restore-TestEnvironment -TestEnvironment $TestEnvironment
-    #endregion
+    Restore-TestEnvironment -TestEnvironment $script:testEnvironment
 }

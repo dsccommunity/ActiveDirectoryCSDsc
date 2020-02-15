@@ -5,32 +5,27 @@
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
 param ()
 
-<#
-    This integration test validates both AdcsCertificationAuthority
-    and AdcsCertificationAuthoritySettings.
-#>
-$script:DSCModuleName = 'ActiveDirectoryCSDsc'
-$script:DSCResourceName = 'DSC_AdcsCertificationAuthority'
-
-Import-Module -Name (Join-Path -Path (Join-Path -Path (Split-Path $PSScriptRoot -Parent) -ChildPath 'TestHelpers') -ChildPath 'CommonTestHelper.psm1') -Global
-
 #region HEADER
-# Integration Test Template Version: 1.1.1
-[String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
-    (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
+$script:dscModuleName = 'ActiveDirectoryCSDsc'
+$script:dscResourceName = 'DSC_AdcsCertificationAuthority'
+
+try
 {
-    & git @('clone', 'https://github.com/PowerShell/DscResource.Tests.git', (Join-Path -Path $script:moduleRoot -ChildPath '\DSCResource.Tests\'))
+    Import-Module -Name DscResource.Test -Force -ErrorAction 'Stop'
+}
+catch [System.IO.FileNotFoundException]
+{
+    throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -Tasks build" first.'
 }
 
-Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1') -Force
-$TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName $script:DSCModuleName `
-    -DSCResourceName $script:DSCResourceName `
-    -TestType Integration
-#endregion
+$script:testEnvironment = Initialize-TestEnvironment `
+    -DSCModuleName $script:dscModuleName `
+    -DSCResourceName $script:dscResourceName `
+    -ResourceType 'Mof' `
+    -TestType 'Integration'
 
-# Using try/finally to always cleanup even if something awful happens.
+Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
+
 try
 {
     <#
@@ -39,7 +34,7 @@ try
         ADCS component being tested. This account will be created automatically for
         the tests and removed afterward.
 
-        When these tests are run on AppVeyor, ADCS-Cert-Authority will be installed
+        When these tests are run on Azure DevOps, ADCS-Cert-Authority will be installed
         and a new Administrator account will be created that uses credentials that
         match the ones following.
     #>
@@ -59,9 +54,9 @@ try
         -ArgumentList ($script:adminUsername, $script:adminPassword)
     New-LocalUserInAdministratorsGroup -Username $script:adminUsername -Password $script:adminPassword
 
-    Describe "$($script:DSCResourceName)_Install_Integration" {
-        $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName)_Install.config.ps1"
-        . $configFile -Verbose -ErrorAction Stop
+    Describe "$($script:dscResourceName)_Install_Integration" {
+        $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName)_Install.Config.ps1"
+        . $configFile
 
         Context 'Install ADCS Certification Authority' {
             $configData = @{
@@ -76,7 +71,7 @@ try
 
             It 'Should compile and apply the MOF without throwing' {
                 {
-                    & "$($script:DSCResourceName)_Install_Config" `
+                    & "$($script:dscResourceName)_Install_Config" `
                         -OutputPath $TestDrive `
                         -ConfigurationData $configData
 
@@ -96,7 +91,7 @@ try
 
             It 'Should have set the resource and all the parameters should match' {
                 $current = Get-DscConfiguration | Where-Object -FilterScript {
-                    $_.ConfigurationName -eq "$($script:DSCResourceName)_Install_Config"
+                    $_.ConfigurationName -eq "$($script:dscResourceName)_Install_Config"
                 }
                 $current.Ensure | Should -Be 'Present'
             }
@@ -280,8 +275,8 @@ try
         }
     }
 
-    Describe "$($script:DSCResourceName)_Uninstall_Integration" {
-        $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:DSCResourceName)_Uninstall.config.ps1"
+    Describe "$($script:dscResourceName)_Uninstall_Integration" {
+        $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName)_Uninstall.config.ps1"
         . $configFile -Verbose -ErrorAction Stop
 
         Context 'Uninstall ADCS Certification Authority' {
@@ -297,7 +292,7 @@ try
 
             It 'Should compile and apply the MOF without throwing' {
                 {
-                    & "$($script:DSCResourceName)_Uninstall_Config" `
+                    & "$($script:dscResourceName)_Uninstall_Config" `
                         -OutputPath $TestDrive `
                         -ConfigurationData $configData `
                         -ErrorAction Stop
@@ -318,7 +313,7 @@ try
 
             It 'Should have set the resource and all the parameters should match' {
                 $current = Get-DscConfiguration | Where-Object -FilterScript {
-                    $_.ConfigurationName -eq "$($script:DSCResourceName)_Uninstall_Config"
+                    $_.ConfigurationName -eq "$($script:dscResourceName)_Uninstall_Config"
                 }
                 $current.Ensure | Should -Be 'Absent'
             }
@@ -327,8 +322,6 @@ try
 }
 finally
 {
-    #region FOOTER
     Remove-LocalUser -Name $script:adminUsername -ErrorAction SilentlyContinue
-    Restore-TestEnvironment -TestEnvironment $TestEnvironment
-    #endregion
+    Restore-TestEnvironment -TestEnvironment $script:testEnvironment
 }
