@@ -1,0 +1,6 @@
+[ClassVersion("0.1.0.0"), FriendlyName("AdcsTemplate")]
+class DSC_AdcsTemplate : OMI_BaseResource
+{
+    [Key, Description("Specifies the name of the CA template")] String Name;
+    [Write, Description("Specifies whether the CA Template should be added or removed."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
+};
