@@ -86,19 +86,19 @@ namespace Microsoft.CertificateServices.Deployment.Commands.CEP {
                     '{0:x2}' -f $_
                 }
             }
-) -join ''
+        ) -join ''
 
-# This thumbprint is valid for FIPS
-$validFipsThumbprint = (
-    [System.AppDomain]::CurrentDomain.GetAssemblies().GetTypes() | Where-Object {
-        $_.BaseType.BaseType -eq [System.Security.Cryptography.HashAlgorithm] -and
-        ($_.Name -cmatch 'Provider$' -and $_.Name -cnotmatch 'MD5')
-    } | Select-Object -First 1 | ForEach-Object {
-        (New-Object $_).ComputeHash([String]::Empty) | ForEach-Object {
-            '{0:x2}' -f $_
-        }
-    }
-) -join ''
+        # This thumbprint is valid for FIPS
+        $validFipsThumbprint = (
+            [System.AppDomain]::CurrentDomain.GetAssemblies().GetTypes() | Where-Object {
+                $_.BaseType.BaseType -eq [System.Security.Cryptography.HashAlgorithm] -and
+                ($_.Name -cmatch 'Provider$' -and $_.Name -cnotmatch 'MD5')
+            } | Select-Object -First 1 | ForEach-Object {
+                (New-Object $_).ComputeHash([String]::Empty) | ForEach-Object {
+                    '{0:x2}' -f $_
+                }
+            }
+        ) -join ''
 
 function Install-AdcsEnrollmentPolicyWebService
 {
@@ -151,429 +151,431 @@ function Uninstall-AdcsEnrollmentPolicyWebService
     )
 }
 
-Describe 'DSC_AdcsEnrollmentPolicyWebService\Get-TargetResource' {
-    Context 'When the Enrollment Policy Web Service is installed' {
-        Mock `
-            -CommandName Test-AdcsEnrollmentPolicyWebServiceInstallState `
-            -MockWith { $true }
-
-        $result = Get-TargetResource @testParametersGet
-
-        It 'Should return Ensure set to Present' {
-            $result.Ensure | Should -Be 'Present'
-        }
-
-        It 'Should call expected mocks' {
-            Assert-VerifiableMock
-
-            Assert-MockCalled `
-                -CommandName Test-AdcsEnrollmentPolicyWebServiceInstallState `
-                -Exactly `
-                -Times 1
-        }
-    }
-
-    Context 'When the Enrollment Policy Web Service is not installed' {
-        Mock `
-            -CommandName Test-AdcsEnrollmentPolicyWebServiceInstallState `
-            -MockWith { $false }
-
-        $result = Get-TargetResource @testParametersGet
-
-        It 'Should return Ensure set to Absent' {
-            $result.Ensure | Should -Be 'Absent'
-        }
-
-        It 'Should call expected mocks' {
-            Assert-MockCalled `
-                -CommandName Test-AdcsEnrollmentPolicyWebServiceInstallState `
-                -Exactly `
-                -Times 1
-        }
-    }
-}
-
-Describe 'DSC_AdcsEnrollmentPolicyWebService\Set-TargetResource' {
-    Context 'When the Enrollment Policy Web Service is not installed but should be' {
-        Mock -CommandName Install-AdcsEnrollmentPolicyWebService
-        Mock -CommandName Uninstall-AdcsEnrollmentPolicyWebService
-
-        It 'Should not throw an exception' {
-            { Set-TargetResource @testParametersPresent } | Should -Not -Throw
-        }
-
-        It 'Should call expected mocks' {
-            Assert-MockCalled `
-                -CommandName Install-AdcsEnrollmentPolicyWebService `
-                -Exactly `
-                -Times 1
-
-            Assert-MockCalled `
-                -CommandName Uninstall-AdcsEnrollmentPolicyWebService `
-                -Exactly `
-                -Times 0
-        }
-    }
-
-    Context 'When the Enrollment Policy Web Service is not installed but should be but an error string is returned installing it' {
-        Mock -CommandName Install-AdcsEnrollmentPolicyWebService `
-            -MockWith {
-            [PSObject] @{ ErrorString = 'Something went wrong' }
-        }
-
-        Mock -CommandName Uninstall-AdcsEnrollmentPolicyWebService
-
-        It 'Should not throw an exception' {
-            $errorRecord = Get-InvalidOperationRecord -Message 'Something went wrong'
-
-            { Set-TargetResource @testParametersPresent } | Should -Throw $errorRecord
-        }
-
-        It 'Should call expected mocks' {
-            Assert-MockCalled `
-                -CommandName Install-AdcsEnrollmentPolicyWebService `
-                -Exactly `
-                -Times 1
-
-            Assert-MockCalled `
-                -CommandName Uninstall-AdcsEnrollmentPolicyWebService `
-                -Exactly `
-                -Times 0
-        }
-    }
-
-    Context 'When the Enrollment Policy Web Service is not installed but should be but an exception is thrown installing it' {
-        Mock -CommandName Install-AdcsEnrollmentPolicyWebService `
-            -MockWith { throw 'Something went wrong' }
-
-        Mock -CommandName Uninstall-AdcsEnrollmentPolicyWebService
-
-        It 'Should not throw an exception' {
-            $errorRecord = Get-InvalidOperationRecord -Message 'Something went wrong'
-
-            { Set-TargetResource @testParametersPresent } | Should -Throw $errorRecord
-        }
-
-        It 'Should call expected mocks' {
-            Assert-MockCalled `
-                -CommandName Install-AdcsEnrollmentPolicyWebService `
-                -Exactly `
-                -Times 1
-
-            Assert-MockCalled `
-                -CommandName Uninstall-AdcsEnrollmentPolicyWebService `
-                -Exactly `
-                -Times 0
-        }
-    }
-
-    Context 'When the Enrollment Policy Web Service is installed but should not be' {
-        Mock -CommandName Install-AdcsEnrollmentPolicyWebService
-        Mock -CommandName Uninstall-AdcsEnrollmentPolicyWebService
-
-        It 'Should not throw an exception' {
-            { Set-TargetResource @testParametersAbsent } | Should -Not -Throw
-        }
-
-        It 'Should call expected mocks' {
-            Assert-MockCalled `
-                -CommandName Install-AdcsEnrollmentPolicyWebService `
-                -Exactly `
-                -Times 0
-
-            Assert-MockCalled `
-                -CommandName Uninstall-AdcsEnrollmentPolicyWebService `
-                -Exactly `
-                -Times 1
-        }
-    }
-}
-
-Describe 'DSC_AdcsEnrollmentPolicyWebService\Test-TargetResource' {
-    Context 'When the Enrollment Policy Web Service is installed' {
-        Context 'When the Enrollment Policy Web Service should be installed' {
-            Mock `
-                -CommandName Test-AdcsEnrollmentPolicyWebServiceInstallState `
-                -MockWith { $true }
-
-            $result = Test-TargetResource @testParametersPresent
-
-            It 'Should return true' {
-                $result | Should -BeTrue
-            }
-
-            It 'Should call expected mocks' {
-                Assert-MockCalled `
+        Describe 'DSC_AdcsEnrollmentPolicyWebService\Get-TargetResource' {
+            Context 'When the Enrollment Policy Web Service is installed' {
+                Mock `
                     -CommandName Test-AdcsEnrollmentPolicyWebServiceInstallState `
-                    -Exactly `
-                    -Times 1
+                    -MockWith { $true }
+
+                $result = Get-TargetResource @testParametersGet
+
+                It 'Should return Ensure set to Present' {
+                    $result.Ensure | Should -Be 'Present'
+                }
+
+                It 'Should call expected mocks' {
+                    Assert-VerifiableMock
+
+                    Assert-MockCalled `
+                        -CommandName Test-AdcsEnrollmentPolicyWebServiceInstallState `
+                        -Exactly `
+                        -Times 1
+                }
             }
-        }
 
-        Context 'When the Enrollment Policy Web Service should not be installed' {
-            Mock `
-                -CommandName Test-AdcsEnrollmentPolicyWebServiceInstallState `
-                -MockWith { $true }
-
-            $result = Test-TargetResource @testParametersAbsent
-
-            It 'Should return false' {
-                $result | Should -BeFalse
-            }
-
-            It 'Should call expected mocks' {
-                Assert-MockCalled `
+            Context 'When the Enrollment Policy Web Service is not installed' {
+                Mock `
                     -CommandName Test-AdcsEnrollmentPolicyWebServiceInstallState `
-                    -Exactly `
-                    -Times 1
-            }
-        }
-    }
+                    -MockWith { $false }
 
-    Context 'When the Enrollment Policy Web Service is not installed' {
-        Context 'When the Enrollment Policy Web Service should be installed' {
-            Mock `
-                -CommandName Test-AdcsEnrollmentPolicyWebServiceInstallState `
-                -MockWith { $false }
+                $result = Get-TargetResource @testParametersGet
 
-            $result = Test-TargetResource @testParametersPresent
+                It 'Should return Ensure set to Absent' {
+                    $result.Ensure | Should -Be 'Absent'
+                }
 
-            It 'Should return false' {
-                $result | Should -BeFalse
-            }
-
-            It 'Should call expected mocks' {
-                Assert-MockCalled `
-                    -CommandName Test-AdcsEnrollmentPolicyWebServiceInstallState `
-                    -Exactly `
-                    -Times 1
+                It 'Should call expected mocks' {
+                    Assert-MockCalled `
+                        -CommandName Test-AdcsEnrollmentPolicyWebServiceInstallState `
+                        -Exactly `
+                        -Times 1
+                }
             }
         }
 
-        Context 'When the Enrollment Policy Web Service should not be installed' {
-            Mock `
-                -CommandName Test-AdcsEnrollmentPolicyWebServiceInstallState `
-                -MockWith { $false }
+        Describe 'DSC_AdcsEnrollmentPolicyWebService\Set-TargetResource' {
+            Context 'When the Enrollment Policy Web Service is not installed but should be' {
+                Mock -CommandName Install-AdcsEnrollmentPolicyWebService
+                Mock -CommandName Uninstall-AdcsEnrollmentPolicyWebService
 
-            $result = Test-TargetResource @testParametersAbsent
+                It 'Should not throw an exception' {
+                    { Set-TargetResource @testParametersPresent } | Should -Not -Throw
+                }
 
-            It 'Should return true' {
-                $result | Should -BeTrue
+                It 'Should call expected mocks' {
+                    Assert-MockCalled `
+                        -CommandName Install-AdcsEnrollmentPolicyWebService `
+                        -Exactly `
+                        -Times 1
+
+                    Assert-MockCalled `
+                        -CommandName Uninstall-AdcsEnrollmentPolicyWebService `
+                        -Exactly `
+                        -Times 0
+                }
             }
 
-            It 'Should call expected mocks' {
-                Assert-MockCalled `
-                    -CommandName Test-AdcsEnrollmentPolicyWebServiceInstallState `
-                    -Exactly `
-                    -Times 1
+            Context 'When the Enrollment Policy Web Service is not installed but should be but an error string is returned installing it' {
+                Mock -CommandName Install-AdcsEnrollmentPolicyWebService `
+                    -MockWith {
+                    [PSObject] @{ ErrorString = 'Something went wrong' }
+                }
+
+                Mock -CommandName Uninstall-AdcsEnrollmentPolicyWebService
+
+                It 'Should not throw an exception' {
+                    $errorRecord = Get-InvalidOperationRecord -Message 'Something went wrong'
+
+                    { Set-TargetResource @testParametersPresent } | Should -Throw $errorRecord
+                }
+
+                It 'Should call expected mocks' {
+                    Assert-MockCalled `
+                        -CommandName Install-AdcsEnrollmentPolicyWebService `
+                        -Exactly `
+                        -Times 1
+
+                    Assert-MockCalled `
+                        -CommandName Uninstall-AdcsEnrollmentPolicyWebService `
+                        -Exactly `
+                        -Times 0
+                }
+            }
+
+            Context 'When the Enrollment Policy Web Service is not installed but should be but an exception is thrown installing it' {
+                Mock -CommandName Install-AdcsEnrollmentPolicyWebService `
+                    -MockWith { throw 'Something went wrong' }
+
+                Mock -CommandName Uninstall-AdcsEnrollmentPolicyWebService
+
+                It 'Should not throw an exception' {
+                    $errorRecord = Get-InvalidOperationRecord -Message 'Something went wrong'
+
+                    { Set-TargetResource @testParametersPresent } | Should -Throw $errorRecord
+                }
+
+                It 'Should call expected mocks' {
+                    Assert-MockCalled `
+                        -CommandName Install-AdcsEnrollmentPolicyWebService `
+                        -Exactly `
+                        -Times 1
+
+                    Assert-MockCalled `
+                        -CommandName Uninstall-AdcsEnrollmentPolicyWebService `
+                        -Exactly `
+                        -Times 0
+                }
+            }
+
+            Context 'When the Enrollment Policy Web Service is installed but should not be' {
+                Mock -CommandName Install-AdcsEnrollmentPolicyWebService
+                Mock -CommandName Uninstall-AdcsEnrollmentPolicyWebService
+
+                It 'Should not throw an exception' {
+                    { Set-TargetResource @testParametersAbsent } | Should -Not -Throw
+                }
+
+                It 'Should call expected mocks' {
+                    Assert-MockCalled `
+                        -CommandName Install-AdcsEnrollmentPolicyWebService `
+                        -Exactly `
+                        -Times 0
+
+                    Assert-MockCalled `
+                        -CommandName Uninstall-AdcsEnrollmentPolicyWebService `
+                        -Exactly `
+                        -Times 1
+                }
             }
         }
-    }
-}
 
-Describe 'DSC_AdcsEnrollmentPolicyWebService\Test-AdcsEnrollmentPolicyWebServiceInstallState' {
-    $testAdcsEnrollmentPolicyWebServiceInstallStateTestCases = @(
-        @{
-            AuthenticationType = 'Certificate'
-            KeyBasedRenewal    = $false
-            WebAppName         = 'ADPolicyProvider_CEP_Certificate'
-            Applicationpool    = 'WSEnrollmentPolicyServer'
-            PhysicalPath       = "C:\Windows\SystemData\CEP\ADPolicyProvider_CEP_Certificate"
-        },
-        @{
-            AuthenticationType = 'Certificate'
-            KeyBasedRenewal    = $true
-            WebAppName         = 'KeyBasedRenewal_ADPolicyProvider_CEP_Certificate'
-            Applicationpool    = 'WSEnrollmentPolicyServer'
-            PhysicalPath       = "C:\Windows\SystemData\CEP\KeyBasedRenewal_ADPolicyProvider_CEP_Certificate"
-        },
-        @{
-            AuthenticationType = 'Kerberos'
-            KeyBasedRenewal    = $false
-            WebAppName         = 'ADPolicyProvider_CEP_Kerberos'
-            Applicationpool    = 'WSEnrollmentPolicyServer'
-            PhysicalPath       = "C:\Windows\SystemData\CEP\ADPolicyProvider_CEP_Kerberos"
-        },
-        @{
-            AuthenticationType = 'UserName'
-            KeyBasedRenewal    = $false
-            WebAppName         = 'ADPolicyProvider_CEP_UsernamePassword'
-            Applicationpool    = 'WSEnrollmentPolicyServer'
-            PhysicalPath       = "C:\Windows\SystemData\CEP\ADPolicyProvider_CEP_UsernamePassword"
-        },
-        @{
-            AuthenticationType = 'UserName'
-            KeyBasedRenewal    = $true
-            WebAppName         = 'KeyBasedRenewal_ADPolicyProvider_CEP_UsernamePassword'
-            Applicationpool    = 'WSEnrollmentPolicyServer'
-            PhysicalPath       = "C:\Windows\SystemData\CEP\KeyBasedRenewal_ADPolicyProvider_CEP_UsernamePassword"
+        Describe 'DSC_AdcsEnrollmentPolicyWebService\Test-TargetResource' {
+            Context 'When the Enrollment Policy Web Service is installed' {
+                Context 'When the Enrollment Policy Web Service should be installed' {
+                    Mock `
+                        -CommandName Test-AdcsEnrollmentPolicyWebServiceInstallState `
+                        -MockWith { $true }
+
+                    $result = Test-TargetResource @testParametersPresent
+
+                    It 'Should return true' {
+                        $result | Should -BeTrue
+                    }
+
+                    It 'Should call expected mocks' {
+                        Assert-MockCalled `
+                            -CommandName Test-AdcsEnrollmentPolicyWebServiceInstallState `
+                            -Exactly `
+                            -Times 1
+                    }
+                }
+
+                Context 'When the Enrollment Policy Web Service should not be installed' {
+                    Mock `
+                        -CommandName Test-AdcsEnrollmentPolicyWebServiceInstallState `
+                        -MockWith { $true }
+
+                    $result = Test-TargetResource @testParametersAbsent
+
+                    It 'Should return false' {
+                        $result | Should -BeFalse
+                    }
+
+                    It 'Should call expected mocks' {
+                        Assert-MockCalled `
+                            -CommandName Test-AdcsEnrollmentPolicyWebServiceInstallState `
+                            -Exactly `
+                            -Times 1
+                    }
+                }
+            }
+
+            Context 'When the Enrollment Policy Web Service is not installed' {
+                Context 'When the Enrollment Policy Web Service should be installed' {
+                    Mock `
+                        -CommandName Test-AdcsEnrollmentPolicyWebServiceInstallState `
+                        -MockWith { $false }
+
+                    $result = Test-TargetResource @testParametersPresent
+
+                    It 'Should return false' {
+                        $result | Should -BeFalse
+                    }
+
+                    It 'Should call expected mocks' {
+                        Assert-MockCalled `
+                            -CommandName Test-AdcsEnrollmentPolicyWebServiceInstallState `
+                            -Exactly `
+                            -Times 1
+                    }
+                }
+
+                Context 'When the Enrollment Policy Web Service should not be installed' {
+                    Mock `
+                        -CommandName Test-AdcsEnrollmentPolicyWebServiceInstallState `
+                        -MockWith { $false }
+
+                    $result = Test-TargetResource @testParametersAbsent
+
+                    It 'Should return true' {
+                        $result | Should -BeTrue
+                    }
+
+                    It 'Should call expected mocks' {
+                        Assert-MockCalled `
+                            -CommandName Test-AdcsEnrollmentPolicyWebServiceInstallState `
+                            -Exactly `
+                            -Times 1
+                    }
+                }
+            }
         }
-    )
-    $mockAdcsEnrollmentPolicyWebServiceInstallStateAllInstalled = {
-        $testAdcsEnrollmentPolicyWebServiceInstallStateTestCases
-    }
-    $mockAdcsEnrollmentPolicyWebServiceInstallStateNoneInstalled = {
-        @()
-    }
 
-    Context 'When matching Enrollment Policy Web Service is installed' {
-        BeforeEach {
-            Mock `
-                -CommandName Get-WebApplication `
-                -MockWith $mockAdcsEnrollmentPolicyWebServiceInstallStateAllInstalled
-        }
-
-        It 'Given AuthenticationType <AuthenticationType> and KeyBasedRenewal <KeyBasedRenewal> it should return $true' -TestCases $testAdcsEnrollmentPolicyWebServiceInstallStateTestCases {
-            param (
-                [Parameter()]
-                $AuthenticationType,
-
-                [Parameter()]
-                $KeyBasedRenewal,
-
-                [Parameter()]
-                $WebAppName,
-
-                [Parameter()]
-                $Applicationpool,
-
-                [Parameter()]
-                $PhysicalPath
+        Describe 'DSC_AdcsEnrollmentPolicyWebService\Test-AdcsEnrollmentPolicyWebServiceInstallState' {
+            $testAdcsEnrollmentPolicyWebServiceInstallStateTestCases = @(
+                @{
+                    AuthenticationType = 'Certificate'
+                    KeyBasedRenewal    = $false
+                    WebAppName         = 'ADPolicyProvider_CEP_Certificate'
+                    Applicationpool    = 'WSEnrollmentPolicyServer'
+                    PhysicalPath       = "C:\Windows\SystemData\CEP\ADPolicyProvider_CEP_Certificate"
+                },
+                @{
+                    AuthenticationType = 'Certificate'
+                    KeyBasedRenewal    = $true
+                    WebAppName         = 'KeyBasedRenewal_ADPolicyProvider_CEP_Certificate'
+                    Applicationpool    = 'WSEnrollmentPolicyServer'
+                    PhysicalPath       = "C:\Windows\SystemData\CEP\KeyBasedRenewal_ADPolicyProvider_CEP_Certificate"
+                },
+                @{
+                    AuthenticationType = 'Kerberos'
+                    KeyBasedRenewal    = $false
+                    WebAppName         = 'ADPolicyProvider_CEP_Kerberos'
+                    Applicationpool    = 'WSEnrollmentPolicyServer'
+                    PhysicalPath       = "C:\Windows\SystemData\CEP\ADPolicyProvider_CEP_Kerberos"
+                },
+                @{
+                    AuthenticationType = 'UserName'
+                    KeyBasedRenewal    = $false
+                    WebAppName         = 'ADPolicyProvider_CEP_UsernamePassword'
+                    Applicationpool    = 'WSEnrollmentPolicyServer'
+                    PhysicalPath       = "C:\Windows\SystemData\CEP\ADPolicyProvider_CEP_UsernamePassword"
+                },
+                @{
+                    AuthenticationType = 'UserName'
+                    KeyBasedRenewal    = $true
+                    WebAppName         = 'KeyBasedRenewal_ADPolicyProvider_CEP_UsernamePassword'
+                    Applicationpool    = 'WSEnrollmentPolicyServer'
+                    PhysicalPath       = "C:\Windows\SystemData\CEP\KeyBasedRenewal_ADPolicyProvider_CEP_UsernamePassword"
+                }
             )
-            $result = Test-AdcsEnrollmentPolicyWebServiceInstallState `
-                -AuthenticationType $AuthenticationType `
-                -KeyBasedRenewal:$KeyBasedRenewal `
-                -Verbose
+            $mockAdcsEnrollmentPolicyWebServiceInstallStateAllInstalled = {
+                $testAdcsEnrollmentPolicyWebServiceInstallStateTestCases
+            }
+            $mockAdcsEnrollmentPolicyWebServiceInstallStateNoneInstalled = {
+                @()
+            }
 
-            $result | Should -BeTrue
-        }
-    }
+            Context 'When matching Enrollment Policy Web Service is installed' {
+                BeforeEach {
+                    Mock `
+                        -CommandName Get-WebApplication `
+                        -MockWith $mockAdcsEnrollmentPolicyWebServiceInstallStateAllInstalled
+                }
 
-    Context 'When matching Enrollment Policy Web Service is not installed' {
-        BeforeEach {
-            Mock `
-                -CommandName Get-WebApplication `
-                -MockWith $mockAdcsEnrollmentPolicyWebServiceInstallStateNoneInstalled
-        }
+                It 'Given AuthenticationType <AuthenticationType> and KeyBasedRenewal <KeyBasedRenewal> it should return $true' -TestCases $testAdcsEnrollmentPolicyWebServiceInstallStateTestCases {
+                    param (
+                        [Parameter()]
+                        $AuthenticationType,
 
-        It 'Given AuthenticationType <AuthenticationType> and KeyBasedRenewal <KeyBasedRenewal> it should return $false' -TestCases $testAdcsEnrollmentPolicyWebServiceInstallStateTestCases {
-            param (
-                [Parameter()]
-                $AuthenticationType,
+                        [Parameter()]
+                        $KeyBasedRenewal,
 
-                [Parameter()]
-                $KeyBasedRenewal,
+                        [Parameter()]
+                        $WebAppName,
 
-                [Parameter()]
-                $WebAppName,
+                        [Parameter()]
+                        $Applicationpool,
 
-                [Parameter()]
-                $Applicationpool,
+                        [Parameter()]
+                        $PhysicalPath
+                    )
+                    $result = Test-AdcsEnrollmentPolicyWebServiceInstallState `
+                        -AuthenticationType $AuthenticationType `
+                        -KeyBasedRenewal:$KeyBasedRenewal `
+                        -Verbose
 
-                [Parameter()]
-                $PhysicalPath
-            )
-            $result = Test-AdcsEnrollmentPolicyWebServiceInstallState `
-                -AuthenticationType $AuthenticationType `
-                -KeyBasedRenewal:$KeyBasedRenewal `
-                -Verbose
+                    $result | Should -BeTrue
+                }
+            }
 
-            $result | Should -BeFalse
-        }
-    }
-}
+            Context 'When matching Enrollment Policy Web Service is not installed' {
+                BeforeEach {
+                    Mock `
+                        -CommandName Get-WebApplication `
+                        -MockWith $mockAdcsEnrollmentPolicyWebServiceInstallStateNoneInstalled
+                }
 
-Describe 'DSC_AdcsEnrollmentPolicyWebService\Test-Thumbprint' {
-    Context 'When FIPS not set' {
-        Context 'When a single valid thumbrpint by parameter is passed' {
-            $result = Test-Thumbprint -Thumbprint $validThumbprint
-            It 'Should return true' {
-                $result | Should -BeOfType [System.Boolean]
-                $result | Should -BeTrue
+                It 'Given AuthenticationType <AuthenticationType> and KeyBasedRenewal <KeyBasedRenewal> it should return $false' -TestCases $testAdcsEnrollmentPolicyWebServiceInstallStateTestCases {
+                    param (
+                        [Parameter()]
+                        $AuthenticationType,
+
+                        [Parameter()]
+                        $KeyBasedRenewal,
+
+                        [Parameter()]
+                        $WebAppName,
+
+                        [Parameter()]
+                        $Applicationpool,
+
+                        [Parameter()]
+                        $PhysicalPath
+                    )
+                    $result = Test-AdcsEnrollmentPolicyWebServiceInstallState `
+                        -AuthenticationType $AuthenticationType `
+                        -KeyBasedRenewal:$KeyBasedRenewal `
+                        -Verbose
+
+                    $result | Should -BeFalse
+                }
             }
         }
 
-        Context 'When a single invalid thumbprint by parameter is passed' {
-            It 'Should throw an exception' {
-                { Test-Thumbprint -Thumbprint $invalidThumbprint } | Should -Throw
+        Describe 'DSC_AdcsEnrollmentPolicyWebService\Test-Thumbprint' {
+            Context 'When FIPS not set' {
+                Context 'When a single valid thumbrpint by parameter is passed' {
+                    $result = Test-Thumbprint -Thumbprint $validThumbprint
+                    It 'Should return true' {
+                        $result | Should -BeOfType [System.Boolean]
+                        $result | Should -BeTrue
+                    }
+                }
+
+                Context 'When a single invalid thumbprint by parameter is passed' {
+                    It 'Should throw an exception' {
+                        { Test-Thumbprint -Thumbprint $invalidThumbprint } | Should -Throw
+                    }
+                }
+
+                Context 'When a single invalid thumbprint by parameter with -Quiet is passed' {
+                    $result = Test-Thumbprint $invalidThumbprint -Quiet
+                    It 'Should return false' {
+                        $result | Should -BeOfType [System.Boolean]
+                        $result | Should -BeFalse
+                    }
+                }
+
+                Context 'When a single valid thumbprint by pipeline is passed' {
+                    $result = $validThumbprint | Test-Thumbprint
+                    It 'Should return true' {
+                        $result | Should -BeOfType [System.Boolean]
+                        $result | Should -BeTrue
+                    }
+                }
+
+                Context 'When a single invalid thumbprint by pipeline is passed' {
+                    It 'Should throw an exception' {
+                        { $invalidThumbprint | Test-Thumbprint } | Should -Throw
+                    }
+                }
+
+                Context 'When a single invalid thumbprint by pipeline with -Quiet is passed' {
+                    $result = $invalidThumbprint | Test-Thumbprint -Quiet
+                    It 'Should return false' {
+                        $result | Should -BeOfType [System.Boolean]
+                        $result | Should -BeFalse
+                    }
+                }
             }
-        }
 
-        Context 'When a single invalid thumbprint by parameter with -Quiet is passed' {
-            $result = Test-Thumbprint $invalidThumbprint -Quiet
-            It 'Should return false' {
-                $result | Should -BeOfType [System.Boolean]
-                $result | Should -BeFalse
-            }
-        }
+            Context 'When FIPS is enabled' {
+                Mock -CommandName Get-ItemProperty -MockWith { @{ Enabled = 1 } }
 
-        Context 'When a single valid thumbprint by pipeline is passed' {
-            $result = $validThumbprint | Test-Thumbprint
-            It 'Should return true' {
-                $result | Should -BeOfType [System.Boolean]
-                $result | Should -BeTrue
-            }
-        }
+                Context 'When a single valid FIPS thumbrpint by parameter is passed' {
+                    $result = Test-Thumbprint -Thumbprint $validFipsThumbprint
+                    It 'Should return true' {
+                        $result | Should -BeOfType [System.Boolean]
+                        $result | Should -BeTrue
+                    }
+                }
 
-        Context 'When a single invalid thumbprint by pipeline is passed' {
-            It 'Should throw an exception' {
-                { $invalidThumbprint | Test-Thumbprint } | Should -Throw
-            }
-        }
+                Context 'When a single invalid FIPS thumbprint by parameter is passed' {
+                    It 'Should throw an exception' {
+                        { Test-Thumbprint -Thumbprint $validThumbprint } | Should -Throw
+                    }
+                }
 
-        Context 'When a single invalid thumbprint by pipeline with -Quiet is passed' {
-            $result = $invalidThumbprint | Test-Thumbprint -Quiet
-            It 'Should return false' {
-                $result | Should -BeOfType [System.Boolean]
-                $result | Should -BeFalse
-            }
-        }
-    }
+                Context 'When a single invalid FIPS thumbprint by parameter with -Quiet is passed' {
+                    $result = Test-Thumbprint $validThumbprint -Quiet
+                    It 'Should return false' {
+                        $result | Should -BeOfType [System.Boolean]
+                        $result | Should -BeFalse
+                    }
+                }
 
-    Context 'When FIPS is enabled' {
-        Mock -CommandName Get-ItemProperty -MockWith { @{ Enabled = 1 } }
+                Context 'When a single valid FIPS thumbprint by pipeline is passed' {
+                    $result = $validFipsThumbprint | Test-Thumbprint
+                    It 'Should return true' {
+                        $result | Should -BeOfType [System.Boolean]
+                        $result | Should -BeTrue
+                    }
+                }
 
-        Context 'When a single valid FIPS thumbrpint by parameter is passed' {
-            $result = Test-Thumbprint -Thumbprint $validFipsThumbprint
-            It 'Should return true' {
-                $result | Should -BeOfType [System.Boolean]
-                $result | Should -BeTrue
-            }
-        }
+                Context 'When a single invalid FIPS thumbprint by pipeline is passed' {
+                    It 'Should throw an exception' {
+                        { $validThumbprint | Test-Thumbprint } | Should -Throw
+                    }
+                }
 
-        Context 'When a single invalid FIPS thumbprint by parameter is passed' {
-            It 'Should throw an exception' {
-                { Test-Thumbprint -Thumbprint $validThumbprint } | Should -Throw
-            }
-        }
-
-        Context 'When a single invalid FIPS thumbprint by parameter with -Quiet is passed' {
-            $result = Test-Thumbprint $validThumbprint -Quiet
-            It 'Should return false' {
-                $result | Should -BeOfType [System.Boolean]
-                $result | Should -BeFalse
-            }
-        }
-
-        Context 'When a single valid FIPS thumbprint by pipeline is passed' {
-            $result = $validFipsThumbprint | Test-Thumbprint
-            It 'Should return true' {
-                $result | Should -BeOfType [System.Boolean]
-                $result | Should -BeTrue
-            }
-        }
-
-        Context 'When a single invalid FIPS thumbprint by pipeline is passed' {
-            It 'Should throw an exception' {
-                { $validThumbprint | Test-Thumbprint } | Should -Throw
-            }
-        }
-
-        Context 'When a single invalid FIPS thumbprint by pipeline with -Quiet is passed' {
-            $result = $validThumbprint | Test-Thumbprint -Quiet
-            It 'Should return false' {
-                $result | Should -BeOfType [System.Boolean]
-                $result | Should -BeFalse
+                Context 'When a single invalid FIPS thumbprint by pipeline with -Quiet is passed' {
+                    $result = $validThumbprint | Test-Thumbprint -Quiet
+                    It 'Should return false' {
+                        $result | Should -BeOfType [System.Boolean]
+                        $result | Should -BeFalse
+                    }
+                }
             }
         }
     }
