@@ -25,6 +25,7 @@ function Invoke-TestSetup
 function Invoke-TestCleanup
 {
     Restore-TestEnvironment -TestEnvironment $script:testEnvironment
+    Remove-Module -Name AdcsStub -Force
 }
 
 Invoke-TestSetup
@@ -932,5 +933,4 @@ try
 finally
 {
     Invoke-TestCleanup
-    Remove-Module -Name AdcsStub -Force
 }

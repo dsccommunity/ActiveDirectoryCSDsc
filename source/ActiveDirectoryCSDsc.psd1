@@ -15,7 +15,7 @@
     Copyright            = 'Copyright the DSC Community contributors. All rights reserved.'
 
     # Description of the functionality provided by this module
-    Description          = 'DSC resources for installing or uninstalling Certificate Services components in Windows Server.'
+    Description          = 'DSC resources for installing, uninstalling and configuring Certificate Services components in Windows Server.'
 
     # Minimum version of the Windows PowerShell engine required by this module
     PowerShellVersion    = '5.0'

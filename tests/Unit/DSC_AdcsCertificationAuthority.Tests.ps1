@@ -25,6 +25,7 @@ function Invoke-TestSetup
 function Invoke-TestCleanup
 {
     Restore-TestEnvironment -TestEnvironment $script:testEnvironment
+    Remove-Module -Name AdcsStub -Force
 }
 
 Invoke-TestSetup
@@ -414,5 +415,4 @@ namespace Microsoft.CertificateServices.Deployment.Common.CA {
 finally
 {
     Invoke-TestCleanup
-    Remove-Module -Name AdcsStub -Force
 }

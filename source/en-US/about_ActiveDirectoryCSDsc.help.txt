@@ -2,12 +2,12 @@ TOPIC
     about_ActiveDirectoryCSDsc
 
 SHORT DESCRIPTION
-    DSC resources for installing or uninstalling Certificate Services components
-    in Windows Server.
+    DSC resources for installing, uninstalling and configuring Certificate
+    Services components in Windows Server.
 
 LONG DESCRIPTION
-    This module contains DSC resources for installing or uninstalling Certificate
-    Services components in Windows Server.
+    This module contains DSC resources for installing, uninstalling and configuring
+    Certificate Services components in Windows Server.
 
 EXAMPLES
     PS C:\> Get-DscResource -Module ActiveDirectoryCSDsc
