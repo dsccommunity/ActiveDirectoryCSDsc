@@ -1,0 +1,16 @@
+[ClassVersion("0.1.0.0"), FriendlyName("AdcsCertificationAuthoritySettings")]
+class DSC_AdcsCertificationAuthoritySettings : OMI_BaseResource
+{
+    [Key, Description("Specifies the resource is a single instance, the value must be 'Yes'."), ValueMap{"Yes"}, Values{"Yes"}] String IsSingleInstance;
+    [write, Description("Specifies an array of Certificate Authority certificate publication URLs, each prepended with an integer representing the type of URL endpoint.")] String CACertPublicationURLs[];
+    [write, Description("Specifies an array of Certificate Revocation List publication URLs, each prepended with an integer representing the type of URL endpoint.")] String CRLPublicationURLs[];
+    [write, Description("Specifies the number of units for the certificate revocation list overlap period.")] UInt32 CRLOverlapUnits;
+    [write, Description("Specifies the units of measurement for the certificate revocation list overlap period."), ValueMap{"Hours","Days","Weeks","Months","Years"}, Values{"Hours","Days","Weeks","Months","Years"}] String CRLOverlapPeriod;
+    [write, Description("Specifies the number of units for the certificate revocation period.")] UInt32 CRLPeriodUnits;
+    [write, Description("Specifies the units of measurement for the certificate revocation period."), ValueMap{"Hours","Days","Weeks","Months","Years"}, Values{"Hours","Days","Weeks","Months","Years"}] String CRLPeriod;
+    [write, Description("Specifies the number of units for the validity period of certificates issued by this certificate authority.")] UInt32 ValidityPeriodUnits;
+    [write, Description("Specifies the units of measurement for the validity period of certificates issued by this certificate authority."), ValueMap{"Hours","Days","Weeks","Months","Years"}, Values{"Hours","Days","Weeks","Months","Years"}] String ValidityPeriod;
+    [write, Description("Specifies the distinguished name of the directory services configuration object that contains this certificate authority in the Active Directory.")] String DSConfigDN;
+    [write, Description("Specifies the distinguished name of the directory services object that contains this certificate authority in the Active Directory.")] String DSDomainDN;
+    [write, Description("Specifies an array of audit categories to enable audit logging for."), ValueMap{"StartAndStopADCS","BackupAndRestoreCADatabase","IssueAndManageCertificateRequests","RevokeCertificatesAndPublishCRLs","ChangeCASecuritySettings","StoreAndRetrieveArchivedKeys","ChangeCAConfiguration"}, Values{"StartAndStopADCS","BackupAndRestoreCADatabase","IssueAndManageCertificateRequests","RevokeCertificatesAndPublishCRLs","ChangeCASecuritySettings","StoreAndRetrieveArchivedKeys","ChangeCAConfiguration"}] String AuditFilter[];
+};
