@@ -1,8 +1,8 @@
 # ActiveDirectoryCSDsc
 
-[![Build Status](https://dev.azure.com/dsccommunity/ActiveDirectoryCSDsc/_apis/build/status/dsccommunity.ActiveDirectoryCSDsc?branchName=master)](https://dev.azure.com/dsccommunity/ActiveDirectoryCSDsc/_build/latest?definitionId=18&branchName=master)
-![Code Coverage](https://img.shields.io/azure-devops/coverage/dsccommunity/ActiveDirectoryCSDsc/18/master)
-[![Azure DevOps tests](https://img.shields.io/azure-devops/tests/dsccommunity/ActiveDirectoryCSDsc/18/master)](https://dsccommunity.visualstudio.com/ActiveDirectoryCSDsc/_test/analytics?definitionId=18&contextType=build)
+[![Build Status](https://dev.azure.com/dsccommunity/ActiveDirectoryCSDsc/_apis/build/status/dsccommunity.ActiveDirectoryCSDsc?branchName=master)](https://dev.azure.com/dsccommunity/ActiveDirectoryCSDsc/_build/latest?definitionId=24&branchName=master)
+![Code Coverage](https://img.shields.io/azure-devops/coverage/dsccommunity/ActiveDirectoryCSDsc/24/master)
+[![Azure DevOps tests](https://img.shields.io/azure-devops/tests/dsccommunity/ActiveDirectoryCSDsc/24/master)](https://dsccommunity.visualstudio.com/ActiveDirectoryCSDsc/_test/analytics?definitionId=24&contextType=build)
 [![PowerShell Gallery (with prereleases)](https://img.shields.io/powershellgallery/vpre/ActiveDirectoryCSDsc?label=ActiveDirectoryCSDsc%20Preview)](https://www.powershellgallery.com/packages/ActiveDirectoryCSDsc/)
 [![PowerShell Gallery](https://img.shields.io/powershellgallery/v/ActiveDirectoryCSDsc?label=ActiveDirectoryCSDsc)](https://www.powershellgallery.com/packages/ActiveDirectoryCSDsc/)
 
