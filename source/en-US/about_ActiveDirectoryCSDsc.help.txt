@@ -1,0 +1,27 @@
+TOPIC
+    about_ActiveDirectoryCSDsc
+
+SHORT DESCRIPTION
+    DSC resources for installing, uninstalling and configuring Certificate
+    Services components in Windows Server.
+
+LONG DESCRIPTION
+    This module contains DSC resources for installing, uninstalling and configuring
+    Certificate Services components in Windows Server.
+
+EXAMPLES
+    PS C:\> Get-DscResource -Module ActiveDirectoryCSDsc
+
+NOTE:
+    Thank you to the DSC Community contributors who contributed to this module by
+    writing code, sharing opinions, and provided feedback.
+
+TROUBLESHOOTING NOTE:
+    Go to the Github repository for read about issues, submit a new issue, and read
+    about new releases. https://github.com/dsccommunity/ActiveDirectoryCSDsc
+
+SEE ALSO
+  - https://github.com/dsccommunity/ActiveDirectoryCSDsc
+
+KEYWORDS
+      DSC, DscResource, CertificateServices, ActiveDirectory
