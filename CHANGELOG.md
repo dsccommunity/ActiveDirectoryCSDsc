@@ -21,3 +21,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated to use continuous delivery pattern using Azure DevOps - Fixes
   [Issue #105](https://github.com/dsccommunity/ActiveDirectoryCSDsc/issues/105).
 - Fixed build badge IDs - Fixes [Issue #108](https://github.com/dsccommunity/ActiveDirectoryCSDsc/issues/108).
+
+### Added
+
+- Added build task `Generate_Conceptual_Help` to generate conceptual help
+  for the DSC resource.
+- Added build task `Generate_Wiki_Content` to generate the wiki content
+  that can be used to update the GitHub Wiki.
+
+### Changed
+
+- Updated CI pipeline files.
+- No longer run integration tests when running the build task `test`, e.g.
+  `.\build.ps1 -Task test`. To manually run integration tests, run the
+  following:
+  ```powershell
+  .\build.ps1 -Tasks test -PesterScript 'tests/Integration' -CodeCoverageThreshold 0
+  ```
