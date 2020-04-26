@@ -30,7 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   ```powershell
   .\build.ps1 -Tasks test -PesterScript 'tests/Integration' -CodeCoverageThreshold 0
   ```
-- Removed unused files repository.
+- Removed unused files repository - Fixes [Issue #112](https://github.com/dsccommunity/ActiveDirectoryCSDsc/issues/112).
 
 ### Added
 
