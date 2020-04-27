@@ -42,7 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added build task `Generate_Wiki_Content` to generate the wiki content
   that can be used to update the GitHub Wiki.
 
-## [4.1.0.0]
+## [4.1.0.0] - 2019-09-19
 
 ### Changed
 
@@ -50,7 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fix grammar in the resource README.md.
 - Fix minor style issues in statement case.
 
-## [4.0.0.0]
+## [4.0.0.0] - 2019-08-08
 
 ### Changed
 
@@ -73,7 +73,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Integration tests updated to create test user account in administrators
     group to make test execution easier.
 
-## [3.3.0.0]
+## [3.3.0.0] - 2019-05-15
 
 ### Changed
 
@@ -84,7 +84,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Opted into Common Tests 'Common Tests - Validate Localization' -
   fixes [Issue #82](https://github.com/dsccommunity/ActiveDirectoryCSDsc/issues/82).
 
-## [3.2.0.0]
+## [3.2.0.0] - 2019-02-20
 
 ### Changed
 
@@ -106,7 +106,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   'Validate Markdown Links' and 'Relative Path Length'.
 - Correct AppVeyor `Invoke-AppveyorAfterTestTask` - fixes [Issue #73](https://github.com/dsccommunity/ActiveDirectoryCSDsc/issues/73).
 
-## [3.1.0.0]
+## [3.1.0.0] - 2019-01-10
 
 ### Changed
 
@@ -115,7 +115,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added fix for two tier PKI deployment fails on initial deployment,
   not error - fixes [Issue #57](https://github.com/dsccommunity/ActiveDirectoryCSDsc/issues/57).
 
-## [3.0.0.0]
+## [3.0.0.0] - 2018-06-13
 
 ### Changed
 
@@ -131,7 +131,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - MSFT_xADCSOnlineResponder resource to install the Online Responder service.
 - Corrected filename of MSFT_AdcsCertificationAuthority integration test file.
 
-## [2.0.0.0]
+## [2.0.0.0] - 2018-05-02
 
 ### Changed
 
@@ -139,14 +139,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   [issue #38](https://github.com/dsccommunity/xAdcsDeployment/issues/38)
 - Enabled PSSA rule violations to fail build - Fixes [Issue #44](https://github.com/dsccommunity/ActiveDirectoryCSDsc/issues/44).
 
-## [1.4.0.0]
+## [1.4.0.0] - 2018-01-01
 
 ### Changed
 
 - xAdcsCertificateAuthority: CertFilePassword invalid type - fixes
   [issue #36](https://github.com/dsccommunity/xAdcsDeployment/issues/36)
 
-## [1.3.0.0]
+## [1.3.0.0] - 2018-01-01
 
 ### Changed
 
@@ -173,14 +173,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Converted AppVeyor.yml to use shared AppVeyor module in DSCResource.Tests - fixes
   [issue #29](https://github.com/dsccommunity/xAdcsDeployment/issues/29).
 
-## [1.2.0.0]
+## [1.2.0.0] - 2018-01-01
 
 ### Changed
 
 - xAdcsWebEnrollment:
   - xAdcsWebEnrollment.psm1 - Change reference and variable from CAType to CAConfig
 
-## [1.1.0.0]
+## [1.1.0.0] - 2018-01-01
 
 ### Changed
 
@@ -213,7 +213,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix markdown violations in Readme.md.
 - Updated readme.md to match DSCResource.Template\Readme.md.
 
-## [1.0.0.0]
+## [1.0.0.0] - 2018-01-01
 
 ### Changed
 
@@ -229,7 +229,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Usage of WinRm.exe replaced in Config-SetupActiveDirectory.ps1 example file
   with Set-WSManQuickConfig cmdlet.
 
-## [0.2.0.0]
+## [0.2.0.0] - 2018-01-01
 
 ### Changed
 
@@ -239,7 +239,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Addition of .gitignore to ensure DSCResource.Tests folder is committed.
 - Updated AppVeyor.yml to use WMF 5 build environment.
 
-## [0.1.0.0]
+## [0.1.0.0] - 2018-01-01
 
 ### Changed
 
