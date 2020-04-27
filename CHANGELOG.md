@@ -139,14 +139,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   [issue #38](https://github.com/dsccommunity/xAdcsDeployment/issues/38)
 - Enabled PSSA rule violations to fail build - Fixes [Issue #44](https://github.com/dsccommunity/ActiveDirectoryCSDsc/issues/44).
 
-## [1.4.0.0] - 2018-01-01
+## [1.4.0.0] - 2017-12-20
 
 ### Changed
 
 - xAdcsCertificateAuthority: CertFilePassword invalid type - fixes
   [issue #36](https://github.com/dsccommunity/xAdcsDeployment/issues/36)
 
-## [1.3.0.0] - 2018-01-01
+## [1.3.0.0] - 2017-11-15
 
 ### Changed
 
@@ -173,14 +173,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Converted AppVeyor.yml to use shared AppVeyor module in DSCResource.Tests - fixes
   [issue #29](https://github.com/dsccommunity/xAdcsDeployment/issues/29).
 
-## [1.2.0.0] - 2018-01-01
+## [1.2.0.0] - 2017-10-05
 
 ### Changed
 
 - xAdcsWebEnrollment:
   - xAdcsWebEnrollment.psm1 - Change reference and variable from CAType to CAConfig
 
-## [1.1.0.0] - 2018-01-01
+## [1.1.0.0] - 2016-12-14
 
 ### Changed
 
@@ -213,7 +213,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix markdown violations in Readme.md.
 - Updated readme.md to match DSCResource.Template\Readme.md.
 
-## [1.0.0.0] - 2018-01-01
+## [1.0.0.0] - 2016-05-18
 
 ### Changed
 
@@ -229,7 +229,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Usage of WinRm.exe replaced in Config-SetupActiveDirectory.ps1 example file
   with Set-WSManQuickConfig cmdlet.
 
-## [0.2.0.0] - 2018-01-01
+## [0.2.0.0] - 2016-02-02
 
 ### Changed
 
@@ -239,7 +239,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Addition of .gitignore to ensure DSCResource.Tests folder is committed.
 - Updated AppVeyor.yml to use WMF 5 build environment.
 
-## [0.1.0.0] - 2018-01-01
+## [0.1.0.0] - 2014-09-27
 
 ### Changed
 
