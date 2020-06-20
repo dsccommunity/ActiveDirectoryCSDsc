@@ -5,8 +5,10 @@ Import-Module -Name (Join-Path -Path $modulePath `
         -ChildPath (Join-Path -Path 'ActiveDirectoryCSDsc.Common' `
             -ChildPath 'ActiveDirectoryCSDsc.Common.psm1'))
 
+Import-Module -Name (Join-Path -Path $modulePath -ChildPath 'DscResource.Common')
+
 # Import Localization Strings.
-$script:localizedData = Get-LocalizedData -ResourceName 'DSC_AdcsOnlineResponder'
+$script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
 <#
     .SYNOPSIS
@@ -54,7 +56,7 @@ function Get-TargetResource
             $($script:localizedData.GettingAdcsOnlineResponderStatusMessage)
         ) -join '' )
 
-    $adcsParameters = @{} + $PSBoundParameters
+    $adcsParameters = @{ } + $PSBoundParameters
     $null = $adcsParameters.Remove('IsSingleInstance')
     $null = $adcsParameters.Remove('Ensure')
     $null = $adcsParameters.Remove('Debug')
@@ -125,7 +127,7 @@ function Set-TargetResource
             $($script:localizedData.SettingAdcsOnlineResponderStatusMessage)
         ) -join '' )
 
-    $adcsParameters = @{} + $PSBoundParameters
+    $adcsParameters = @{ } + $PSBoundParameters
     $null = $adcsParameters.Remove('IsSingleInstance')
     $null = $adcsParameters.Remove('Ensure')
     $null = $adcsParameters.Remove('Debug')
@@ -144,7 +146,7 @@ function Set-TargetResource
     }
     else
     {
-    Write-Verbose -Message ( @(
+        Write-Verbose -Message ( @(
                 "$($MyInvocation.MyCommand): "
                 $($script:localizedData.UninstallingAdcsOnlineResponderMessage)
             ) -join '' )
@@ -204,7 +206,7 @@ function Test-TargetResource
             $script:localizedData.TestingAdcsOnlineResponderStatusMessage
         ) -join '' )
 
-    $adcsParameters = @{} + $PSBoundParameters
+    $adcsParameters = @{ } + $PSBoundParameters
     $null = $adcsParameters.Remove('IsSingleInstance')
     $null = $adcsParameters.Remove('Ensure')
     $null = $adcsParameters.Remove('Debug')

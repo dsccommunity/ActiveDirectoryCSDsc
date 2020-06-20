@@ -5,8 +5,10 @@ Import-Module -Name (Join-Path -Path $modulePath `
         -ChildPath (Join-Path -Path 'ActiveDirectoryCSDsc.Common' `
             -ChildPath 'ActiveDirectoryCSDsc.Common.psm1'))
 
+Import-Module -Name (Join-Path -Path $modulePath -ChildPath 'DscResource.Common')
+
 # Import Localization Strings.
-$script:localizedData = Get-LocalizedData -ResourceName 'DSC_AdcsEnrollmentPolicyWebService'
+$script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
 <#
     .SYNOPSIS
@@ -152,7 +154,7 @@ function Set-TargetResource
             $($script:localizedData.SettingAdcsEnrollmentPolicyWebServiceStatusMessage -f $AuthenticationType)
         ) -join '' )
 
-    $adcsEnrollmentPolicyWebServiceParameters = @{} + $PSBoundParameters
+    $adcsEnrollmentPolicyWebServiceParameters = @{ } + $PSBoundParameters
     $null = $adcsEnrollmentPolicyWebServiceParameters.Remove('Ensure')
     $null = $adcsEnrollmentPolicyWebServiceParameters.Remove('Debug')
     $null = $adcsEnrollmentPolicyWebServiceParameters.Remove('ErrorAction')
@@ -191,9 +193,9 @@ function Set-TargetResource
     if (-not [System.String]::IsNullOrEmpty($errorMessage))
     {
         Write-Verbose -Message ( @(
-            "$($MyInvocation.MyCommand): "
-            $($script:localizedData.AdcsEnrollmentPolicyWebServiceErrorMessage -f $errorMessage)
-        ) -join '' )
+                "$($MyInvocation.MyCommand): "
+                $($script:localizedData.AdcsEnrollmentPolicyWebServiceErrorMessage -f $errorMessage)
+            ) -join '' )
         New-InvalidOperationException -Message $errorMessage
     }
 } # function Set-TargetResource
@@ -383,18 +385,18 @@ function Test-AdcsEnrollmentPolicyWebServiceInstallState
     if ($null -eq $enrollmentPolicyWebServiceWebApp)
     {
         Write-Verbose -Message ( @(
-            "$($MyInvocation.MyCommand): "
-            $($script:localizedData.AdcsEnrollmentPolicyWebServiceInstallIsNotInstalledMessage -f $AuthenticationType, $KeyBasedRenewal)
-        ) -join '' )
+                "$($MyInvocation.MyCommand): "
+                $($script:localizedData.AdcsEnrollmentPolicyWebServiceInstallIsNotInstalledMessage -f $AuthenticationType, $KeyBasedRenewal)
+            ) -join '' )
 
         return $false
     }
     else
     {
         Write-Verbose -Message ( @(
-            "$($MyInvocation.MyCommand): "
-            $($script:localizedData.AdcsEnrollmentPolicyWebServiceInstallIsInstalledMessage -f $AuthenticationType, $KeyBasedRenewal)
-        ) -join '' )
+                "$($MyInvocation.MyCommand): "
+                $($script:localizedData.AdcsEnrollmentPolicyWebServiceInstallIsInstalledMessage -f $AuthenticationType, $KeyBasedRenewal)
+            ) -join '' )
 
         return $true
     }

@@ -5,8 +5,10 @@ Import-Module -Name (Join-Path -Path $modulePath `
         -ChildPath (Join-Path -Path 'ActiveDirectoryCSDsc.Common' `
             -ChildPath 'ActiveDirectoryCSDsc.Common.psm1'))
 
+Import-Module -Name (Join-Path -Path $modulePath -ChildPath 'DscResource.Common')
+
 # Import Localization Strings.
-$script:localizedData = Get-LocalizedData -ResourceName 'DSC_AdcsWebEnrollment'
+$script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
 <#
     .SYNOPSIS
@@ -61,7 +63,7 @@ function Get-TargetResource
             $($script:localizedData.GettingAdcsWebEnrollmentStatusMessage)
         ) -join '' )
 
-    $adcsParameters = @{} + $PSBoundParameters
+    $adcsParameters = @{ } + $PSBoundParameters
     $null = $adcsParameters.Remove('IsSingleInstance')
     $null = $adcsParameters.Remove('Ensure')
     $null = $adcsParameters.Remove('Debug')
@@ -140,7 +142,7 @@ function Set-TargetResource
             $($script:localizedData.SettingAdcsWebEnrollmentStatusMessage)
         ) -join '' )
 
-    $adcsParameters = @{} + $PSBoundParameters
+    $adcsParameters = @{ } + $PSBoundParameters
     $null = $adcsParameters.Remove('IsSingleInstance')
     $null = $adcsParameters.Remove('Ensure')
     $null = $adcsParameters.Remove('Debug')
@@ -227,7 +229,7 @@ function Test-TargetResource
             $($script:localizedData.TestingAdcsWebEnrollmentStatusMessage -f $CAConfig)
         ) -join '' )
 
-    $adcsParameters = @{} + $PSBoundParameters
+    $adcsParameters = @{ } + $PSBoundParameters
     $null = $adcsParameters.Remove('IsSingleInstance')
     $null = $adcsParameters.Remove('Ensure')
     $null = $adcsParameters.Remove('Debug')
