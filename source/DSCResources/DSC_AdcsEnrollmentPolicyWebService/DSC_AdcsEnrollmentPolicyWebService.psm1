@@ -478,10 +478,10 @@ function Test-Thumbprint
             $validHash = New-Object `
                 -TypeName PSObject `
                 -Property @{
-                Hash      = $hashProvider.BaseType.Name
-                BitSize   = $bitSize
-                HexLength = $bitSize / 4
-            }
+                    Hash      = $hashProvider.BaseType.Name
+                    BitSize   = $bitSize
+                    HexLength = $bitSize / 4
+                }
             $validHashes += @( $validHash )
         }
     }
