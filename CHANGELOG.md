@@ -34,6 +34,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change Azure DevOps Pipeline definition to include `source/*` - Fixes [Issue #114](https://github.com/dsccommunity/ActiveDirectoryCSDsc/issues/114).
 - Updated pipeline to use `latest` version of `ModuleBuilder` - Fixes [Issue #115](https://github.com/dsccommunity/ActiveDirectoryCSDsc/issues/115).
 - Merge `HISTORIC_CHANGELOG.md` into `CHANGELOG.md` - Fixes [Issue #115](https://github.com/dsccommunity/ActiveDirectoryCSDsc/issues/115).
+- Fixed build failures caused by changes in `ModuleBuilder` module v1.7.0
+  by changing `CopyDirectories` to `CopyPaths` - Fixes [Issue #119](https://github.com/dsccommunity/ActiveDirectoryCSDsc/issues/119).
+- Updated to use the common module _DscResource.Common_ - Fixes [Issue #117](https://github.com/dsccommunity/ActiveDirectoryCSDsc/issues/117).
+- Pin `Pester` module to 4.10.1 because Pester 5.0 is missing code
+  coverage - Fixes [Issue #118](https://github.com/dsccommunity/ActiveDirectoryCSDsc/issues/118).
 
 ### Added
 

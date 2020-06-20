@@ -5,8 +5,10 @@ Import-Module -Name (Join-Path -Path $modulePath `
         -ChildPath (Join-Path -Path 'ActiveDirectoryCSDsc.Common' `
             -ChildPath 'ActiveDirectoryCSDsc.Common.psm1'))
 
+Import-Module -Name (Join-Path -Path $modulePath -ChildPath 'DscResource.Common')
+
 # Import Localization Strings.
-$script:localizedData = Get-LocalizedData -ResourceName 'DSC_AdcsTemplate'
+$script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
 <#
     .SYNOPSIS
