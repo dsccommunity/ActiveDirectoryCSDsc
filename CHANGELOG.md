@@ -5,6 +5,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.0.0] - 2020-06-20
+
 ### Changed
 
 - Updated common function `Test-DscParameterState` to support ordered comparison
