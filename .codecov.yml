@@ -1,8 +1,8 @@
 codecov:
   notify:
     require_ci_to_pass: no
-  # dev should be the baseline for reporting
-  branch: dev
+  # main should be the baseline for reporting
+  branch: main
 
 comment:
   layout: "reach, diff"
