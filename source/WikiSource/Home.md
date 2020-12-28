@@ -32,4 +32,4 @@ Get-DscResource -Module ActiveDirectoryCSDsc
 
 ## Change Log
 
-A full list of changes in each version can be found in the [change log](https://github.com/dsccommunity/ActiveDirectoryCSDsc/blob/master/CHANGELOG.md).
+A full list of changes in each version can be found in the [change log](https://github.com/dsccommunity/ActiveDirectoryCSDsc/blob/main/CHANGELOG.md).
