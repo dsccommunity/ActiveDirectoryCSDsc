@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ActiveDirectoryCSDsc
   - Automatically publish documentation to GitHub Wiki - Fixes [Issue #122](https://github.com/dsccommunity/ActiveDirectoryCSDsc/issues/122).
 - Renamed `master` branch to `main` - Fixes [Issue #124](https://github.com/dsccommunity/ActiveDirectoryCSDsc/issues/124).
+- Updated `GitVersion.yml` to latest pattern - Fixes [Issue #126](https://github.com/dsccommunity/ActiveDirectoryCSDsc/issues/126).
 
 ## [5.0.0] - 2020-06-20
 
