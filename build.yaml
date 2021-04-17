@@ -48,8 +48,8 @@ BuildWorkflow:
     - Pester_If_Code_Coverage_Under_Threshold
 
   publish:
-    - Publish_Release_to_GitHub
-    - Publish_Module_to_gallery
+    - Publish_Release_To_GitHub
+    - Publish_Module_To_gallery
     - Publish_GitHub_Wiki_Content
 
 ####################################################
@@ -65,6 +65,8 @@ Pester:
     - tests/Integration
   ExcludeTag:
   Tag:
+  CodeCoverageOutputFile: JaCoCo_coverage.xml
+  CodeCoverageOutputFileEncoding: ascii
   CodeCoverageThreshold: 70
 
 DscTest:
@@ -85,6 +87,8 @@ Resolve-Dependency:
 ModuleBuildTasks:
   Sampler:
     - '*.build.Sampler.ib.tasks'
+  Sampler.GitHubTasks:
+    - '*.ib.tasks'
   DscResource.DocGenerator:
     - 'Task.*'
 
