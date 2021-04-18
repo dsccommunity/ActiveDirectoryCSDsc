@@ -46,7 +46,7 @@ stages:
             displayName: 'Publish Build Artifact'
             inputs:
               PathtoPublish: '$(buildFolderName)/'
-              ArtifactName: $(testArtifactName)
+              ArtifactName: $(buildArtifactName)
               publishLocation: 'Container'
 
   - stage: Test
