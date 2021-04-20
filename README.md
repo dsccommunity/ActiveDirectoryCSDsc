@@ -6,8 +6,6 @@
 [![PowerShell Gallery (with prereleases)](https://img.shields.io/powershellgallery/vpre/ActiveDirectoryCSDsc?label=ActiveDirectoryCSDsc%20Preview)](https://www.powershellgallery.com/packages/ActiveDirectoryCSDsc/)
 [![PowerShell Gallery](https://img.shields.io/powershellgallery/v/ActiveDirectoryCSDsc?label=ActiveDirectoryCSDsc)](https://www.powershellgallery.com/packages/ActiveDirectoryCSDsc/)
 [![codecov](https://codecov.io/gh/dsccommunity/ActiveDirectoryCSDsc/branch/main/graph/badge.svg)](https://codecov.io/gh/dsccommunity/ActiveDirectoryCSDsc)
-![Azure DevOps coverage (main)](https://img.shields.io/azure-devops/coverage/dsccommunity/ActiveDirectoryCSDsc/14/main)
-
 
 ## Code of Conduct
 
