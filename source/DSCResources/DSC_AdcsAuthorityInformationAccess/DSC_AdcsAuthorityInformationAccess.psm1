@@ -205,6 +205,7 @@ function Test-TargetResource
         -Verbose:$VerbosePreference
 
     $null = $PSBoundParameters.Remove('IsSingleInstance')
+    $null = $PSBoundParameters.Remove('AllowRestartService')
 
     return Test-DscParameterState `
         -CurrentValues $currentSettings `
@@ -234,7 +235,8 @@ function Get-CaAiaUriList
 
     Write-Verbose -Message ($script:localizedData.GettingAiaUrisMessage -f $ExtensionType)
 
-    return [System.String[]] (Get-CAAuthorityInformationAccess | Where-Object -Property $ExtensionType -Eq $true).Uri
+    $UriList = [System.String[]](Get-CAAuthorityInformationAccess | Where-Object -Property $ExtensionType -Eq $true).Uri
+    return ,$UriList
 }
 
 Export-ModuleMember -Function *-TargetResource
