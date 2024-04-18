@@ -13,7 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated `GitVersion.yml` to latest pattern - Fixes [Issue #126](https://github.com/dsccommunity/ActiveDirectoryCSDsc/issues/126).
 - Updated build to use `Sampler.GitHubTasks` - Fixes [Issue #129](https://github.com/dsccommunity/ActiveDirectoryCSDsc/issues/129).
 - Added support for publishing code coverage to `CodeCov.io` and
-  Azure Pipelines - Fixes [Issue #130](https://github.com/dsccommunity/ActiveDirectoryCSDsc/issues/130).
+- Azure Pipelines - Fixes [Issue #130](https://github.com/dsccommunity/ActiveDirectoryCSDsc/issues/130).
+- Azure pipelines - Remove deprecated images, make the build work
 
 ## [5.0.0] - 2020-06-20
 
