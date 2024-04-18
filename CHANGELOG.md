@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - AdcsAuthorityInformationAccess
   - Removed `AllowRestartService` parameter from compared settings, force `Get-CaAiaUriList`
     to return unmangled `System.String[]` with single values.
+    Fixes [Issue #128](https://github.com/dsccommunity/ActiveDirectoryCSDsc/issues/128)
     Fixes [Issue #138](https://github.com/dsccommunity/ActiveDirectoryCSDsc/issues/138).
 
 ### Changed
