@@ -167,7 +167,7 @@ try
                     }
                 }
 
-                Context 'When AIA and OCSP are passed but OCSP is missing a URI' {
+                Context 'When AIA and OCSP are passed but AIA is missing a URI' {
                     $setTargetResourceParameters = @{
                         IsSingleInstance    = 'Yes'
                         AiaUri              = $script:AiaList + ('http://tertiary/Certs/<CATruncatedName>.cer')
@@ -208,7 +208,7 @@ try
                     }
                 }
 
-                Context 'When AIA and OCSP are passed but AIA is missing a URI' {
+                Context 'When AIA and OCSP are passed but OCSP is missing a URI' {
                     $setTargetResourceParameters = @{
                         IsSingleInstance    = 'Yes'
                         AiaUri              = $script:AiaList
@@ -249,7 +249,7 @@ try
                     }
                 }
 
-                Context 'When AIA and OCSP are passed but OCSP has an extra URI' {
+                Context 'When AIA and OCSP are passed but AIA has an extra URI' {
                     $setTargetResourceParameters = @{
                         IsSingleInstance    = 'Yes'
                         AiaUri              = [System.String[]] @('http://primary/Certs/<CATruncatedName>.cer')
@@ -290,7 +290,7 @@ try
                     }
                 }
 
-                Context 'When AIA and OCSP are passed but AIA has an extra URI' {
+                Context 'When AIA and OCSP are passed but OCSP has an extra URI' {
                     $setTargetResourceParameters = @{
                         IsSingleInstance    = 'Yes'
                         AiaUri              = $script:AiaList
