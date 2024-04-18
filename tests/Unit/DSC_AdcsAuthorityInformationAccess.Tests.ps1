@@ -249,11 +249,8 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Set-TargetResource' -Tag 'Set' {
             }
         }
 
-        Context 'When AIA and OCSP are passed but OCSP is missing a URI' {
-            BeforeAll {
-                InModuleScope -ScriptBlock {
-
-                    $script:setTargetResourceParameters = @{
+                Context 'When AIA and OCSP are passed but AIA is missing a URI' {
+                    $setTargetResourceParameters = @{
                         IsSingleInstance    = 'Yes'
                         AiaUri              = $AiaList + ('http://tertiary/Certs/<CATruncatedName>.cer')
                         OcspUri             = $OcspList
@@ -301,7 +298,7 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Set-TargetResource' -Tag 'Set' {
             }
         }
 
-        Context 'When AIA and OCSP are passed but AIA is missing a URI' {
+        Context 'When AIA and OCSP are passed but OCSP is missing a URI' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
                     $script:setTargetResourceParameters = @{
@@ -352,10 +349,8 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Set-TargetResource' -Tag 'Set' {
             }
         }
 
-        Context 'When AIA and OCSP are passed but OCSP has an extra URI' {
-            BeforeAll {
-                InModuleScope -ScriptBlock {
-                    $script:setTargetResourceParameters = @{
+                Context 'When AIA and OCSP are passed but AIA has an extra URI' {
+                    $setTargetResourceParameters = @{
                         IsSingleInstance    = 'Yes'
                         AiaUri              = [System.String[]] @('http://primary/Certs/<CATruncatedName>.cer')
                         OcspUri             = $OcspList
@@ -403,10 +398,8 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Set-TargetResource' -Tag 'Set' {
             }
         }
 
-        Context 'When AIA and OCSP are passed but AIA has an extra URI' {
-            BeforeAll {
-                InModuleScope -ScriptBlock {
-                    $script:setTargetResourceParameters = @{
+                Context 'When AIA and OCSP are passed but OCSP has an extra URI' {
+                    $setTargetResourceParameters = @{
                         IsSingleInstance    = 'Yes'
                         AiaUri              = $AiaList
                         OcspUri             = [System.String[]] @('http://primary-ocsp-responder/ocsp')
