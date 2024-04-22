@@ -252,8 +252,8 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Set-TargetResource' -Tag 'Set' {
                 Context 'When AIA and OCSP are passed but AIA is missing a URI' {
                     $setTargetResourceParameters = @{
                         IsSingleInstance    = 'Yes'
-                        AiaUri              = $AiaList + ('http://tertiary/Certs/<CATruncatedName>.cer')
-                        OcspUri             = $OcspList
+                        AiaUri              = $script:AiaList + @('http://tertiary/Certs/<CATruncatedName>.cer')
+                        OcspUri             = $script:OcspList
                         AllowRestartService = $true
                     }
                 }
@@ -754,8 +754,8 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Test-TargetResource' -Tag 'Test' {
             InModuleScope -ScriptBlock {
                 $script:testTargetResourceParameters = @{
                     IsSingleInstance    = 'Yes'
-                    AiaUri              = $AiaList + ('http://tertiary/Certs/<CATruncatedName>.cer')
-                    OcspUri             = $OcspList
+                    AiaUri              = $script:AiaList + @('http://tertiary/Certs/<CATruncatedName>.cer')
+                    OcspUri             = $script:OcspList
                     AllowRestartService = $false
                 }
             }
@@ -793,7 +793,7 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Test-TargetResource' -Tag 'Test' {
         BeforeAll {
             $script:testTargetResourceParameters = @{
                 IsSingleInstance    = 'Yes'
-                AiaUri              = $AiaList + ('http://tertiary/Certs/<CATruncatedName>.cer')
+                AiaUri              = $AiaList + @('http://tertiary/Certs/<CATruncatedName>.cer')
                 OcspUri             = $OcspList + @('http://tertiary-ocsp-responder/ocsp')
                 AllowRestartService = $false
             }
@@ -1250,7 +1250,7 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Get-CaAiaUriList' {
         }
     }
 
-    Context 'When ExtensionType is AddToCertificateOcsp and there is AddToCertificateOcsp URI and two AddToCertificateAia URIs' {
+    Context 'When ExtensionType is AddToCertificateOcsp and there is two AddToCertificateOcsp URI and two AddToCertificateAia URIs' {
         BeforeAll {
             $getCAAuthorityInformationAccessMock = {
                 @(
