@@ -170,7 +170,7 @@ try
                 Context 'When AIA and OCSP are passed but AIA is missing a URI' {
                     $setTargetResourceParameters = @{
                         IsSingleInstance    = 'Yes'
-                        AiaUri              = $script:AiaList + ('http://tertiary/Certs/<CATruncatedName>.cer')
+                        AiaUri              = $script:AiaList + @('http://tertiary/Certs/<CATruncatedName>.cer')
                         OcspUri             = $script:OcspList
                         AllowRestartService = $true
                         Verbose             = $true
@@ -569,7 +569,7 @@ try
             Context 'When AIA and OCSP are passed and AIA contains an extra value' {
                 $testTargetResourceParameters = @{
                     IsSingleInstance    = 'Yes'
-                    AiaUri              = $script:AiaList + ('http://tertiary/Certs/<CATruncatedName>.cer')
+                    AiaUri              = $script:AiaList + @('http://tertiary/Certs/<CATruncatedName>.cer')
                     OcspUri             = $script:OcspList
                     AllowRestartService = $false
                     Verbose             = $true
@@ -593,7 +593,7 @@ try
             Context 'When AIA and OCSP are passed and both AIA and OCSP contains extra values' {
                 $testTargetResourceParameters = @{
                     IsSingleInstance    = 'Yes'
-                    AiaUri              = $script:AiaList + ('http://tertiary/Certs/<CATruncatedName>.cer')
+                    AiaUri              = $script:AiaList + @('http://tertiary/Certs/<CATruncatedName>.cer')
                     OcspUri             = $script:OcspList + @('http://tertiary-ocsp-responder/ocsp')
                     AllowRestartService = $false
                     Verbose             = $true
@@ -788,12 +788,12 @@ try
                     } | Should -Not -Throw
                 }
 
-                It 'Should return null' {
+                It 'Should return one Aia entry' {
                     $script:getCaAiaUriListResult | Should -BeExactly 'http://primary/Certs/<CATruncatedName>.cer'
                 }
             }
 
-            Context 'When ExtensionType is AddToCertificateAia and there is AddToCertificateAia URI and two AddToCertificateOcsp URIs' {
+            Context 'When ExtensionType is AddToCertificateAia and there is two AddToCertificateAia URI and one AddToCertificateOcsp URIs' {
                 $getCAAuthorityInformationAccessMock = {
                     @(
                         [PSCustomObject] @{
@@ -825,7 +825,7 @@ try
                     } | Should -Not -Throw
                 }
 
-                It 'Should return null' {
+                It 'Should return two Aia entries' {
                     $script:getCaAiaUriListResult[0] | Should -BeExactly 'http://primary/Certs/<CATruncatedName>.cer'
                     $script:getCaAiaUriListResult[1] | Should -BeExactly 'http://secondary/Certs/<CATruncatedName>.cer'
                 }
@@ -858,7 +858,7 @@ try
                 }
             }
 
-            Context 'When ExtensionType is AddToCertificateOcsp and there is AddToCertificateOcsp URI and one AddToCertificateAia URI' {
+            Context 'When ExtensionType is AddToCertificateOcsp and there is one AddToCertificateOcsp URI and one AddToCertificateAia URI' {
                 $getCAAuthorityInformationAccessMock = {
                     @(
                         [PSCustomObject] @{
@@ -885,12 +885,12 @@ try
                     } | Should -Not -Throw
                 }
 
-                It 'Should return null' {
+                It 'Should return one OCSP entry' {
                     $script:getCaAiaUriListResult | Should -BeExactly 'http://primary-ocsp-responder/ocsp'
                 }
             }
 
-            Context 'When ExtensionType is AddToCertificateOcsp and there is AddToCertificateOcsp URI and two AddToCertificateAia URIs' {
+            Context 'When ExtensionType is AddToCertificateOcsp and there is two AddToCertificateOcsp URI and one AddToCertificateAia URIs' {
                 $getCAAuthorityInformationAccessMock = {
                     @(
                         [PSCustomObject] @{
@@ -922,7 +922,7 @@ try
                     } | Should -Not -Throw
                 }
 
-                It 'Should return null' {
+                It 'Should return two OCSP entries' {
                     $script:getCaAiaUriListResult[0] | Should -BeExactly 'http://primary-ocsp-responder/ocsp'
                     $script:getCaAiaUriListResult[1] | Should -BeExactly 'http://secondary-ocsp-responder/ocsp'
                 }
