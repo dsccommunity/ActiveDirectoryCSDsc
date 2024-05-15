@@ -135,6 +135,25 @@ namespace Microsoft.CertificateServices.Deployment.Common.OCSP {
                         -Times 1
                 }
             }
+
+            Context 'When there is an unexpected error' {
+                Mock `
+                    -CommandName Install-AdcsOnlineResponder `
+                    -MockWith { Throw (New-Object -TypeName 'System.Exception') } `
+                    -Verifiable
+
+                It 'Should throw an exception' {
+                    { Get-TargetResource @testParametersPresent } | Should Throw
+                }
+
+                It 'Should call expected mocks' {
+                    Assert-VerifiableMock
+                    Assert-MockCalled `
+                        -CommandName Install-AdcsOnlineResponder `
+                        -Exactly `
+                        -Times 1
+                }
+            }
         }
 
         Describe 'DSC_AdcsOnlineResponder\Set-TargetResource' {
@@ -286,6 +305,24 @@ namespace Microsoft.CertificateServices.Deployment.Common.OCSP {
                             -Exactly `
                             -Times 1
                     }
+                }
+            }
+
+            Context 'Should throw on any other error' {
+                Mock -CommandName Install-AdcsOnlineResponder `
+                    -MockWith { Throw (New-Object -TypeName 'System.Exception') } `
+                    -Verifiable
+
+                It 'Should throw an exception' {
+                    { Test-TargetResource @testParametersPresent } | Should Throw
+                }
+
+                It 'Should call expected mocks' {
+                    Assert-VerifiableMock
+                    Assert-MockCalled `
+                        -CommandName Install-AdcsOnlineResponder `
+                        -Exactly `
+                        -Times 1
                 }
             }
         }
