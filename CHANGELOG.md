@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added support for publishing code coverage to `CodeCov.io` and
 - Azure Pipelines - Fixes [Issue #130](https://github.com/dsccommunity/ActiveDirectoryCSDsc/issues/130).
 - Azure pipelines - Remove deprecated images, make the build work
+- Azure Pipelines - Reverted `PublishCodeCoverageResults` back to v1 to display line level coverage in ADO.
 
 ## [5.0.0] - 2020-06-20
 
