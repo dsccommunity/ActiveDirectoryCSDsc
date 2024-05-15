@@ -220,6 +220,26 @@ namespace Microsoft.CertificateServices.Deployment.Common.CA {
                         -Times 1
                 }
             }
+
+            Context 'When there is an unexpected error' {
+                Mock `
+                    -CommandName Install-AdcsCertificationAuthority `
+                    -MockWith { Throw (New-Object -TypeName 'System.Exception') } `
+                    -Verifiable
+
+                It 'Should throw an exception' {
+                    { Get-TargetResource @testParametersPresent } | Should Throw
+                }
+
+                It 'Should call expected mocks' {
+                    Assert-VerifiableMock
+
+                    Assert-MockCalled `
+                        -CommandName Install-AdcsCertificationAuthority `
+                        -Exactly `
+                        -Times 1
+                }
+            }
         }
 
         Describe 'DSC_AdcsCertificationAuthority\Set-TargetResource' {
@@ -399,6 +419,24 @@ namespace Microsoft.CertificateServices.Deployment.Common.CA {
 
                 It 'Should return true' {
                     $result | Should -BeTrue
+                }
+
+                It 'Should call expected mocks' {
+                    Assert-VerifiableMock
+                    Assert-MockCalled `
+                        -CommandName Install-AdcsCertificationAuthority `
+                        -Exactly `
+                        -Times 1
+                }
+            }
+
+            Context 'Should throw on any other error' {
+                Mock -CommandName Install-AdcsCertificationAuthority `
+                    -MockWith { Throw (New-Object -TypeName 'System.Exception') } `
+                    -Verifiable
+
+                It 'Should throw an exception' {
+                    { Test-TargetResource @testParametersPresent } | Should Throw
                 }
 
                 It 'Should call expected mocks' {

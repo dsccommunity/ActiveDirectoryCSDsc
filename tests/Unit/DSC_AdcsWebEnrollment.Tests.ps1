@@ -142,6 +142,26 @@ namespace Microsoft.CertificateServices.Deployment.Common.WEP {
                         -Times 1
                 }
             }
+
+            Context 'When there is an unexpected error' {
+                Mock `
+                    -CommandName Install-AdcsWebEnrollment `
+                    -MockWith { Throw (New-Object -TypeName 'System.Exception') } `
+                    -Verifiable
+
+                It 'Should throw an exception' {
+                    { Get-TargetResource @testParametersPresent } | Should Throw
+                }
+
+                It 'Should call expected mocks' {
+                    Assert-VerifiableMock
+
+                    Assert-MockCalled `
+                        -CommandName Install-AdcsWebEnrollment `
+                        -Exactly `
+                        -Times 1
+                }
+            }
         }
 
         Describe 'DSC_AdcsWebEnrollment\Set-TargetResource' {
@@ -297,6 +317,26 @@ namespace Microsoft.CertificateServices.Deployment.Common.WEP {
                             -Exactly `
                             -Times 1
                     }
+                }
+            }
+
+            Context 'Should throw on any other error' {
+                Mock `
+                    -CommandName Install-AdcsWebEnrollment `
+                    -MockWith { Throw (New-Object -TypeName 'System.Exception') } `
+                    -Verifiable
+
+                It 'Should throw an exception' {
+                    { Test-TargetResource @testParametersPresent } | Should Throw
+                }
+
+                It 'Should call expected mocks' {
+                    Assert-VerifiableMock
+
+                    Assert-MockCalled `
+                        -CommandName Install-AdcsWebEnrollment `
+                        -Exactly `
+                        -Times 1
                 }
             }
         }
