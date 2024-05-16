@@ -236,5 +236,3 @@ function Get-CaAiaUriList
 
     return [System.String[]] (Get-CAAuthorityInformationAccess | Where-Object -Property $ExtensionType -Eq $true).Uri
 }
-
-Export-ModuleMember -Function *-TargetResource

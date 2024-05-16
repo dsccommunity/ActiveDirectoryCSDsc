@@ -226,11 +226,3 @@ function Get-ObjectNotFoundException
 
     return New-Object @newObjectParameters
 }
-
-Export-ModuleMember -Function @(
-    'Get-InvalidArgumentRecord'
-    'Get-InvalidOperationRecord'
-    'Test-WindowsFeature'
-    'New-LocalUserInAdministratorsGroup'
-    'Get-ObjectNotFoundException'
-)

@@ -559,5 +559,3 @@ function Set-CertificateAuthoritySetting
             ($script:localizedData.UpdatingAdcsCaSettingMessage -f $Name, $Value)
         ) -join '' )
 } # function Set-CertificateAuthoritySetting
-
-Export-ModuleMember -Function *-TargetResource

@@ -290,5 +290,3 @@ function Test-TargetResource
         throw $_
     } # try
 } # function Test-TargetResource
-
-Export-ModuleMember -Function *-TargetResource

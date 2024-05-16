@@ -211,5 +211,3 @@ function Test-TargetResource
         }
     }
 } # function Test-TargetResource
-
-Export-ModuleMember -Function *-TargetResource
