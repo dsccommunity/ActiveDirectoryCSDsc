@@ -1,48 +1,93 @@
-#region HEADER
-$script:projectPath = "$PSScriptRoot\..\.." | Convert-Path
-$script:projectName = (Get-ChildItem -Path "$script:projectPath\*\*.psd1" | Where-Object -FilterScript {
-        ($_.Directory.Name -match 'source|src' -or $_.Directory.Name -eq $_.BaseName) -and
-        $(try
+<#
+    .SYNOPSIS
+        Unit test for helper functions in module ActiveDirectoryCSDsc.Common.
+
+    .NOTES
+#>
+
+# Suppressing this rule because ConvertTo-SecureString is used to simplify the tests.
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
+# Suppressing this rule because Script Analyzer does not understand Pester's syntax.
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+param ()
+
+BeforeDiscovery {
+    try
+    {
+        if (-not (Get-Module -Name 'DscResource.Test'))
+        {
+            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
-                Test-ModuleManifest -Path $_.FullName -ErrorAction Stop
+                # Redirect all streams to $null, except the error stream (stream 2)
+                & "$PSScriptRoot/../../build.ps1" -Tasks 'noop' 2>&1 4>&1 5>&1 6>&1 > $null
             }
-            catch
-            {
-                $false
-            })
-    }).BaseName
 
-$script:parentModule = Get-Module -Name $script:projectName -ListAvailable | Select-Object -First 1
-$script:subModulesFolder = Join-Path -Path $script:parentModule.ModuleBase -ChildPath 'Modules'
-Remove-Module -Name $script:parentModule -Force -ErrorAction 'SilentlyContinue'
+            # If the dependencies has not been resolved, this will throw an error.
+            Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
+        }
+    }
+    catch [System.IO.FileNotFoundException]
+    {
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+    }
+}
 
-$script:subModuleName = (Split-Path -Path $PSCommandPath -Leaf) -replace '\.Tests.ps1'
-$script:subModuleFile = Join-Path -Path $script:subModulesFolder -ChildPath "$($script:subModuleName)/$($script:subModuleName).psm1"
+BeforeAll {
+    $script:dscModuleName = 'ActiveDirectoryCSDsc'
+    $script:subModuleName = 'ActiveDirectoryCSDsc.Common'
 
-Import-Module $script:subModuleFile -Force -ErrorAction Stop
-#endregion HEADER
+    $script:parentModule = Get-Module -Name $script:dscModuleName -ListAvailable | Select-Object -First 1
+    $script:subModulesFolder = Join-Path -Path $script:parentModule.ModuleBase -ChildPath 'Modules'
 
-InModuleScope $script:subModuleName {
-    Describe 'ActiveDirectoryCSDsc.Common\Restart-SystemService' {
+    $script:subModulePath = Join-Path -Path $script:subModulesFolder -ChildPath $script:subModuleName
+
+    Import-Module -Name $script:subModulePath -Force -ErrorAction 'Stop'
+
+    Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
+
+
+    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:subModuleName
+    $PSDefaultParameterValues['Mock:ModuleName'] = $script:subModuleName
+    $PSDefaultParameterValues['Should:ModuleName'] = $script:subModuleName
+}
+
+AfterAll {
+    $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
+    $PSDefaultParameterValues.Remove('Mock:ModuleName')
+    $PSDefaultParameterValues.Remove('Should:ModuleName')
+
+    # Unload the module being tested so that it doesn't impact any other tests.
+    Get-Module -Name $script:subModuleName -All | Remove-Module -Force
+
+    # Remove module common test helper.
+    Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
+}
+
+Describe 'ActiveDirectoryCSDsc.Common\Restart-SystemService' -Tag 'RestartSystemService' {
+    BeforeAll {
+        Mock -CommandName Restart-Service
+
+        $restartServiceIfExistsParams = @{
+            Name = 'BITS'
+        }
+    }
+
+    Context 'When service does not exist and is not restarted' {
         BeforeAll {
-            Mock -CommandName Restart-Service
-
-            $restartServiceIfExistsParams = @{
-                Name = 'BITS'
-            }
-        }
-
-        Context 'When service does not exist and is not restarted' {
             Mock -CommandName Get-Service
-
-            It 'Should call the expected mocks' {
-                Restart-ServiceIfExists @restartServiceIfExistsParams
-                Assert-MockCalled Get-Service -Exactly -Times 1 -Scope It -ParameterFilter { $Name -eq $restartServiceIfExistsParams.Name }
-                Assert-MockCalled Restart-Service -Exactly -Times 0 -Scope It
-            }
         }
 
-        Context 'When service exists and will be restarted' {
+        It 'Should call the expected mocks' {
+            Restart-ServiceIfExists @restartServiceIfExistsParams
+
+            Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It -ParameterFilter { $Name -eq $restartServiceIfExistsParams.Name }
+            Assert-MockCalled -CommandName Restart-Service -Exactly -Times 0 -Scope It
+        }
+    }
+
+    Context 'When service exists and will be restarted' {
+        BeforeAll {
             $getService_mock = {
                 @{
                     Status      = 'Running'
@@ -52,12 +97,13 @@ InModuleScope $script:subModuleName {
             }
 
             Mock -CommandName Get-Service -MockWith $getService_mock
+        }
 
-            It 'Should call the expected mocks' {
-                Restart-ServiceIfExists @restartServiceIfExistsParams
-                Assert-MockCalled Get-Service -Exactly -Times 1 -Scope It -ParameterFilter { $Name -eq $restartServiceIfExistsParams.Name }
-                Assert-MockCalled Restart-Service -Exactly -Times 1 -Scope It
-            }
+        It 'Should call the expected mocks' {
+            Restart-ServiceIfExists @restartServiceIfExistsParams
+
+            Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It -ParameterFilter { $Name -eq $restartServiceIfExistsParams.Name }
+            Assert-MockCalled -CommandName Restart-Service -Exactly -Times 1 -Scope It
         }
     }
 }
