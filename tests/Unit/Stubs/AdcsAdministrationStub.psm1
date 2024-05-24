@@ -1,6 +1,11 @@
+# This section suppresses rules PsScriptAnalyzer may catch in stub functions.
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess', '')]
+
 # Name: ADCSAdministration
 # Version: 2.0.0.0
-# CreatedOn: 2024-05-17 16:22:27Z
+
+[CmdletBinding()]
+param ()
 
 function Add-CAAuthorityInformationAccess
 {
@@ -14,10 +19,13 @@ Add-CAAuthorityInformationAccess [-Uri] <string> -AddToCertificateAia [-Force] [
     #>
 
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
+    #[OutputType([Microsoft.CertificateServices.Administration.Commands.CA.AuthorityInformationAccessResult])]
+    [OutputType([System.Object])]
     param (
         [Parameter(ParameterSetName = 'AddAsInputObject', Mandatory = $true, Position = 1, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
-        [Microsoft.CertificateServices.Administration.Commands.CA.AuthorityInformationAccess]
+        #[Microsoft.CertificateServices.Administration.Commands.CA.AuthorityInformationAccess]
+        [System.Object]
         ${InputObject},
 
         [Parameter(ParameterSetName = 'AddAsOCSP', Mandatory = $true, Position = 1, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
@@ -58,6 +66,8 @@ function Add-CACrlDistributionPoint
     #>
 
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
+    #[OutputType([Microsoft.CertificateServices.Administration.Commands.CA.CrlDistributionPointResult])]
+    [OutputType([System.Object])]
     param (
         [Parameter(Mandatory = $true, Position = 1, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
@@ -271,6 +281,8 @@ function Get-CAAuthorityInformationAccess
     #>
 
     [CmdletBinding()]
+    #[OutputType([Microsoft.CertificateServices.Administration.Commands.CA.AuthorityInformationAccess])]
+    [OutputType([System.Object])]
     param ( )
     end
     {
@@ -293,6 +305,8 @@ function Get-CACrlDistributionPoint
     #>
 
     [CmdletBinding()]
+    #[OutputType([Microsoft.CertificateServices.Administration.Commands.CA.CrlDistributionPoint])]
+    [OutputType([System.Object])]
     param ( )
     end
     {
@@ -315,6 +329,8 @@ function Get-CATemplate
     #>
 
     [CmdletBinding()]
+    #[OutputType([Microsoft.CertificateServices.Administration.Commands.Common.CertificateTemplate])]
+    [OutputType([System.Object])]
     param ( )
     end
     {
@@ -339,6 +355,8 @@ Remove-CAAuthorityInformationAccess [-Uri] <string> [-AddToCertificateOcsp] [-Fo
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'RemoveAsAIA', SupportsShouldProcess = $true, ConfirmImpact = 'High')]
+    #[OutputType([Microsoft.CertificateServices.Administration.Commands.CA.AuthorityInformationAccessResult])]
+    [OutputType([System.Object])]
     param (
         [Parameter(Mandatory = $true, Position = 1, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
@@ -377,6 +395,8 @@ function Remove-CACrlDistributionPoint
     #>
 
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
+    #[OutputType([Microsoft.CertificateServices.Administration.Commands.CA.CrlDistributionPointResult])]
+    [OutputType([System.Object])]
     param (
         [Parameter(Mandatory = $true, Position = 1, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
