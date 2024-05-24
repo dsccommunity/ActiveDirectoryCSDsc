@@ -246,7 +246,7 @@ function Set-TargetResource
         -IsSingleInstance $IsSingleInstance `
         -Verbose:$VerbosePreference
 
-    $settingUpdated = $false
+    $parameterUpdated = $false
 
     <#
         Step through each parameter and update any that are passed
