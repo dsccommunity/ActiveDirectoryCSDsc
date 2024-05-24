@@ -42,13 +42,53 @@ BeforeAll {
         -TestType 'Unit'
 
     Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
-    Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\AdcsStub.psm1')
+    #Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\AdcsStub.psm1')
     Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '.\Stubs\AdcsAdministrationStub.psm1')
 
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscResourceName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscResourceName
     $PSDefaultParameterValues['Should:ModuleName'] = $script:dscResourceName
+
+    # Test Data
+    $script:mockTemplateList = @(
+        @{
+            Name = 'User'
+            Oid  = '1.3.6.1.4.1.311.21.8.8499410.11380151.15942274.9578998.10586356.49.1.1'
+        }
+        @{
+            Name = 'DirectoryEmailReplication'
+            Oid  = '1.3.6.1.4.1.311.21.8.8499410.11380151.15942274.9578998.10586356.49.1.29'
+        }
+        @{
+            Name = 'DomainControllerAuthentication'
+            Oid  = '1.3.6.1.4.1.311.21.8.8499410.11380151.15942274.9578998.10586356.49.1.28'
+        }
+        @{
+            Name = 'KerberosAuthentication'
+            Oid  = '1.3.6.1.4.1.311.21.8.8499410.11380151.15942274.9578998.10586356.49.1.33'
+        }
+    )
+
+    InModuleScope -ScriptBlock {
+        $script:testTemplatePresent = @{
+            Name = 'User'
+        }
+
+        $script:testTemplateNotPresent = @{
+            Name = 'EFS'
+        }
+    }
+
+    $script:mockGetTemplatePresent = @{
+        Name   = 'User'
+        Ensure = 'Present'
+    }
+
+    $script:mockGetTemplateNotPresent = @{
+        Name   = 'EFS'
+        Ensure = 'Absent'
+    }
 }
 
 
@@ -62,7 +102,7 @@ AfterAll {
     # Unload the module being tested so that it doesn't impact any other tests.
     Get-Module -Name $script:dscResourceName -All | Remove-Module -Force
 
-    Remove-Module -Name AdcsStub -Force
+    #Remove-Module -Name AdcsStub -Force
     Remove-Module -Name AdcsAdministrationStub -Force
 
     # Remove module common test helper.
@@ -70,47 +110,22 @@ AfterAll {
 }
 
 Describe 'DSC_AdcsTemplate\Get-TargetResource' -Tag 'Get' {
-    BeforeAll {
-        $script:mockTemplateList = @(
-            @{
-                Name = 'User'
-                Oid  = '1.3.6.1.4.1.311.21.8.8499410.11380151.15942274.9578998.10586356.49.1.1'
-            }
-            @{
-                Name = 'DirectoryEmailReplication'
-                Oid  = '1.3.6.1.4.1.311.21.8.8499410.11380151.15942274.9578998.10586356.49.1.29'
-            }
-            @{
-                Name = 'DomainControllerAuthentication'
-                Oid  = '1.3.6.1.4.1.311.21.8.8499410.11380151.15942274.9578998.10586356.49.1.28'
-            }
-            @{
-                Name = 'KerberosAuthentication'
-                Oid  = '1.3.6.1.4.1.311.21.8.8499410.11380151.15942274.9578998.10586356.49.1.33'
-            }
-        )
-    }
     Context 'When the template is installed' {
         BeforeAll {
-            Mock -CommandName Get-CATemplate -MockWith { $mockTemplateList }
+            Mock -CommandName Get-CATemplate -MockWith { $mockTemplateList } -Verifiable
         }
 
         It 'Should return Ensure set to Present' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $getTargetResourceParameters = @{
-                    Name = 'User'
-                }
-
-                $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
-
-                $getTargetResourceResult.Ensure | Should -Be 'Present'
+                $result = Get-TargetResource @testTemplatePresent
+                $result.Ensure | Should -Be 'Present'
             }
         }
 
         It 'Should call expected mocks' {
-            #Should -InvokeVerifiable
+            Should -InvokeVerifiable
             Should -Invoke -CommandName Get-CATemplate -Exactly -Times 1 -Scope Context
         }
     }
@@ -124,13 +139,8 @@ Describe 'DSC_AdcsTemplate\Get-TargetResource' -Tag 'Get' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $getTargetResourceParameters = @{
-                    Name = 'EFS'
-                }
-
-                $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
-
-                $getTargetResourceResult.Ensure | Should -Be 'Absent'
+                $result = Get-TargetResource @testTemplateNotPresent
+                $result.Ensure | Should -Be 'Absent'
             }
         }
 
@@ -141,7 +151,7 @@ Describe 'DSC_AdcsTemplate\Get-TargetResource' -Tag 'Get' {
     }
 
     Context 'When Get-CATemplate throws an exception' {
-        BeforeEach {
+        BeforeAll {
             Mock -CommandName Get-CATemplate -MockWith { throw }
         }
 
@@ -149,14 +159,10 @@ Describe 'DSC_AdcsTemplate\Get-TargetResource' -Tag 'Get' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $getTargetResourceParameters = @{
-                    Name = 'User'
-                }
-
                 $mockErrorRecord = Get-InvalidOperationRecord `
                     -Message $script:localizedData.InvalidOperationGettingAdcsTemplateMessage
 
-                { Get-TargetResource @getTargetResourceParameters } | Should -Throw -ExpectedMessage ($mockErrorRecord.Exception.Message + '*')
+                { Get-TargetResource @testTemplatePresent } | Should -Throw -ExpectedMessage ($mockErrorRecord.Exception.Message + '*')
             }
         }
     }
@@ -166,29 +172,19 @@ Describe 'DSC_AdcsTemplate\Set-TargetResource' -Tag 'Set' {
     Context 'When the template is not added but should be' {
         BeforeAll {
             Mock -CommandName Add-CATemplate
-
-            InModuleScope -ScriptBlock {
-                # TODO: Make this work inside and outside of `InModuleScope`
-                $script:testTemplateNotPresent = @{
-                    Name = 'EFS'
-                }
-            }
         }
 
         It 'Should not throw an exception' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $setTargetResourceParameters = $testTemplateNotPresent
-
-                { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                { Set-TargetResource @testTemplateNotPresent } | Should -Not -Throw
             }
         }
 
         It 'Should call expected mock' {
             Should -Invoke -CommandName Add-CATemplate `
                 -ParameterFilter {
-                # TODO Fix this hardocded
                 $Name -eq 'EFS'
             } -Exactly -Times 1 -Scope Context
         }
@@ -201,10 +197,6 @@ Describe 'DSC_AdcsTemplate\Set-TargetResource' -Tag 'Set' {
             It 'Should throw the correct error' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
-
-                    $testTemplateNotPresent = @{
-                        Name = 'EFS'
-                    }
 
                     $mockErrorRecord = Get-InvalidOperationRecord `
                         -Message ($script:localizedData.InvalidOperationAddingAdcsTemplateMessage -f $testTemplateNotPresent.Name)
@@ -222,10 +214,6 @@ Describe 'DSC_AdcsTemplate\Set-TargetResource' -Tag 'Set' {
             It 'Should not throw an exception' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
-
-                    $testTemplatePresent = @{
-                        Name = 'User'
-                    }
 
                     { Set-TargetResource @testTemplatePresent -Ensure 'Absent' } | Should -Not -Throw
                 }
@@ -250,10 +238,6 @@ Describe 'DSC_AdcsTemplate\Set-TargetResource' -Tag 'Set' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $testTemplatePresent = @{
-                        Name = 'User'
-                    }
-
                     $mockErrorRecord = Get-InvalidOperationRecord `
                         -Message ($script:localizedData.InvalidOperationRemovingAdcsTemplateMessage -f $testTemplatePresent.Name)
 
@@ -265,17 +249,6 @@ Describe 'DSC_AdcsTemplate\Set-TargetResource' -Tag 'Set' {
 }
 
 Describe 'DSC_AdcsTemplate\Test-TargetResource' -Tag 'Test' {
-    BeforeAll {
-        $script:mockGetTemplatePresent = @{
-            Name   = 'User'
-            Ensure = 'Present'
-        }
-
-        $script:mockGetTemplateNotPresent = @{
-            Name   = 'EFS'
-            Ensure = 'Absent'
-        }
-    }
     Context 'When the template is added and should be' {
         BeforeAll {
             Mock -CommandName Get-TargetResource -MockWith { $mockGetTemplatePresent }
@@ -284,12 +257,8 @@ Describe 'DSC_AdcsTemplate\Test-TargetResource' -Tag 'Test' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $mockTestTargetResourceParameters = @{
-                    Name = 'User'
-                }
-
-                $testTargetResourceResult = Test-TargetResource @mockTestTargetResourceParameters -Ensure 'Present'
-                $testTargetResourceResult | Should -BeTrue
+                $result = Test-TargetResource @testTemplatePresent -Ensure 'Present'
+                $result | Should -BeTrue
             }
         }
 
@@ -313,11 +282,8 @@ Describe 'DSC_AdcsTemplate\Test-TargetResource' -Tag 'Test' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $mockTestTargetResourceParameters = @{
-                    Name = 'EFS'
-                }
-                $testTargetResourceResult = Test-TargetResource @mockTestTargetResourceParameters -Ensure 'Absent'
-                $testTargetResourceResult | Should -BeFalse
+                $result  = Test-TargetResource @testTemplateNotPresent -Ensure 'Absent'
+                $result  | Should -BeFalse
             }
         }
 
@@ -340,12 +306,8 @@ Describe 'DSC_AdcsTemplate\Test-TargetResource' -Tag 'Test' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $mockTestTargetResourceParameters = @{
-                    Name = 'EFS'
-                }
-
-                $testTargetResourceResult = Test-TargetResource @mockTestTargetResourceParameters -Ensure 'Present'
-                $testTargetResourceResult | Should -BeFalse
+                $result  = Test-TargetResource @testTemplateNotPresent -Ensure 'Present'
+                $result  | Should -BeFalse
             }
         }
 
@@ -368,11 +330,8 @@ Describe 'DSC_AdcsTemplate\Test-TargetResource' -Tag 'Test' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $mockTestTargetResourceParameters = @{
-                    Name = 'EFS'
-                }
-                $testTargetResourceResult = Test-TargetResource @mockTestTargetResourceParameters -Ensure 'Absent'
-                $testTargetResourceResult | Should -BeTrue
+                $result  = Test-TargetResource @testTemplateNotPresent -Ensure 'Absent'
+                $result  | Should -BeTrue
             }
         }
 
