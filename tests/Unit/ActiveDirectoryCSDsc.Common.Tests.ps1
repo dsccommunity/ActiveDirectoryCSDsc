@@ -5,8 +5,6 @@
     .NOTES
 #>
 
-# Suppressing this rule because ConvertTo-SecureString is used to simplify the tests.
-[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
 # Suppressing this rule because Script Analyzer does not understand Pester's syntax.
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
 param ()
@@ -81,14 +79,17 @@ Describe 'ActiveDirectoryCSDsc.Common\Restart-SystemService' -Tag 'RestartSystem
         It 'Should call the expected mocks' {
             Restart-ServiceIfExists @restartServiceIfExistsParams
 
-            Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It -ParameterFilter { $Name -eq $restartServiceIfExistsParams.Name }
-            Assert-MockCalled -CommandName Restart-Service -Exactly -Times 0 -Scope It
+            Should -Invoke -CommandName Get-Service -ParameterFilter {
+                $Name -eq $restartServiceIfExistsParams.Name
+            } -Exactly -Times 1 -Scope It
+            
+            Should -Invoke -CommandName Restart-Service -Exactly -Times 0 -Scope It
         }
     }
 
     Context 'When service exists and will be restarted' {
         BeforeAll {
-            $getService_mock = {
+            $mockGetService = {
                 @{
                     Status      = 'Running'
                     Name        = 'Servsvc'
@@ -96,14 +97,17 @@ Describe 'ActiveDirectoryCSDsc.Common\Restart-SystemService' -Tag 'RestartSystem
                 }
             }
 
-            Mock -CommandName Get-Service -MockWith $getService_mock
+            Mock -CommandName Get-Service -MockWith $mockGetService
         }
 
         It 'Should call the expected mocks' {
             Restart-ServiceIfExists @restartServiceIfExistsParams
 
-            Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It -ParameterFilter { $Name -eq $restartServiceIfExistsParams.Name }
-            Assert-MockCalled -CommandName Restart-Service -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Get-Service -ParameterFilter {
+                $Name -eq $restartServiceIfExistsParams.Name
+            } -Exactly -Times 1 -Scope It
+
+            Should -Invoke -CommandName Restart-Service -Exactly -Times 1 -Scope It
         }
     }
 }
