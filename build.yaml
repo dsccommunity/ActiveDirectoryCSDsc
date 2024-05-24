@@ -168,7 +168,7 @@ DscTest:
       - Modules/DscResource.Common
       - Modules/DscResource.Base
       # Must exclude built module file because it should not be tested like MOF-based resources
-      - SqlServerDsc.psm1
+      - ActiveDirectoryCSDsc.psm1
     MainGitBranch: main
 
 ####################################################
