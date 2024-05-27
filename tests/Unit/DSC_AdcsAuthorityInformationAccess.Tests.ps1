@@ -60,7 +60,7 @@ BeforeAll {
     )
 
     InModuleScope -Parameters @{
-        AiaList = $AiaList
+        AiaList  = $AiaList
         OcspList = $OcspList
     } -ScriptBlock {
         $script:AiaList = $AiaList

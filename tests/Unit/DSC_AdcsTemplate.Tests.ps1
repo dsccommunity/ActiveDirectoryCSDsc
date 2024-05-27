@@ -280,7 +280,7 @@ Describe 'DSC_AdcsTemplate\Test-TargetResource' -Tag 'Test' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $result  = Test-TargetResource @testTemplateNotPresent -Ensure 'Absent'
+                $result = Test-TargetResource @testTemplateNotPresent -Ensure 'Absent'
                 $result  | Should -BeFalse
             }
         }
@@ -304,7 +304,7 @@ Describe 'DSC_AdcsTemplate\Test-TargetResource' -Tag 'Test' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $result  = Test-TargetResource @testTemplateNotPresent -Ensure 'Present'
+                $result = Test-TargetResource @testTemplateNotPresent -Ensure 'Present'
                 $result  | Should -BeFalse
             }
         }
@@ -328,7 +328,7 @@ Describe 'DSC_AdcsTemplate\Test-TargetResource' -Tag 'Test' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $result  = Test-TargetResource @testTemplateNotPresent -Ensure 'Absent'
+                $result = Test-TargetResource @testTemplateNotPresent -Ensure 'Absent'
                 $result  | Should -BeTrue
             }
         }
