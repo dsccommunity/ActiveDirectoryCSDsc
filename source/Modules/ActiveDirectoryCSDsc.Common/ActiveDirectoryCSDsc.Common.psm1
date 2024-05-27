@@ -35,3 +35,7 @@ function Restart-ServiceIfExists
         Write-Verbose -Message ($script:localizedData.UnknownService -f $Name)
     }
 }
+
+Export-ModuleMember -Function @(
+    'Restart-ServiceIfExists'
+)
