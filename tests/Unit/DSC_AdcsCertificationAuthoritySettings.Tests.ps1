@@ -194,12 +194,12 @@ Describe 'DSC_AdcsCertificationAuthoritySettings\Get-TargetResource' -Tag 'Get' 
 Describe 'DSC_AdcsCertificationAuthoritySettings\Set-TargetResource' -Tag 'Set' {
     BeforeAll {
         InModuleScope -Parameters @{
-            inModuleScopeParams = $baseParameterCurrentList
+            baseTestParameters = $baseParameterCurrentList
         } -ScriptBlock {
 
             $script:setTargetResourceParameters = @{
                 IsSingleInstance = 'Yes'
-            } + $inModuleScopeParams
+            } + $baseTestParameters
         }
     }
 
@@ -291,7 +291,6 @@ Describe 'DSC_AdcsCertificationAuthoritySettings\Set-TargetResource' -Tag 'Set' 
         }
     }
 
-
     Context 'When Active Directory Certification Authority is not installed' {
         BeforeAll {
             Mock -CommandName Get-ItemPropertyValue
@@ -322,12 +321,12 @@ Describe 'DSC_AdcsCertificationAuthoritySettings\Set-TargetResource' -Tag 'Set' 
 Describe 'DSC_AdcsCertificationAuthoritySettings\Test-TargetResource' -Tag 'Test' {
     BeforeAll {
         InModuleScope -Parameters @{
-            inModuleScopeParams = $baseParameterCurrentList
+            baseTestParameters = $baseParameterCurrentList
         } -ScriptBlock {
 
             $script:testTargetResourceParameters = @{
                 IsSingleInstance = 'Yes'
-            } + $inModuleScopeParams
+            } + $baseTestParameters
         }
     }
 
