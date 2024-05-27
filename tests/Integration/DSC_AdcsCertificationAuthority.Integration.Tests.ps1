@@ -34,6 +34,8 @@ BeforeDiscovery {
     $script:dscResourceFriendlyName = 'AdcsCertificationAuthority'
     $script:dscResourceName = "DSC_$($script:dscResourceFriendlyName)"
 
+    Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
+
     # Ensure that the tests can be performed on this computer
     $script:skipIntegrationTests = $false
 
