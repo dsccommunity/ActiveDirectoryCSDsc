@@ -50,17 +50,6 @@ BeforeAll {
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscResourceName
     $PSDefaultParameterValues['Should:ModuleName'] = $script:dscResourceName
 
-    InModuleScope -ScriptBlock {
-        $script:AiaList = [System.String[]] @(
-            'http://primary/Certs/<CATruncatedName>.cer'
-            'http://secondary/Certs/<CATruncatedName>.cer'
-        )
-        $script:OcspList = [System.String[]] @(
-            'http://primary-ocsp-responder/ocsp'
-            'http://secondary-ocsp-responder/ocsp'
-        )
-    }
-
     $script:AiaList = [System.String[]] @(
         'http://primary/Certs/<CATruncatedName>.cer'
         'http://secondary/Certs/<CATruncatedName>.cer'
@@ -70,14 +59,22 @@ BeforeAll {
         'http://secondary-ocsp-responder/ocsp'
     )
 
+    InModuleScope -Parameters @{
+        AiaList = $AiaList
+        OcspList = $OcspList
+    } -ScriptBlock {
+        $script:AiaList = $AiaList
+        $script:OcspList = $OcspList
+    }
+
     $script:getCaAiaUriListAiaMock = {
-        $script:AiaList
+        $AiaList
     }
     $script:getCaAiaUriListAiaParameterFilter = {
         $ExtensionType -eq 'AddToCertificateAia'
     }
     $script:getCaAiaUriListOcspMock = {
-        $script:OcspList
+        $OcspList
     }
     $script:getCaAiaUriListOcspParameterFilter = {
         $ExtensionType -eq 'AddToCertificateOcsp'
@@ -86,8 +83,8 @@ BeforeAll {
     $script:getTargetResourceMock = {
         @{
             IsSingleInstance    = 'Yes'
-            AiaUri              = $script:AiaList
-            OcspUri             = $script:OcspList
+            AiaUri              = $AiaList
+            OcspUri             = $OcspList
             AllowRestartService = $false
         }
     }
@@ -199,20 +196,18 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Get-TargetResource' -Tag 'Get' {
 
 Describe 'DSC_AdcsAuthorityInformationAccess\Set-TargetResource' -Tag 'Set' {
     BeforeAll {
-        Mock -CommandName Add-CAAuthorityInformationAccess `
-            -ModuleName DSC_AdcsAuthorityInformationAccess
+        Mock -CommandName Add-CAAuthorityInformationAccess
 
-        Mock -CommandName Remove-CAAuthorityInformationAccess `
-            -ModuleName DSC_AdcsAuthorityInformationAccess
+        Mock -CommandName Remove-CAAuthorityInformationAccess
 
-        Mock -CommandName Restart-ServiceIfExists `
-            -ModuleName DSC_AdcsAuthorityInformationAccess
+        Mock -CommandName Restart-ServiceIfExists
     }
 
     Context 'When AllowRestartService is true' {
         Context 'When AIA and OCSP are passed but are both in the correct state' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
+
                     $script:setTargetResourceParameters = @{
                         IsSingleInstance    = 'Yes'
                         AiaUri              = $AiaList
@@ -222,7 +217,6 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Set-TargetResource' -Tag 'Set' {
                 }
 
                 Mock -CommandName Get-TargetResource `
-                    -ModuleName DSC_AdcsAuthorityInformationAccess `
                     -MockWith $getTargetResourceMock
             }
 
@@ -258,7 +252,6 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Set-TargetResource' -Tag 'Set' {
         Context 'When AIA and OCSP are passed but OCSP is missing a URI' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
-                    Set-StrictMode -Version 1.0
 
                     $script:setTargetResourceParameters = @{
                         IsSingleInstance    = 'Yes'
@@ -269,7 +262,6 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Set-TargetResource' -Tag 'Set' {
                 }
 
                 Mock -CommandName Get-TargetResource `
-                    -ModuleName DSC_AdcsAuthorityInformationAccess `
                     -MockWith $getTargetResourceMock
             }
 
@@ -314,14 +306,13 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Set-TargetResource' -Tag 'Set' {
                 InModuleScope -ScriptBlock {
                     $script:setTargetResourceParameters = @{
                         IsSingleInstance    = 'Yes'
-                        AiaUri              = $script:AiaList
-                        OcspUri             = $script:OcspList + @('http://tertiary-ocsp-responder/ocsp')
+                        AiaUri              = $AiaList
+                        OcspUri             = $OcspList + @('http://tertiary-ocsp-responder/ocsp')
                         AllowRestartService = $true
                     }
                 }
 
                 Mock -CommandName Get-TargetResource `
-                    -ModuleName DSC_AdcsAuthorityInformationAccess `
                     -MockWith $getTargetResourceMock
             }
 
@@ -373,7 +364,6 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Set-TargetResource' -Tag 'Set' {
                 }
 
                 Mock -CommandName Get-TargetResource `
-                    -ModuleName DSC_AdcsAuthorityInformationAccess `
                     -MockWith $getTargetResourceMock
             }
 
@@ -418,14 +408,13 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Set-TargetResource' -Tag 'Set' {
                 InModuleScope -ScriptBlock {
                     $script:setTargetResourceParameters = @{
                         IsSingleInstance    = 'Yes'
-                        AiaUri              = $script:AiaList
+                        AiaUri              = $AiaList
                         OcspUri             = [System.String[]] @('http://primary-ocsp-responder/ocsp')
                         AllowRestartService = $true
                     }
                 }
 
                 Mock -CommandName Get-TargetResource `
-                    -ModuleName DSC_AdcsAuthorityInformationAccess `
                     -MockWith $getTargetResourceMock
             }
 
@@ -478,8 +467,7 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Set-TargetResource' -Tag 'Set' {
                 }
 
                 Mock -CommandName Get-TargetResource `
-                    -ModuleName DSC_AdcsAuthorityInformationAccess `
-                    -MockWith $script:getTargetResourceMock
+                    -MockWith $getTargetResourceMock
             }
 
             It 'Should not throw an exception' {
@@ -534,7 +522,6 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Set-TargetResource' -Tag 'Set' {
                 }
 
                 Mock -CommandName Get-TargetResource `
-                    -ModuleName DSC_AdcsAuthorityInformationAccess `
                     -MockWith $getTargetResourceMock
             }
 
@@ -593,7 +580,6 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Set-TargetResource' -Tag 'Set' {
                 }
 
                 Mock -CommandName Get-TargetResource `
-                    -ModuleName DSC_AdcsAuthorityInformationAccess `
                     -MockWith $getTargetResourceMock
             }
 
@@ -648,7 +634,6 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Set-TargetResource' -Tag 'Set' {
                 }
 
                 Mock -CommandName Get-TargetResource `
-                    -ModuleName DSC_AdcsAuthorityInformationAccess `
                     -MockWith $getTargetResourceMock
             }
 
@@ -704,7 +689,6 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Test-TargetResource' -Tag 'Test' {
             }
 
             Mock -CommandName Get-TargetResource `
-                -ModuleName DSC_AdcsAuthorityInformationAccess `
                 -MockWith $getTargetResourceMock
         }
 
@@ -744,7 +728,6 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Test-TargetResource' -Tag 'Test' {
             }
 
             Mock -CommandName Get-TargetResource `
-                -ModuleName DSC_AdcsAuthorityInformationAccess `
                 -MockWith $getTargetResourceMock
         }
 
@@ -785,7 +768,6 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Test-TargetResource' -Tag 'Test' {
             }
 
             Mock -CommandName Get-TargetResource `
-                -ModuleName DSC_AdcsAuthorityInformationAccess `
                 -MockWith $getTargetResourceMock
         }
 
@@ -824,18 +806,25 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Test-TargetResource' -Tag 'Test' {
             }
 
             Mock -CommandName Get-TargetResource `
-                -ModuleName DSC_AdcsAuthorityInformationAccess `
-                -MockWith $script:getTargetResourceMock
+                -MockWith $getTargetResourceMock
         }
 
         It 'Should not throw an exception' {
-            {
-                $script:testTargetResourceResult = Test-TargetResource @testTargetResourceParameters
-            } | Should -Not -Throw
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                {
+                    $script:testTargetResourceResult = Test-TargetResource @testTargetResourceParameters
+                } | Should -Not -Throw
+            }
         }
 
         It 'Should return false' {
-            $script:testTargetResourceResult | Should -BeFalse
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $testTargetResourceResult | Should -BeFalse
+            }
         }
 
         It 'Should call expected mocks' {
@@ -849,24 +838,31 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Test-TargetResource' -Tag 'Test' {
         BeforeAll {
             $testTargetResourceParameters = @{
                 IsSingleInstance    = 'Yes'
-                AiaUri              = $script:AiaList
+                AiaUri              = $AiaList
                 OcspUri             = [System.String[]] @()
                 AllowRestartService = $false
             }
 
             Mock -CommandName Get-TargetResource `
-                -ModuleName DSC_AdcsAuthorityInformationAccess `
-                -MockWith $script:getTargetResourceMock
+                -MockWith $getTargetResourceMock
         }
 
         It 'Should not throw an exception' {
-            {
-                $script:testTargetResourceResult = Test-TargetResource @testTargetResourceParameters
-            } | Should -Not -Throw
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                {
+                    $script:testTargetResourceResult = Test-TargetResource @testTargetResourceParameters
+                } | Should -Not -Throw
+            }
         }
 
         It 'Should return false' {
-            $script:testTargetResourceResult | Should -BeFalse
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $testTargetResourceResult | Should -BeFalse
+            }
         }
     }
 
@@ -882,13 +878,13 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Test-TargetResource' -Tag 'Test' {
             }
 
             Mock -CommandName Get-TargetResource `
-                -ModuleName DSC_AdcsAuthorityInformationAccess `
                 -MockWith $getTargetResourceMock
         }
 
         It 'Should not throw an exception' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
+
                 {
                     $script:testTargetResourceResult = Test-TargetResource @testTargetResourceParameters
                 } | Should -Not -Throw
@@ -922,7 +918,6 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Test-TargetResource' -Tag 'Test' {
             }
 
             Mock -CommandName Get-TargetResource `
-                -ModuleName DSC_AdcsAuthorityInformationAccess `
                 -MockWith $getTargetResourceMock
         }
 
@@ -962,7 +957,6 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Test-TargetResource' -Tag 'Test' {
             }
 
             Mock -CommandName Get-TargetResource `
-                -ModuleName DSC_AdcsAuthorityInformationAccess `
                 -MockWith $getTargetResourceMock
         }
 
@@ -1002,7 +996,6 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Test-TargetResource' -Tag 'Test' {
             }
 
             Mock -CommandName Get-TargetResource `
-                -ModuleName DSC_AdcsAuthorityInformationAccess `
                 -MockWith $getTargetResourceMock
         }
 
@@ -1047,18 +1040,25 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Get-CaAiaUriList' {
 
             Mock `
                 -CommandName Get-CAAuthorityInformationAccess `
-                -ModuleName DSC_AdcsAuthorityInformationAccess `
                 -MockWith $getCAAuthorityInformationAccessMock
         }
 
         It 'Should not throw an exception' {
-            {
-                $script:getCaAiaUriListResult = Get-CaAiaUriList -ExtensionType 'AddToCertificateAia'
-            } | Should -Not -Throw
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                {
+                    $script:getCaAiaUriListResult = Get-CaAiaUriList -ExtensionType 'AddToCertificateAia'
+                } | Should -Not -Throw
+            }
         }
 
         It 'Should return null' {
-            $getCaAiaUriListResult | Should -BeNullOrEmpty
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $getCaAiaUriListResult | Should -BeNullOrEmpty
+            }
         }
 
         It 'Should call expected mocks' {
@@ -1087,18 +1087,25 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Get-CaAiaUriList' {
 
             Mock `
                 -CommandName Get-CAAuthorityInformationAccess `
-                -ModuleName DSC_AdcsAuthorityInformationAccess `
                 -MockWith $getCAAuthorityInformationAccessMock
         }
 
         It 'Should not throw an exception' {
-            {
-                $script:getCaAiaUriListResult = Get-CaAiaUriList -ExtensionType 'AddToCertificateAia'
-            } | Should -Not -Throw
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                {
+                    $script:getCaAiaUriListResult = Get-CaAiaUriList -ExtensionType 'AddToCertificateAia'
+                } | Should -Not -Throw
+            }
         }
 
         It 'Should return null' {
-            $getCaAiaUriListResult | Should -BeExactly 'http://primary/Certs/<CATruncatedName>.cer'
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $getCaAiaUriListResult | Should -BeExactly 'http://primary/Certs/<CATruncatedName>.cer'
+            }
         }
 
         It 'Should call expected mocks' {
@@ -1132,19 +1139,26 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Get-CaAiaUriList' {
 
             Mock `
                 -CommandName Get-CAAuthorityInformationAccess `
-                -ModuleName DSC_AdcsAuthorityInformationAccess `
                 -MockWith $getCAAuthorityInformationAccessMock
         }
 
         It 'Should not throw an exception' {
-            {
-                $script:getCaAiaUriListResult = Get-CaAiaUriList -ExtensionType 'AddToCertificateAia'
-            } | Should -Not -Throw
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                {
+                    $script:getCaAiaUriListResult = Get-CaAiaUriList -ExtensionType 'AddToCertificateAia'
+                } | Should -Not -Throw
+            }
         }
 
         It 'Should return null' {
-            $getCaAiaUriListResult[0] | Should -BeExactly 'http://primary/Certs/<CATruncatedName>.cer'
-            $getCaAiaUriListResult[1] | Should -BeExactly 'http://secondary/Certs/<CATruncatedName>.cer'
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $getCaAiaUriListResult[0] | Should -BeExactly 'http://primary/Certs/<CATruncatedName>.cer'
+                $getCaAiaUriListResult[1] | Should -BeExactly 'http://secondary/Certs/<CATruncatedName>.cer'
+            }
         }
 
         It 'Should call expected mocks' {
@@ -1168,18 +1182,25 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Get-CaAiaUriList' {
 
             Mock `
                 -CommandName Get-CAAuthorityInformationAccess `
-                -ModuleName DSC_AdcsAuthorityInformationAccess `
                 -MockWith $getCAAuthorityInformationAccessMock
         }
 
         It 'Should not throw an exception' {
-            {
-                $script:getCaAiaUriListResult = Get-CaAiaUriList -ExtensionType 'AddToCertificateOcsp'
-            } | Should -Not -Throw
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                {
+                    $script:getCaAiaUriListResult = Get-CaAiaUriList -ExtensionType 'AddToCertificateOcsp'
+                } | Should -Not -Throw
+            }
         }
 
         It 'Should return null' {
-            $getCaAiaUriListResult | Should -BeNullOrEmpty
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $getCaAiaUriListResult | Should -BeNullOrEmpty
+            }
         }
 
         It 'Should call expected mocks' {
@@ -1208,18 +1229,25 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Get-CaAiaUriList' {
 
             Mock `
                 -CommandName Get-CAAuthorityInformationAccess `
-                -ModuleName DSC_AdcsAuthorityInformationAccess `
                 -MockWith $getCAAuthorityInformationAccessMock
         }
 
         It 'Should not throw an exception' {
-            {
-                $script:getCaAiaUriListResult = Get-CaAiaUriList -ExtensionType 'AddToCertificateOcsp'
-            } | Should -Not -Throw
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                {
+                    $script:getCaAiaUriListResult = Get-CaAiaUriList -ExtensionType 'AddToCertificateOcsp'
+                } | Should -Not -Throw
+            }
         }
 
         It 'Should return null' {
-            $getCaAiaUriListResult | Should -BeExactly 'http://primary-ocsp-responder/ocsp'
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $getCaAiaUriListResult | Should -BeExactly 'http://primary-ocsp-responder/ocsp'
+            }
         }
 
         It 'Should call expected mocks' {
@@ -1253,19 +1281,26 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Get-CaAiaUriList' {
 
             Mock `
                 -CommandName Get-CAAuthorityInformationAccess `
-                -ModuleName DSC_AdcsAuthorityInformationAccess `
                 -MockWith $getCAAuthorityInformationAccessMock
         }
 
         It 'Should not throw an exception' {
-            {
-                $script:getCaAiaUriListResult = Get-CaAiaUriList -ExtensionType 'AddToCertificateOcsp'
-            } | Should -Not -Throw
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                {
+                    $script:getCaAiaUriListResult = Get-CaAiaUriList -ExtensionType 'AddToCertificateOcsp'
+                } | Should -Not -Throw
+            }
         }
 
-        It 'Should return null' {
-            $getCaAiaUriListResult[0] | Should -BeExactly 'http://primary-ocsp-responder/ocsp'
-            $getCaAiaUriListResult[1] | Should -BeExactly 'http://secondary-ocsp-responder/ocsp'
+        It 'Should return the correct URIs' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $getCaAiaUriListResult[0] | Should -BeExactly 'http://primary-ocsp-responder/ocsp'
+                $getCaAiaUriListResult[1] | Should -BeExactly 'http://secondary-ocsp-responder/ocsp'
+            }
         }
 
         It 'Should call expected mocks' {
