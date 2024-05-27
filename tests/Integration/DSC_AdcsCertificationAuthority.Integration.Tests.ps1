@@ -5,8 +5,6 @@
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
 param ()
 
-#region HEADER
-
 BeforeDiscovery {
     try
     {
@@ -84,8 +82,6 @@ AfterAll {
     # Remove module common test helper.
     Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
 }
-
-
 
 Describe "$($script:dscResourceName)_Install_Integration" {
     BeforeAll {
