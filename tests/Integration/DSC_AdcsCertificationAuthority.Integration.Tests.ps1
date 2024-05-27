@@ -33,6 +33,16 @@ BeforeDiscovery {
     $script:dscModuleName = 'ActiveDirectoryCSDsc'
     $script:dscResourceFriendlyName = 'AdcsCertificationAuthority'
     $script:dscResourceName = "DSC_$($script:dscResourceFriendlyName)"
+
+    # Ensure that the tests can be performed on this computer
+    $script:skipIntegrationTests = $false
+
+    # Ensure that the tests can be performed on this computer
+    if (-not (Test-WindowsFeature -Name 'ADCS-Cert-Authority'))
+    {
+        Write-Warning -Message 'Skipping integration tests for AdcsCertificationAuthority because the feature ADCS-Cert-Authority is not installed.'
+        $skipIntegrationTests = $true
+    }
 }
 
 BeforeAll {
@@ -61,13 +71,6 @@ BeforeAll {
     $script:adminUsername = 'AdcsAdminTest'
     $script:adminPassword = ConvertTo-SecureString -String 'NotPass12!' -AsPlainText -Force
 
-    # Ensure that the tests can be performed on this computer
-    if (-not (Test-WindowsFeature -Name 'ADCS-Cert-Authority'))
-    {
-        Write-Warning -Message 'Skipping integration tests for AdcsCertificationAuthority because the feature ADCS-Cert-Authority is not installed.'
-        return
-    }
-
     # Create a new Local User in the administrators group
     $script:adminCredential = New-Object `
         -TypeName System.Management.Automation.PSCredential `
@@ -83,7 +86,7 @@ AfterAll {
     Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
 }
 
-Describe "$($script:dscResourceName)_Install_Integration" {
+Describe "$($script:dscResourceName)_Install_Integration" -Skip:$skipIntegrationTests {
     BeforeAll {
         $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName)_Install.Config.ps1"
         . $configFile
@@ -131,7 +134,7 @@ Describe "$($script:dscResourceName)_Install_Integration" {
     }
 }
 
-Describe 'DSC_AdcsCertificationAuthoritySettings_Integration' {
+Describe 'DSC_AdcsCertificationAuthoritySettings_Integration' -Skip:$skipIntegrationTests {
     Context 'Configure ADCS Certification Authority Settings' {
         BeforeAll {
             $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName)Settings.config.ps1"
@@ -214,7 +217,7 @@ Describe 'DSC_AdcsCertificationAuthoritySettings_Integration' {
     }
 }
 
-Describe 'DSC_AdcsAuthorityInformationAccess_Integration' {
+Describe 'DSC_AdcsAuthorityInformationAccess_Integration' -Skip:$skipIntegrationTests {
     BeforeAll {
         $configFile = Join-Path -Path $PSScriptRoot -ChildPath 'DSC_AdcsAuthorityInformationAccess.config.ps1'
         . $configFile -Verbose -ErrorAction Stop
@@ -317,7 +320,7 @@ Describe 'DSC_AdcsAuthorityInformationAccess_Integration' {
     }
 }
 
-Describe "$($script:dscResourceName)_Uninstall_Integration" {
+Describe "$($script:dscResourceName)_Uninstall_Integration" -Skip:$skipIntegrationTests {
     Context 'Uninstall ADCS Certification Authority' {
         BeforeAll {
             $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName)_Uninstall.config.ps1"

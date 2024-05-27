@@ -34,6 +34,20 @@ BeforeDiscovery {
     $script:dscResourceFriendlyName = 'AdcsEnrollmentPolicyWebService'
     $script:dscResourceName = "DSC_$($script:dscResourceFriendlyName)"
 
+    # Ensure that the tests can be performed on this computer
+    $script:skipIntegrationTests = $false
+
+    if (-not (Test-WindowsFeature -Name 'ADCS-Enroll-Web-Pol'))
+    {
+        Write-Warning -Message 'Skipping integration tests for AdcsEnrollmentPolicyWebService because the feature ADCS-Enroll-Web-Pol is not installed.'
+        $skipIntegrationTests = $true
+    }
+
+    if ([System.String]::IsNullOrEmpty($ENV:USERDNSDOMAIN))
+    {
+        Write-Warning -Message 'Skipping integration tests for AdcsEnrollmentPolicyWebService because it must be run on a domain joined server.'
+        $skipIntegrationTests = $true
+    }
 }
 
 BeforeAll {
@@ -62,28 +76,13 @@ BeforeAll {
     $script:adminUsername = "$($env:USERDNSDOMAIN)\Administrator"
     $script:adminPassword = ConvertTo-SecureString -String 'NotPass12!' -AsPlainText -Force
 
-    # Ensure that the tests can be performed on this computer
-    $script:skipIntegrationTests = $false
-
-    if (-not (Test-WindowsFeature -Name 'ADCS-Enroll-Web-Pol'))
-    {
-        Write-Warning -Message 'Skipping integration tests for AdcsEnrollmentPolicyWebService because the feature ADCS-Enroll-Web-Pol is not installed.'
-        $skipIntegrationTests = $true
-    }
-
-    if ([System.String]::IsNullOrEmpty($ENV:USERDNSDOMAIN))
-    {
-        Write-Warning -Message 'Skipping integration tests for AdcsEnrollmentPolicyWebService because it must be run on a domain joined server.'
-        $skipIntegrationTests = $true
-    }
-
     # Get the Administrator credential
     $script:adminCredential = New-Object `
         -TypeName System.Management.Automation.PSCredential `
         -ArgumentList ($script:adminUsername, $script:AdminPassword)
 
     # Create an SSL certificate to be used for the Web Service
-    $certificate = New-SelfSignedCertificate `
+    $script:certificate = New-SelfSignedCertificate `
         -DnsName $ENV:ComputerName `
         -CertStoreLocation Cert:\LocalMachine\My
 }
