@@ -42,7 +42,6 @@ BeforeAll {
         -TestType 'Unit'
 
     Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
-    #Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '.\Stubs\AdcsAdministrationStub.psm1')
     Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '.\Stubs\AdcsDeploymentStub.psm1')
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscResourceName
@@ -99,7 +98,6 @@ AfterAll {
     # Unload the module being tested so that it doesn't impact any other tests.
     Get-Module -Name $script:dscResourceName -All | Remove-Module -Force
 
-    #Remove-Module -Name AdcsAdministrationStub -Force
     Remove-Module -Name AdcsDeploymentStub -Force
 
     # Remove module common test helper.
