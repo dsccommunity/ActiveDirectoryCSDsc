@@ -63,7 +63,7 @@ BeforeAll {
     $script:adminPassword = ConvertTo-SecureString -String 'NotPass12!' -AsPlainText -Force
 
     # Ensure that the tests can be performed on this computer
-    $skipIntegrationTests = $false
+    $script:skipIntegrationTests = $false
 
     if (-not (Test-WindowsFeature -Name 'ADCS-Enroll-Web-Pol'))
     {
@@ -77,19 +77,13 @@ BeforeAll {
         $skipIntegrationTests = $true
     }
 
-    # Integration tests can't be performed on this computer
-    if ($skipIntegrationTests)
-    {
-        return
-    }
-
     # Get the Administrator credential
     $script:adminCredential = New-Object `
         -TypeName System.Management.Automation.PSCredential `
         -ArgumentList ($script:adminUsername, $script:AdminPassword)
 
     # Create an SSL certificate to be used for the Web Service
-    $script:certificate = New-SelfSignedCertificate `
+    $certificate = New-SelfSignedCertificate `
         -DnsName $ENV:ComputerName `
         -CertStoreLocation Cert:\LocalMachine\My
 }
@@ -109,7 +103,7 @@ AfterAll {
     Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
 }
 
-Describe "$($script:dscResourceName) integration test" {
+Describe "$($script:dscResourceName) integration test" -Skip:$skipIntegrationTests {
     BeforeDiscovery {
         # These are the test cases to run integration tests for
         $script:testAdcsEnrollmentPolicyWebServiceTestCases = @(
@@ -140,8 +134,6 @@ Describe "$($script:dscResourceName) integration test" {
         $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName).Config.ps1"
         . $configFile
     }
-
-
 
     Context 'Install ADCS Enrollment Policy Web Service for AuthenticationType <AuthenticationType> and KeyBasedRenewal <KeyBasedRenewal>' -ForEach $testAdcsEnrollmentPolicyWebServiceTestCases {
         It 'Should compile and apply the MOF without throwing' {
