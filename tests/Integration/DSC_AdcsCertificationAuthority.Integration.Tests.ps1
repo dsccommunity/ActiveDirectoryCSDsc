@@ -8,9 +8,6 @@ param ()
 #region HEADER
 
 BeforeDiscovery {
-    $script:dscModuleName = 'ActiveDirectoryCSDsc'
-    $script:dscResourceName = 'DSC_AdcsCertificationAuthority'
-
     try
     {
         if (-not (Get-Module -Name 'DscResource.Test'))
@@ -30,9 +27,21 @@ BeforeDiscovery {
     {
         throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
     }
+
+    <#
+        Need to define that variables here to be used in the Pester Discover to
+        build the ForEach-blocks.
+    #>
+    $script:dscModuleName = 'ActiveDirectoryCSDsc'
+    $script:dscResourceFriendlyName = 'AdcsCertificationAuthority'
+    $script:dscResourceName = "DSC_$($script:dscResourceFriendlyName)"
 }
 
 BeforeAll {
+    $script:dscModuleName = 'ActiveDirectoryCSDsc'
+    $script:dscResourceFriendlyName = 'AdcsCertificationAuthority'
+    $script:dscResourceName = "DSC_$($script:dscResourceFriendlyName)"
+
     $script:testEnvironment = Initialize-TestEnvironment `
         -DSCModuleName $script:dscModuleName `
         -DSCResourceName $script:dscResourceName `
