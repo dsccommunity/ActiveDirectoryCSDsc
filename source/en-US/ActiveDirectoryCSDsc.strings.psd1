@@ -6,5 +6,5 @@
         classes (that are not a DSC resource).
 #>
 
-@'
+ConvertFrom-StringData @'
 '@
