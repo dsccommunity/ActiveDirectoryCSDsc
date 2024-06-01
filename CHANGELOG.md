@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Azure pipelines - Remove deprecated images, make the build work
 - Azure Pipelines - Reverted `PublishCodeCoverageResults` back to v1 to display line level coverage in ADO.
 - `Tests` - Added tests for catch blocks in `AdcsCertificationAuthority`, `AcdsOnlineResponder`, `AdcsWebEnrollment`.
+- `Tests` - Migrate all tests to Pester 5
 
 ## [5.0.0] - 2020-06-20
 

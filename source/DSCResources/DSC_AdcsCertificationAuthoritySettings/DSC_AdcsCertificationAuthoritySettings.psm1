@@ -246,7 +246,7 @@ function Set-TargetResource
         -IsSingleInstance $IsSingleInstance `
         -Verbose:$VerbosePreference
 
-    $settingUpdated = $false
+    $parameterUpdated = $false
 
     <#
         Step through each parameter and update any that are passed
@@ -559,5 +559,3 @@ function Set-CertificateAuthoritySetting
             ($script:localizedData.UpdatingAdcsCaSettingMessage -f $Name, $Value)
         ) -join '' )
 } # function Set-CertificateAuthoritySetting
-
-Export-ModuleMember -Function *-TargetResource

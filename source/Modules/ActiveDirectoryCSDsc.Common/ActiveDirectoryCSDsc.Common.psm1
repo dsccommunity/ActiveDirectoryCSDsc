@@ -1,6 +1,6 @@
-$modulePath = Join-Path -Path (Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent) -ChildPath 'Modules'
+$script:resourceHelperModulePath = Join-Path -Path $PSScriptRoot -ChildPath '..\..\Modules\DscResource.Common'
 
-Import-Module -Name (Join-Path -Path $modulePath -ChildPath 'DscResource.Common')
+Import-Module -Name $script:resourceHelperModulePath
 
 # Import Localization Strings
 $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
@@ -22,17 +22,17 @@ function Restart-ServiceIfExists
         $Name
     )
 
-    Write-Verbose -Message ($script:localizedData.GetServiceInformation -f $Name) -Verbose
-    $servicesService = Get-Service @PSBoundParameters -ErrorAction Continue
+    Write-Verbose -Message ($script:localizedData.GetServiceInformation -f $Name)
+    $servicesService = Get-Service @PSBoundParameters -ErrorAction Continue -Verbose:$VerbosePreference
 
     if ($servicesService)
     {
-        Write-Verbose -Message ($script:localizedData.RestartService -f $Name) -Verbose
-        $servicesService | Restart-Service -Force -ErrorAction Stop -Verbose
+        Write-Verbose -Message ($script:localizedData.RestartService -f $Name)
+        $servicesService | Restart-Service -Force -ErrorAction Stop -Verbose:$VerbosePreference
     }
     else
     {
-        Write-Verbose -Message ($script:localizedData.UnknownService -f $Name) -Verbose
+        Write-Verbose -Message ($script:localizedData.UnknownService -f $Name)
     }
 }
 

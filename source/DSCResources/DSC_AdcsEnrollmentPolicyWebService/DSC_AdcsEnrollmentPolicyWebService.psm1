@@ -512,5 +512,3 @@ function Test-Thumbprint
         }
     }
 } # end function Test-Thumbprint
-
-Export-ModuleMember -Function *-TargetResource
