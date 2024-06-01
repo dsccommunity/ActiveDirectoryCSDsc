@@ -18,6 +18,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Azure Pipelines - Reverted `PublishCodeCoverageResults` back to v1 to display line level coverage in ADO.
 - `Tests` - Added tests for catch blocks in `AdcsCertificationAuthority`, `AcdsOnlineResponder`, `AdcsWebEnrollment`.
 - `Tests` - Migrate all tests to Pester 5
+- AdcsAuthorityInformationAccess
+  - Removed `AllowRestartService` parameter from compared settings, force `Get-CaAiaUriList`
+    to return unmangled `System.String[]` with single values.
+    Fixes [Issue #128](https://github.com/dsccommunity/ActiveDirectoryCSDsc/issues/128)
+    Fixes [Issue #138](https://github.com/dsccommunity/ActiveDirectoryCSDsc/issues/138).
 
 ## [5.0.0] - 2020-06-20
 
