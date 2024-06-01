@@ -33,8 +33,8 @@ function Get-TargetResource
 
     return @{
         IsSingleInstance    = 'Yes'
-        AiaUri              = Get-CaAiaUriList -ExtensionType 'AddToCertificateAia' -Verbose:$VerbosePreference
-        OcspUri             = Get-CaAiaUriList -ExtensionType 'AddToCertificateOcsp' -Verbose:$VerbosePreference
+        AiaUri              = [System.String[]] (Get-CaAiaUriList -ExtensionType 'AddToCertificateAia' -Verbose:$VerbosePreference)
+        OcspUri             = [System.String[]] (Get-CaAiaUriList -ExtensionType 'AddToCertificateOcsp' -Verbose:$VerbosePreference)
         AllowRestartService = $false
     }
 } # function Get-TargetResource
@@ -226,7 +226,7 @@ function Test-TargetResource
 function Get-CaAiaUriList
 {
     [CmdletBinding()]
-    [OutputType([System.String[]])]
+    [OutputType([System.Object[]])]
     param
     (
         [Parameter(Mandatory = $true)]
@@ -236,5 +236,5 @@ function Get-CaAiaUriList
 
     Write-Verbose -Message ($script:localizedData.GettingAiaUrisMessage -f $ExtensionType)
 
-    return , [System.String[]] (Get-CAAuthorityInformationAccess | Where-Object -Property $ExtensionType -Eq $true).Uri
+    return (Get-CAAuthorityInformationAccess | Where-Object -Property $ExtensionType -Eq $true).Uri
 }
