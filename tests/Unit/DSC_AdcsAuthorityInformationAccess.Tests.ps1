@@ -249,7 +249,7 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Set-TargetResource' -Tag 'Set' {
             }
         }
 
-        Context 'When AIA and OCSP are passed but OCSP is missing a URI' {
+        Context 'When AIA and OCSP are passed but AIA is missing a URI' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
 
@@ -301,7 +301,7 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Set-TargetResource' -Tag 'Set' {
             }
         }
 
-        Context 'When AIA and OCSP are passed but AIA is missing a URI' {
+        Context 'When AIA and OCSP are passed but OCSP is missing a URI' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
                     $script:setTargetResourceParameters = @{
@@ -352,7 +352,7 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Set-TargetResource' -Tag 'Set' {
             }
         }
 
-        Context 'When AIA and OCSP are passed but OCSP has an extra URI' {
+        Context 'When AIA and OCSP are passed but AIA has an extra URI' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
                     $script:setTargetResourceParameters = @{
@@ -403,7 +403,7 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Set-TargetResource' -Tag 'Set' {
             }
         }
 
-        Context 'When AIA and OCSP are passed but AIA has an extra URI' {
+        Context 'When AIA and OCSP are passed but OCSP has an extra URI' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
                     $script:setTargetResourceParameters = @{
