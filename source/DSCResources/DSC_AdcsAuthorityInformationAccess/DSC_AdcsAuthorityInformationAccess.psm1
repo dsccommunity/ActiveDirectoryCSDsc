@@ -33,8 +33,8 @@ function Get-TargetResource
 
     return @{
         IsSingleInstance    = 'Yes'
-        AiaUri              = [System.String[]] (Get-CaAiaUriList -ExtensionType 'AddToCertificateAia' -Verbose:$VerbosePreference)
-        OcspUri             = [System.String[]] (Get-CaAiaUriList -ExtensionType 'AddToCertificateOcsp' -Verbose:$VerbosePreference)
+        AiaUri              = [System.String[]] (Get-CaAiaUriList -ExtensionType 'AddToCertificateAia')
+        OcspUri             = [System.String[]] (Get-CaAiaUriList -ExtensionType 'AddToCertificateOcsp')
         AllowRestartService = $false
     }
 } # function Get-TargetResource
@@ -226,7 +226,7 @@ function Test-TargetResource
 function Get-CaAiaUriList
 {
     [CmdletBinding()]
-    [OutputType([System.Object[]])]
+    [OutputType([System.String[]])]
     param
     (
         [Parameter(Mandatory = $true)]
