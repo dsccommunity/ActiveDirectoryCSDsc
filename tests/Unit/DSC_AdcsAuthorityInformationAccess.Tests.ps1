@@ -249,13 +249,13 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Set-TargetResource' -Tag 'Set' {
             }
         }
 
-        Context 'When AIA and OCSP are passed but OCSP is missing a URI' {
+        Context 'When AIA and OCSP are passed but AIA is missing a URI' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
 
                     $script:setTargetResourceParameters = @{
                         IsSingleInstance    = 'Yes'
-                        AiaUri              = $AiaList + ('http://tertiary/Certs/<CATruncatedName>.cer')
+                        AiaUri              = $AiaList + @('http://tertiary/Certs/<CATruncatedName>.cer')
                         OcspUri             = $OcspList
                         AllowRestartService = $true
                     }
@@ -301,7 +301,7 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Set-TargetResource' -Tag 'Set' {
             }
         }
 
-        Context 'When AIA and OCSP are passed but AIA is missing a URI' {
+        Context 'When AIA and OCSP are passed but OCSP is missing a URI' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
                     $script:setTargetResourceParameters = @{
@@ -352,7 +352,7 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Set-TargetResource' -Tag 'Set' {
             }
         }
 
-        Context 'When AIA and OCSP are passed but OCSP has an extra URI' {
+        Context 'When AIA and OCSP are passed but AIA has an extra URI' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
                     $script:setTargetResourceParameters = @{
@@ -403,7 +403,7 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Set-TargetResource' -Tag 'Set' {
             }
         }
 
-        Context 'When AIA and OCSP are passed but AIA has an extra URI' {
+        Context 'When AIA and OCSP are passed but OCSP has an extra URI' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
                     $script:setTargetResourceParameters = @{
@@ -761,7 +761,7 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Test-TargetResource' -Tag 'Test' {
             InModuleScope -ScriptBlock {
                 $script:testTargetResourceParameters = @{
                     IsSingleInstance    = 'Yes'
-                    AiaUri              = $AiaList + ('http://tertiary/Certs/<CATruncatedName>.cer')
+                    AiaUri              = $AiaList + @('http://tertiary/Certs/<CATruncatedName>.cer')
                     OcspUri             = $OcspList
                     AllowRestartService = $false
                 }
@@ -800,7 +800,7 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Test-TargetResource' -Tag 'Test' {
         BeforeAll {
             $script:testTargetResourceParameters = @{
                 IsSingleInstance    = 'Yes'
-                AiaUri              = $AiaList + ('http://tertiary/Certs/<CATruncatedName>.cer')
+                AiaUri              = $AiaList + @('http://tertiary/Certs/<CATruncatedName>.cer')
                 OcspUri             = $OcspList + @('http://tertiary-ocsp-responder/ocsp')
                 AllowRestartService = $false
             }
@@ -1068,7 +1068,7 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Get-CaAiaUriList' {
         }
     }
 
-    Context 'When ExtensionType is AddToCertificateAia and there is AddToCertificateAia URI and one AddToCertificateOcsp URI' {
+    Context 'When ExtensionType is AddToCertificateAia and there is one AddToCertificateAia URI and one AddToCertificateOcsp URI' {
         BeforeAll {
             $getCAAuthorityInformationAccessMock = {
                 @(
@@ -1100,7 +1100,7 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Get-CaAiaUriList' {
             }
         }
 
-        It 'Should return null' {
+        It 'Should return one entry' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
@@ -1115,7 +1115,7 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Get-CaAiaUriList' {
         }
     }
 
-    Context 'When ExtensionType is AddToCertificateAia and there is AddToCertificateAia URI and two AddToCertificateOcsp URIs' {
+    Context 'When ExtensionType is AddToCertificateAia and there is two AddToCertificateAia URI and one AddToCertificateOcsp URIs' {
         BeforeAll {
             $getCAAuthorityInformationAccessMock = {
                 @(
@@ -1152,7 +1152,7 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Get-CaAiaUriList' {
             }
         }
 
-        It 'Should return null' {
+        It 'Should return two entries' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
@@ -1168,7 +1168,7 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Get-CaAiaUriList' {
         }
     }
 
-    Context 'When ExtensionType is AddToCertificateOcsp and there are only AddToCertificateAia URIs' {
+    Context 'When ExtensionType is AddToCertificateAia and there are only AddToCertificateAia URIs' {
         BeforeAll {
             $getCAAuthorityInformationAccessMock = {
                 @(
@@ -1242,7 +1242,7 @@ Describe 'DSC_AdcsAuthorityInformationAccess\Get-CaAiaUriList' {
             }
         }
 
-        It 'Should return null' {
+        It 'Should return one OCSP entry' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
