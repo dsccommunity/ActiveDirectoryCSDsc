@@ -7,4 +7,7 @@
 #>
 
 ConvertFrom-StringData @'
+    # Get-CaAiaUriList
+    GettingAiaUrisMessage = Getting Active Directory Authority Information Access URI list for '{0}'.
+
 '@
