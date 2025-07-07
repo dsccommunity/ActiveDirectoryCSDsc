@@ -1,8 +1,0 @@
-[ClassVersion("1.0.0.0"), FriendlyName("AdcsAuthorityInformationAccess")]
-class DSC_AdcsAuthorityInformationAccess : OMI_BaseResource
-{
-    [Key, Description("Specifies the resource is a single instance, the value must be 'Yes'."), ValueMap{"Yes"}, Values{"Yes"}] String IsSingleInstance;
-    [Write, Description("Specifies the list of URIs that should be included in the AIA extension of the issued certificate.")] String AiaUri[];
-    [Write, Description("Specifies the list of URIs that should be included in the Online Responder OCSP extension of the issued certificate.")] String OcspUri[];
-    [Write, Description("Allows the Certificate Authority service to be restarted if changes are made. Defaults to false.")] Boolean AllowRestartService;
-};
