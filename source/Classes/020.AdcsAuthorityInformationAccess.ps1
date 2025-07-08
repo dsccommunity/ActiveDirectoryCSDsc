@@ -113,7 +113,7 @@ class AdcsAuthorityInformationAccess : ResourceBase
             {
                 if ($desiredAiaUri -notin $this.AiaUri)
                 {
-                    Write-Debug -Message ($script:localizedData.AddingAdcsAiaUriMessage -f 'AIA', $desiredAiaUri)
+                    Write-Debug -Message ($this.localizedData.AddingAdcsAiaUriMessage -f 'AIA', $desiredAiaUri)
 
                     Add-CAAuthorityInformationAccess -Uri $desiredAiaUri -AddToCertificateAia -Force
 
@@ -126,7 +126,7 @@ class AdcsAuthorityInformationAccess : ResourceBase
             {
                 if ($currentAiaUri -notin $this.AiaUri)
                 {
-                    Write-Debug -Message ($script:localizedData.RemovingAdcsAiaUriMessage -f 'AIA', $currentAiaUri)
+                    Write-Debug -Message ($this.localizedData.RemovingAdcsAiaUriMessage -f 'AIA', $currentAiaUri)
 
                     Remove-CAAuthorityInformationAccess -Uri $currentAiaUri -AddToCertificateAia -Force
 
@@ -166,7 +166,7 @@ class AdcsAuthorityInformationAccess : ResourceBase
 
         if ($RestartRequired -and $this.AllowRestartService)
         {
-            Write-Debug -Message $script:localizedData.RestartingCertSvcMessage
+            Write-Debug -Message $this.localizedData.RestartingCertSvcMessage
 
             $null = Restart-ServiceIfExists -Name 'CertSvc'
         }
