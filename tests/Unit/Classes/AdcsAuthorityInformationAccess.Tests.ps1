@@ -89,7 +89,6 @@ Describe 'AdcsAuthorityInformationAccess\Get()' -Tag 'Get' {
                         IsSingleInstance = 'Yes'
                         AiaUri           = 'http://example.com/aia'
                         OcspUri          = 'http://example.com/ocsp'
-                        Ensure           = 'Present'
                     }
 
                     <#
@@ -130,7 +129,6 @@ Describe 'AdcsAuthorityInformationAccess\Get()' -Tag 'Get' {
 
                     $currentState.AllowRestartService | Should -BeNullOrEmpty
 
-                    $currentState.Ensure | Should -Be 'Present'
                     $currentState.Reasons | Should -BeNullOrEmpty
                 }
             }
@@ -145,7 +143,6 @@ Describe 'AdcsAuthorityInformationAccess\Get()' -Tag 'Get' {
                         IsSingleInstance = 'Yes'
                         AiaUri           = @('http://example.com/aia1', 'http://example.com/aia2')
                         OcspUri          = @('http://example.com/ocsp1', 'http://example.com/ocsp2')
-                        Ensure           = 'Present'
                     }
 
                     <#
@@ -186,7 +183,6 @@ Describe 'AdcsAuthorityInformationAccess\Get()' -Tag 'Get' {
 
                     $currentState.AllowRestartService | Should -BeNullOrEmpty
 
-                    $currentState.Ensure | Should -Be 'Present'
                     $currentState.Reasons | Should -BeNullOrEmpty
                 }
             }
@@ -199,7 +195,6 @@ Describe 'AdcsAuthorityInformationAccess\Get()' -Tag 'Get' {
 
                     $script:mockInstance = [AdcsAuthorityInformationAccess] @{
                         IsSingleInstance = 'Yes'
-                        Ensure           = 'Absent'
                     }
 
                     <#
@@ -236,7 +231,6 @@ Describe 'AdcsAuthorityInformationAccess\Get()' -Tag 'Get' {
 
                     $currentState.AllowRestartService | Should -BeNullOrEmpty
 
-                    $currentState.Ensure | Should -Be 'Absent'
                     $currentState.Reasons | Should -HaveCount 0
                 }
             }
@@ -253,7 +247,6 @@ Describe 'AdcsAuthorityInformationAccess\Get()' -Tag 'Get' {
                         IsSingleInstance = 'Yes'
                         AiaUri           = 'http://example.com/aia'
                         OcspUri          = 'http://example.com/ocsp'
-                        Ensure           = 'Present'
                     }
 
                     <#
@@ -294,7 +287,6 @@ Describe 'AdcsAuthorityInformationAccess\Get()' -Tag 'Get' {
 
                     $currentState.AllowRestartService | Should -BeNullOrEmpty
 
-                    $currentState.Ensure | Should -Be 'Present'
 
                     $currentState.Reasons | Should -HaveCount 1
                     $currentState.Reasons[0].Code | Should -Be 'AdcsAuthorityInformationAccess:AdcsAuthorityInformationAccess:AiaUri'
@@ -312,7 +304,6 @@ Describe 'AdcsAuthorityInformationAccess\Get()' -Tag 'Get' {
                         IsSingleInstance = 'Yes'
                         AiaUri           = 'http://example.com/aia'
                         OcspUri          = 'http://example.com/ocsp'
-                        Ensure           = 'Present'
                     }
 
                     <#
@@ -353,7 +344,6 @@ Describe 'AdcsAuthorityInformationAccess\Get()' -Tag 'Get' {
 
                     $currentState.AllowRestartService | Should -BeNullOrEmpty
 
-                    $currentState.Ensure | Should -Be 'Present'
 
                     $currentState.Reasons | Should -HaveCount 1
                     $currentState.Reasons[0].Code | Should -Be 'AdcsAuthorityInformationAccess:AdcsAuthorityInformationAccess:OcspUri'
@@ -371,7 +361,6 @@ Describe 'AdcsAuthorityInformationAccess\Get()' -Tag 'Get' {
                         IsSingleInstance = 'Yes'
                         AiaUri           = @('http://example.com/aia1')
                         OcspUri          = @('http://example.com/ocsp1', 'http://example.com/ocsp2')
-                        Ensure           = 'Present'
                     }
 
                     <#
@@ -412,7 +401,6 @@ Describe 'AdcsAuthorityInformationAccess\Get()' -Tag 'Get' {
 
                     $currentState.AllowRestartService | Should -BeNullOrEmpty
 
-                    $currentState.Ensure | Should -Be 'Present'
 
                     $currentState.Reasons | Should -HaveCount 1
                     $currentState.Reasons[0].Code | Should -Be 'AdcsAuthorityInformationAccess:AdcsAuthorityInformationAccess:AiaUri'
@@ -430,7 +418,6 @@ Describe 'AdcsAuthorityInformationAccess\Get()' -Tag 'Get' {
                         IsSingleInstance = 'Yes'
                         AiaUri           = @('http://example.com/aia1', 'http://example.com/aia2')
                         OcspUri          = @('http://example.com/ocsp1')
-                        Ensure           = 'Present'
                     }
 
                     <#
@@ -471,7 +458,6 @@ Describe 'AdcsAuthorityInformationAccess\Get()' -Tag 'Get' {
 
                     $currentState.AllowRestartService | Should -BeNullOrEmpty
 
-                    $currentState.Ensure | Should -Be 'Present'
 
                     $currentState.Reasons | Should -HaveCount 1
                     $currentState.Reasons[0].Code | Should -Be 'AdcsAuthorityInformationAccess:AdcsAuthorityInformationAccess:OcspUri'
@@ -491,7 +477,6 @@ Describe 'AdcsAuthorityInformationAccess\Set()' -Tag 'Set' {
                 IsSingleInstance = 'Yes'
                 AiaUri           = @('http://example.com/aia1')
                 OcspUri          = @('http://example.com/ocsp1', 'http://example.com/ocsp2')
-                Ensure           = 'Present'
             } |
                 # Mock method Modify which is called by the case method Set().
                 Add-Member -Force -MemberType 'ScriptMethod' -Name 'Modify' -Value {
@@ -580,7 +565,6 @@ Describe 'AdcsAuthorityInformationAccess\Test()' -Tag 'Test' {
                 IsSingleInstance = 'Yes'
                 AiaUri           = @('http://example.com/aia1')
                 OcspUri          = @('http://example.com/ocsp1', 'http://example.com/ocsp2')
-                Ensure           = 'Present'
             }
         }
     }
@@ -660,7 +644,6 @@ Describe 'AdcsAuthorityInformationAccess\GetCurrentState()' -Tag 'HiddenMember' 
                     IsSingleInstance = 'Yes'
                     AiaUri           = @('http://example.com/aia1')
                     OcspUri          = @('http://example.com/ocsp1', 'http://example.com/ocsp2')
-                    Ensure           = 'Present'
                 }
             }
 
@@ -708,7 +691,6 @@ Describe 'AdcsAuthorityInformationAccess\GetCurrentState()' -Tag 'HiddenMember' 
                     IsSingleInstance = 'Yes'
                     AiaUri           = @('http://example.com/aia1')
                     OcspUri          = @('http://example.com/ocsp1', 'http://example.com/ocsp2')
-                    Ensure           = 'Present'
                 }
             }
 

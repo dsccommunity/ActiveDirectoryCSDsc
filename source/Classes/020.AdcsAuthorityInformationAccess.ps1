@@ -23,9 +23,6 @@
         Allows the Certificate Authority service to be restarted if changes are made.
         Defaults to false.
 
-    .PARAMETER Ensure
-        Specifies whether the WS-Man Listener should exist.
-
     .PARAMETER Reasons
         Returns the reason a property is not in desired state.
 #>
@@ -48,10 +45,6 @@ class AdcsAuthorityInformationAccess : ResourceBase
     [DscProperty()]
     [Nullable[System.Boolean]]
     $AllowRestartService
-
-    [DscProperty(Mandatory)]
-    [Ensure]
-    $Ensure = [Ensure]::Present
 
     [DscProperty(NotConfigurable)]
     [AdcsReason[]]
