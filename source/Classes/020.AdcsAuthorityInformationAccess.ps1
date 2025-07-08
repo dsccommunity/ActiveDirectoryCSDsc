@@ -111,7 +111,7 @@ class AdcsAuthorityInformationAccess : ResourceBase
                 {
                     Write-Debug -Message ($this.localizedData.AddingAdcsAiaUriMessage -f 'AIA', $desiredAiaUri)
 
-                    Add-CAAuthorityInformationAccess -Uri $desiredAiaUri -AddToCertificateAia -Force 4>&5
+                    Add-CAAuthorityInformationAccess -Uri $desiredAiaUri -AddToCertificateAia -Force -Verbose:$false
 
                     $RestartRequired = $true
                 }
@@ -124,7 +124,7 @@ class AdcsAuthorityInformationAccess : ResourceBase
                 {
                     Write-Debug -Message ($this.localizedData.RemovingAdcsAiaUriMessage -f 'AIA', $currentAiaUri)
 
-                    Remove-CAAuthorityInformationAccess -Uri $currentAiaUri -AddToCertificateAia -Force 4>&5
+                    Remove-CAAuthorityInformationAccess -Uri $currentAiaUri -AddToCertificateAia -Force -Verbose:$false
 
                     $RestartRequired = $true
                 }
@@ -143,7 +143,7 @@ class AdcsAuthorityInformationAccess : ResourceBase
                 {
                     Write-Debug -Message ($this.localizedData.AddingAdcsAiaUriMessage -f 'OCSP', $desiredOcspUri)
 
-                    Add-CAAuthorityInformationAccess -Uri $desiredOcspUri -AddToCertificateOcsp -Force 4>&5
+                    Add-CAAuthorityInformationAccess -Uri $desiredOcspUri -AddToCertificateOcsp -Force -Verbose:$false
 
                     $RestartRequired = $true
                 }
@@ -156,7 +156,7 @@ class AdcsAuthorityInformationAccess : ResourceBase
                 {
                     Write-Debug -Message ($this.localizedData.RemovingAdcsAiaUriMessage -f 'OCSP', $currentOcspUri)
 
-                    Remove-CAAuthorityInformationAccess -Uri $currentOcspUri -AddToCertificateOcsp -Force 4>&5
+                    Remove-CAAuthorityInformationAccess -Uri $currentOcspUri -AddToCertificateOcsp -Force -Verbose:$false
 
                     $RestartRequired = $true
                 }
@@ -167,7 +167,7 @@ class AdcsAuthorityInformationAccess : ResourceBase
         {
             Write-Debug -Message $this.localizedData.RestartingCertSvcMessage
 
-            $null = Restart-ServiceIfExists -Name 'CertSvc' 4>&5
+            $null = Restart-ServiceIfExists -Name 'CertSvc' -Verbose:$false
         }
     }
 

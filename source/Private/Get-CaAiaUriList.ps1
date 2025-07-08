@@ -20,5 +20,5 @@ function Get-CaAiaUriList
 
     Write-Debug -Message ($script:localizedData.GettingAiaUrisMessage -f $ExtensionType)
 
-    return (Get-CAAuthorityInformationAccess 4>&5 | Where-Object -Property $ExtensionType -Eq $true).Uri
+    return (Get-CAAuthorityInformationAccess -Verbose:$false | Where-Object -Property $ExtensionType -Eq $true).Uri
 }
