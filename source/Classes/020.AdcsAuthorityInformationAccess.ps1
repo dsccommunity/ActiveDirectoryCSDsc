@@ -72,20 +72,20 @@ class AdcsAuthorityInformationAccess : ResourceBase
         return ([ResourceBase] $this).Get()
     }
 
-    # Base method Get() call this method to get the current state as a Hashtable.
+    # Base method Get() calls this method to get the current state as a Hashtable.
     [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)
     {
         $state = @{}
 
-        $aia = [System.String[]] (Get-CaAiaUriList -ExtensionType 'AddToCertificateAia')
-        $ocsp = [System.String[]] (Get-CaAiaUriList -ExtensionType 'AddToCertificateOcsp')
+        $AiaList = [System.String[]] (Get-CaAiaUriList -ExtensionType 'AddToCertificateAia')
+        $OcspList = [System.String[]] (Get-CaAiaUriList -ExtensionType 'AddToCertificateOcsp')
 
-        if ($aia -or $ocsp)
+        if ($AiaList -or $OcspList)
         {
             $state = @{
                 IsSingleInstance = $properties.IsSingleInstance
-                AiaUri           = $aia
-                OcspUri          = $ocsp
+                AiaUri           = $AiaList
+                OcspUri          = $OcspList
             }
         }
 
