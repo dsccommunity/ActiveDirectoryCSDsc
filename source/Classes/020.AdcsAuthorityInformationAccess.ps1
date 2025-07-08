@@ -101,10 +101,13 @@ class AdcsAuthorityInformationAccess : ResourceBase
 
         if ($properties.ContainsKey($this.AiaUri.Name))
         {
+            # Get the array number of the entry
+            $index = [array]::IndexOf($this.PropertiesNotInDesiredState.Property, $this.AiaUri.Name)
+
             # Add any missing AIA URIs
-            foreach ($desiredAiaUri in $this.CachedDesiredState.AiaUri)
+            foreach ($desiredAiaUri in $this.PropertiesNotInDesiredState[$index].ExpectedValue)
             {
-                if ($desiredAiaUri -notin $this.AiaUri)
+                if ($desiredAiaUri -notin $this.PropertiesNotInDesiredState[$index].ActualValue)
                 {
                     Write-Debug -Message ($this.localizedData.AddingAdcsAiaUriMessage -f 'AIA', $desiredAiaUri)
 
@@ -115,9 +118,9 @@ class AdcsAuthorityInformationAccess : ResourceBase
             }
 
             # Remove any AIA URIs that aren't required
-            foreach ($currentAiaUri in $this.AiaUri)
+            foreach ($currentAiaUri in $this.PropertiesNotInDesiredState[$index].ActualValue)
             {
-                if ($currentAiaUri -notin $this.AiaUri)
+                if ($currentAiaUri -notin $this.PropertiesNotInDesiredState[$index].ExpectedValue)
                 {
                     Write-Debug -Message ($this.localizedData.RemovingAdcsAiaUriMessage -f 'AIA', $currentAiaUri)
 
@@ -128,34 +131,37 @@ class AdcsAuthorityInformationAccess : ResourceBase
             }
         }
 
-        # if ($properties.ContainsKey($this.AiaUri.Name))
-        # {
-        #     # Add any missing OCSP URIs
-        #     foreach ($desiredOcspUri in $OcspUri)
-        #     {
-        #         if ($desiredOcspUri -notin $currentResource.OcspUri)
-        #         {
-        #             Write-Debug -Message ($script:localizedData.AddingAdcsAiaUriMessage -f 'OCSP', $desiredOcspUri)
+        if ($properties.ContainsKey($this.OcspUri.Name))
+        {
+            # Get the array number of the entry
+            $index = [array]::IndexOf($this.PropertiesNotInDesiredState.Property, $this.OcspUri.Name)
 
-        #             Add-CAAuthorityInformationAccess -Uri $desiredOcspUri -AddToCertificateOcsp -Force
+            # Add any missing OCSP URIs
+            foreach ($desiredOcspUri in $this.PropertiesNotInDesiredState[$index].ExpectedValue)
+            {
+                if ($desiredOcspUri -notin $this.PropertiesNotInDesiredState[$index].ActualValue)
+                {
+                    Write-Debug -Message ($this.localizedData.AddingAdcsAiaUriMessage -f 'OCSP', $desiredOcspUri)
 
-        #             $RestartRequired = $true
-        #         }
-        #     }
+                    Add-CAAuthorityInformationAccess -Uri $desiredOcspUri -AddToCertificateOcsp -Force
 
-        #     # Remove any OCSP URIs that aren't required
-        #     foreach ($currentOcspUri in $currentResource.OcspUri)
-        #     {
-        #         if ($currentOcspUri -notin $OcspUri)
-        #         {
-        #             Write-Debug -Message ($script:localizedData.RemovingAdcsAiaUriMessage -f 'OCSP', $currentOcspUri)
+                    $RestartRequired = $true
+                }
+            }
 
-        #             Remove-CAAuthorityInformationAccess -Uri $currentOcspUri -AddToCertificateOcsp -Force
+            # Remove any OCSP URIs that aren't required
+            foreach ($currentOcspUri in $this.PropertiesNotInDesiredState[$index].ActualValue)
+            {
+                if ($currentOcspUri -notin $this.PropertiesNotInDesiredState[$index].ExpectedValue)
+                {
+                    Write-Debug -Message ($this.localizedData.RemovingAdcsAiaUriMessage -f 'OCSP', $currentOcspUri)
 
-        #             $RestartRequired = $true
-        #         }
-        #     }
-        # }
+                    Remove-CAAuthorityInformationAccess -Uri $currentOcspUri -AddToCertificateOcsp -Force
+
+                    $RestartRequired = $true
+                }
+            }
+        }
 
         if ($RestartRequired -and $this.AllowRestartService)
         {
