@@ -25,6 +25,17 @@
 
     .PARAMETER Reasons
         Returns the reason a property is not in desired state.
+
+    .NOTES
+        Used Functions:
+            Name                                | Module
+            ---------------------------------   |--------------------------
+            Add-CAAuthorityInformationAccess    | AdcsAdministration
+            Remove-CAAuthorityInformationAccess | AdcsAdministration
+            Assert-Module                       | DscResource.Common
+            Assert-BoundParameter               | DscResource.Common
+            Get-CaAiaUriList                    | ActiveDirectoryCSDsc
+            Restart-ServiceIfExists             | ActiveDirectoryCSDsc.Common
 #>
 
 [DscResource()]
