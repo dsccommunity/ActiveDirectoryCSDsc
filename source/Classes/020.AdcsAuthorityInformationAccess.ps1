@@ -184,7 +184,7 @@ class AdcsAuthorityInformationAccess : ResourceBase
     #>
     hidden [void] AssertProperties([System.Collections.Hashtable] $properties)
     {
-        Assert-Module -Name ADCSAdministration
+        Assert-Module -ModuleName 'ADCSAdministration'
 
         $assertBoundParameterParameters = @{
             BoundParameterList = $properties
@@ -192,7 +192,7 @@ class AdcsAuthorityInformationAccess : ResourceBase
                 'AiaUri'
                 'OcspUri'
             )
-            RequiredBehavior   = 'All'
+            RequiredBehavior   = 'Any'
         }
 
         Assert-BoundParameter @assertBoundParameterParameters
