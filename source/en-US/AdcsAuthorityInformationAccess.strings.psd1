@@ -11,5 +11,7 @@ ConvertFrom-StringData @'
     # None
 
     ## Strings directly used by the derived class AdcsAuthorityInformationAccess.
-    RestartingCertSvcMessage = Active Directory Certificate Authority settings have changed, so 'CertSvc' service is restarting. (ADCSAIA000)
+    AddingAdcsAiaUriMessage = Adding '{0}' URI '{1}'. (ADCSAIA0001)
+    RemovingAdcsAiaUriMessage = Removing '{0}' URI '{1}'. (ADCSAIA0002)
+    RestartingCertSvcMessage = Active Directory Certificate Authority settings have changed, so 'CertSvc' service is restarting. (ADCSAIA0003)
 '@
