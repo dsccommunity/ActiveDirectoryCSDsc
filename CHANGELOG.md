@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     to return unmangled `System.String[]` with single values.
     Fixes [Issue #128](https://github.com/dsccommunity/ActiveDirectoryCSDsc/issues/128)
     Fixes [Issue #138](https://github.com/dsccommunity/ActiveDirectoryCSDsc/issues/138).
+  - Convert to class-based resource.
 
 ## [5.0.0] - 2020-06-20
 
