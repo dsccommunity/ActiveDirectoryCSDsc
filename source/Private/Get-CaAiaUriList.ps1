@@ -20,11 +20,5 @@ function Get-CaAiaUriList
 
     Write-Debug -Message ($script:localizedData.GettingAiaUrisMessage -f $ExtensionType)
 
-    $VerbosePreference = 'SilentlyContinue'
-    if ($DebugPreference -ne 'SilentlyContinue')
-    {
-        $VerbosePreference = $DebugPreference
-    }
-
-    return (Get-CAAuthorityInformationAccess | Where-Object -Property $ExtensionType -Eq $true).Uri
+    return (Get-CAAuthorityInformationAccess -Verbose:$false | Where-Object -Property $ExtensionType -Eq $true).Uri
 }
