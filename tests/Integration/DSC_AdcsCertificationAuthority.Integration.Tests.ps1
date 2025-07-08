@@ -258,7 +258,6 @@ Describe 'DSC_AdcsAuthorityInformationAccess_Integration' -Skip:$skipIntegration
                     -Verbose `
                     -Force `
                     -ErrorAction Stop
-                    -Debug
             } | Should -Not -Throw
         }
 
