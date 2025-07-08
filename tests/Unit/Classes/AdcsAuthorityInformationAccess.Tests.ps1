@@ -650,161 +650,107 @@ Describe 'AdcsAuthorityInformationAccess\Test()' -Tag 'Test' {
     }
 }
 
-# Describe 'WSManListener\GetCurrentState()' -Tag 'HiddenMember' {
-#     Context 'When object is missing in the current state' {
-#         BeforeAll {
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
+Describe 'AdcsAuthorityInformationAccess\GetCurrentState()' -Tag 'HiddenMember' {
+    Context 'When object is missing in the current state' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-#                 $script:mockInstance = [WSManListener] @{
-#                     Transport = 'HTTP'
-#                     Port      = 5985
-#                     Address   = '*'
-#                     Ensure    = 'Present'
-#                 }
-#             }
+                $script:mockInstance = [AdcsAuthorityInformationAccess] @{
+                    IsSingleInstance = 'Yes'
+                    AiaUri           = @('http://example.com/aia1')
+                    OcspUri          = @('http://example.com/ocsp1', 'http://example.com/ocsp2')
+                    Ensure           = 'Present'
+                }
+            }
 
-#             Mock -CommandName Get-Listener
-#         }
+            Mock -CommandName Get-CaAiaUriList -ParameterFilter {
+                $ExtensionType -eq 'AddToCertificateAia'
+            }
 
-#         It 'Should return the correct values' {
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
+            Mock -CommandName Get-CaAiaUriList -ParameterFilter {
+                $ExtensionType -eq 'AddToCertificateOcsp'
+            }
+        }
 
-#                 $currentState = $script:mockInstance.GetCurrentState(
-#                     @{
-#                         Transport = 'HTTP'
-#                         Ensure    = [Ensure]::Present
-#                     }
-#                 )
+        It 'Should return the correct values' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-#                 $currentState.Transport | Should -BeNullOrEmpty
-#                 $currentState.Port | Should -BeNullOrEmpty
-#                 $currentState.Address | Should -BeNullOrEmpty
-#                 $currentState.Issuer | Should -BeNullOrEmpty
-#                 $currentState.CertificateThumbprint | Should -BeNullOrEmpty
-#                 $currentState.Hostname | Should -BeNullOrEmpty
-#                 $currentState.Enabled | Should -BeFalse
-#                 $currentState.URLPrefix | Should -BeNullOrEmpty
-#             }
+                $currentState = $script:mockInstance.GetCurrentState(
+                    @{
+                        IsSingleInstance = 'Yes'
+                    }
+                )
 
-#             Should -Invoke -CommandName Get-Listener -Exactly -Times 1 -Scope It
-#         }
-#     }
+                $currentState.IsSingleInstance | Should -BeNullOrEmpty
+                $currentState.AiaUri | Should -BeNullOrEmpty
+                $currentState.OcspUri | Should -BeNullOrEmpty
+                $currentState.AllowRestartService | Should -BeNullOrEmpty
+            }
 
-#     Context 'When the object is present in the current state' {
-#         Context 'When getting a HTTP Transport' {
-#             BeforeAll {
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
+            Should -Invoke -CommandName Get-CaAiaUriList -ParameterFilter {
+                $ExtensionType -eq 'AddToCertificateAia'
+            } -Exactly -Times 1 -Scope It
 
-#                     $script:mockInstance = [WSManListener] @{
-#                         Transport = 'HTTP'
-#                         Port      = 5985
-#                         Address   = '*'
-#                         Ensure    = 'Present'
-#                     }
-#                 }
+            Should -Invoke -CommandName Get-CaAiaUriList -ParameterFilter {
+                $ExtensionType -eq 'AddToCertificateOcsp'
+            } -Exactly -Times 1 -Scope It
+        }
+    }
 
-#                 Mock -CommandName Get-Listener -MockWith {
-#                     return @{
-#                         Transport             = 'HTTP'
-#                         Port                  = [System.UInt16] 5985
-#                         Address               = '*'
+    Context 'When the object is present in the current state' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-#                         CertificateThumbprint = $null
-#                         Hostname              = [System.Net.Dns]::GetHostEntry((Get-ComputerName)).Hostname
+                $script:mockInstance = [AdcsAuthorityInformationAccess] @{
+                    IsSingleInstance = 'Yes'
+                    AiaUri           = @('http://example.com/aia1')
+                    OcspUri          = @('http://example.com/ocsp1', 'http://example.com/ocsp2')
+                    Ensure           = 'Present'
+                }
+            }
 
-#                         Enabled               = $true
-#                         URLPrefix             = 'wsman'
-#                     }
-#                 }
-#             }
+            Mock -CommandName Get-CaAiaUriList -ParameterFilter {
+                $ExtensionType -eq 'AddToCertificateAia'
+            } -MockWith {
+                return @('http://example.com/aia1', 'http://example.com/aia2')
+            }
 
-#             It 'Should return the correct values' {
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
+            Mock -CommandName Get-CaAiaUriList -ParameterFilter {
+                $ExtensionType -eq 'AddToCertificateOcsp'
+            } -MockWith {
+                return @('http://example.com/ocsp1', 'http://example.com/ocsp2')
+            }
+        }
 
-#                     $currentState = $script:mockInstance.GetCurrentState(
-#                         @{
-#                             Transport = 'HTTP'
-#                             Ensure    = [Ensure]::Present
-#                         }
-#                     )
+        It 'Should return the correct values' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-#                     $currentState.Transport | Should -Be 'HTTP'
-#                     $currentState.Port | Should -Be 5985
-#                     $currentState.Address | Should -Be '*'
-#                     $currentState.Issuer | Should -BeNullOrEmpty
-#                     $currentState.CertificateThumbprint | Should -BeNullOrEmpty
-#                     $currentState.Hostname | Should -Be ([System.Net.Dns]::GetHostEntry((Get-ComputerName)).Hostname)
-#                     $currentState.Enabled | Should -BeTrue
-#                     $currentState.URLPrefix | Should -Be 'wsman'
-#                 }
+                $currentState = $script:mockInstance.GetCurrentState(
+                    @{
+                        IsSingleInstance = 'Yes'
+                    }
+                )
 
-#                 Should -Invoke -CommandName Get-Listener -Exactly -Times 1 -Scope It
-#             }
-#         }
+                $currentState.IsSingleInstance | Should -Be 'Yes'
+                $currentState.AiaUri | Should -Be @('http://example.com/aia1', 'http://example.com/aia2')
+                $currentState.OcspUri | Should -Be @('http://example.com/ocsp1', 'http://example.com/ocsp2')
+                $currentState.AllowRestartService | Should -BeNullOrEmpty
+            }
 
-#         Context 'When getting a HTTPS Transport' {
-#             BeforeAll {
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
+            Should -Invoke -CommandName Get-CaAiaUriList -ParameterFilter {
+                $ExtensionType -eq 'AddToCertificateAia'
+            } -Exactly -Times 1 -Scope It
 
-#                     $script:mockInstance = [WSManListener] @{
-#                         Transport = 'HTTPS'
-#                         Port      = 5986
-#                         Address   = '*'
-#                         Ensure    = 'Present'
-#                     }
-#                 }
-
-#                 Mock -CommandName Get-Listener -MockWith {
-#                     return @{
-#                         Transport             = 'HTTPS'
-#                         Port                  = [System.UInt16] 5986
-#                         Address               = '*'
-
-#                         CertificateThumbprint = '74FA31ADEA7FDD5333CED10910BFA6F665A1F2FC'
-#                         Hostname              = [System.Net.Dns]::GetHostEntry((Get-ComputerName)).Hostname
-
-#                         Enabled               = $true
-#                         URLPrefix             = 'wsman'
-#                     }
-#                 }
-
-#                 Mock -CommandName Find-Certificate -MockWith {
-#                     return @{ Issuer = 'CN=CONTOSO.COM Issuing CA, DC=CONTOSO, DC=COM' }
-#                 }
-#             }
-
-#             It 'Should return the correct values' {
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
-
-#                     $currentState = $script:mockInstance.GetCurrentState(
-#                         @{
-#                             Transport = 'HTTPS'
-#                             Ensure    = [Ensure]::Present
-#                         }
-#                     )
-
-#                     $currentState.Transport | Should -Be 'HTTPS'
-#                     $currentState.Port | Should -Be 5986
-#                     $currentState.Address | Should -Be '*'
-#                     $currentState.Issuer | Should -Be 'CN=CONTOSO.COM Issuing CA, DC=CONTOSO, DC=COM'
-#                     $currentState.CertificateThumbprint | Should -Be '74FA31ADEA7FDD5333CED10910BFA6F665A1F2FC'
-#                     $currentState.Hostname | Should -Be ([System.Net.Dns]::GetHostEntry((Get-ComputerName)).Hostname)
-#                     $currentState.Enabled | Should -BeTrue
-#                     $currentState.URLPrefix | Should -Be 'wsman'
-#                 }
-
-#                 Should -Invoke -CommandName Get-Listener -Exactly -Times 1 -Scope It
-#                 Should -Invoke -CommandName Find-Certificate -Exactly -Times 1 -Scope It
-#             }
-#         }
-#     }
-# }
+            Should -Invoke -CommandName Get-CaAiaUriList -ParameterFilter {
+                $ExtensionType -eq 'AddToCertificateOcsp'
+            } -Exactly -Times 1 -Scope It
+        }
+    }
+}
 
 # Describe 'WSManListener\Modify()' -Tag 'HiddenMember' {
 #     Context 'When the system is not in the desired state' {
