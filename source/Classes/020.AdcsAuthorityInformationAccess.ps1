@@ -99,10 +99,10 @@ class AdcsAuthorityInformationAccess : ResourceBase
     {
         $RestartRequired = $false
 
-        if ($properties.ContainsKey($this.AiaUri.Name))
+        if ($properties.ContainsKey('AiaUri'))
         {
             # Get the array number of the entry
-            $index = [array]::IndexOf($this.PropertiesNotInDesiredState.Property, $this.AiaUri.Name)
+            $index = [array]::IndexOf($this.PropertiesNotInDesiredState.Property, 'AiaUri')
 
             # Add any missing AIA URIs
             foreach ($desiredAiaUri in $this.PropertiesNotInDesiredState[$index].ExpectedValue)
@@ -131,10 +131,10 @@ class AdcsAuthorityInformationAccess : ResourceBase
             }
         }
 
-        if ($properties.ContainsKey($this.OcspUri.Name))
+        if ($properties.ContainsKey('OcspUri'))
         {
             # Get the array number of the entry
-            $index = [array]::IndexOf($this.PropertiesNotInDesiredState.Property, $this.OcspUri.Name)
+            $index = [array]::IndexOf($this.PropertiesNotInDesiredState.Property, 'OcspUri')
 
             # Add any missing OCSP URIs
             foreach ($desiredOcspUri in $this.PropertiesNotInDesiredState[$index].ExpectedValue)
