@@ -19,9 +19,10 @@ function Get-CaAiaUriList
     )
 
     $VerbosePreference = 'SilentlyContinue'
-    
-    if ($DebugPreference -ne 'SilentlyContinue') {
-        $VerbosePreference = 'Continue'
+
+    if ($DebugPreference -ne 'SilentlyContinue')
+    {
+        $VerbosePreference = $DebugPreference
     }
 
     Write-Debug -Message ($script:localizedData.GettingAiaUrisMessage -f $ExtensionType)
