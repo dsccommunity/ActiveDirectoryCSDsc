@@ -34,6 +34,9 @@ BeforeAll {
 
     Import-Module -Name $script:dscModuleName
 
+    # Load stub cmdlets and classes.
+    Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\Stubs\AdcsAdministrationStub.psm1')
+
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscModuleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscModuleName
     $PSDefaultParameterValues['Should:ModuleName'] = $script:dscModuleName
@@ -43,6 +46,9 @@ AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
     $PSDefaultParameterValues.Remove('Should:ModuleName')
+
+    # Unload stub module
+    Remove-Module -Name AdcsAdministrationStub -Force
 
     # Unload the module being tested so that it doesn't impact any other tests.
     Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
@@ -734,95 +740,288 @@ Describe 'AdcsAuthorityInformationAccess\GetCurrentState()' -Tag 'HiddenMember' 
     }
 }
 
-# Describe 'WSManListener\Modify()' -Tag 'HiddenMember' {
-#     Context 'When the system is not in the desired state' {
-#         BeforeAll {
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
+Describe 'AdcsAuthorityInformationAccess\Modify()' -Tag 'HiddenMember' {
+    Context 'When the system is not in the desired state' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-#                 $script:mockInstance = [WSManListener] @{
-#                     Transport = 'HTTP'
-#                     Ensure    = 'Present'
-#                 } |
-#                     # Mock method NewInstance which is called by the case method Modify().
-#                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'NewInstance' -Value {
-#                         $script:methodNewInstanceCallCount += 1
-#                     } -PassThru |
-#                     # Mock method RemoveInstance which is called by the case method Modify().
-#                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'RemoveInstance' -Value {
-#                         $script:methodRemoveInstanceCallCount += 1
-#                     } -PassThru
-#             }
-#         }
+                $script:mockInstance = [AdcsAuthorityInformationAccess] @{
+                    IsSingleInstance = 'Yes'
+                    AiaUri           = @('http://example.com/aia1', 'http://example.com/aia2')
+                    OcspUri          = @('http://example.com/ocsp1', 'http://example.com/ocsp2')
+                }
 
-#         BeforeEach {
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
+                Mock -CommandName Add-CAAuthorityInformationAccess -ParameterFilter {
+                    $AddToCertificateAia -eq $true
+                }
 
-#                 $script:methodNewInstanceCallCount = 0
-#                 $script:methodRemoveInstanceCallCount = 0
-#             }
-#         }
+                Mock -CommandName Remove-CAAuthorityInformationAccess -ParameterFilter {
+                    $AddToCertificateAia -eq $true
+                }
 
-#         Context 'When the resource does not exist' {
-#             It 'Should call method NewInstance()' {
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
+                Mock -CommandName Add-CAAuthorityInformationAccess -ParameterFilter {
+                    $AddToCertificateOcsp -eq $true
+                }
 
-#                     $mockProperties = @{
-#                         Transport = 'HTTP'
-#                         Ensure    = 'Present'
-#                     }
+                Mock -CommandName Remove-CAAuthorityInformationAccess -ParameterFilter {
+                    $AddToCertificateOcsp -eq $true
+                }
 
-#                     $script:mockInstance.Modify($mockProperties)
+                Mock -CommandName Restart-ServiceIfExists
+            }
+        }
 
-#                     $script:methodNewInstanceCallCount | Should -Be 1
-#                     $script:methodRemoveInstanceCallCount | Should -Be 0
-#                 }
-#             }
-#         }
+        Context 'When the resource does not exist' {
+            It 'Should call the correct mocks' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
 
-#         Context 'When the resource does exist' {
-#             It 'Should call method RemoveInstance()' {
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
+                    $mockProperties = @{
+                        AiaUri  = @('http://example.com/aia1', 'http://example.com/aia2')
+                        OcspUri = @('http://example.com/ocsp1', 'http://example.com/ocsp2')
+                    }
 
-#                     $script:mockInstance.Ensure = 'Absent'
+                    $script:mockInstance.PropertiesNotInDesiredState = @(
+                        @{
+                            Property      = 'AiaUri'
+                            ExpectedValue = @('http://example.com/aia1', 'http://example.com/aia2')
+                            ActualValue   = @()
+                        }
+                        @{
+                            Property      = 'OcspUri'
+                            ExpectedValue = @('http://example.com/ocsp1', 'http://example.com/ocsp2')
+                            ActualValue   = @()
+                        }
+                    )
 
-#                     $mockProperties = @{
-#                         Transport = 'HTTP'
-#                         Ensure    = 'Absent'
-#                     }
+                    $script:mockInstance.Modify($mockProperties)
+                }
 
-#                     $script:mockInstance.Modify($mockProperties)
+                Should -Invoke -CommandName Add-CAAuthorityInformationAccess -ParameterFilter {
+                    $AddToCertificateAia -eq $true
+                } -Exactly -Times 2 -Scope It
 
-#                     $script:methodNewInstanceCallCount | Should -Be 0
-#                     $script:methodRemoveInstanceCallCount | Should -Be 1
-#                 }
-#             }
-#         }
+                Should -Invoke -CommandName Add-CAAuthorityInformationAccess -ParameterFilter {
+                    $AddToCertificateOcsp -eq $true
+                } -Exactly -Times 2 -Scope It
 
-#         Context 'When the resource does exist but properties are incorrect' {
-#             It 'Should call method RemoveInstance() and NewInstance()' {
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
+                Should -Invoke -CommandName Remove-CAAuthorityInformationAccess -ParameterFilter {
+                    $AddToCertificateAia -eq $true
+                } -Exactly -Times 0 -Scope It
 
-#                     $script:mockInstance.Ensure = 'Present'
+                Should -Invoke -CommandName Remove-CAAuthorityInformationAccess -ParameterFilter {
+                    $AddToCertificateOcsp -eq $true
+                } -Exactly -Times 0 -Scope It
 
-#                     $mockProperties = @{
-#                         Transport = 'HTTP'
-#                         Port      = 5000
-#                     }
+                Should -Invoke -CommandName Restart-ServiceIfExists -Exactly -Times 0 -Scope It
+            }
+        }
 
-#                     $script:mockInstance.Modify($mockProperties)
+        Context 'When the AIA needs to be added' {
+            It 'Should call the correct mocks' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
 
-#                     $script:methodRemoveInstanceCallCount | Should -Be 1
-#                     $script:methodNewInstanceCallCount | Should -Be 1
-#                 }
-#             }
-#         }
-#     }
-# }
+                    $mockProperties = @{
+                        AiaUri = @('http://example.com/aia1', 'http://example.com/aia2')
+                    }
+
+                    $script:mockInstance.PropertiesNotInDesiredState = @(
+                        @{
+                            Property      = 'AiaUri'
+                            ExpectedValue = @('http://example.com/aia1', 'http://example.com/aia2')
+                            ActualValue   = @('http://example.com/aia1')
+                        }
+                    )
+
+                    $script:mockInstance.Modify($mockProperties)
+                }
+
+                Should -Invoke -CommandName Add-CAAuthorityInformationAccess -ParameterFilter {
+                    $AddToCertificateAia -eq $true
+                } -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Add-CAAuthorityInformationAccess -ParameterFilter {
+                    $AddToCertificateOcsp -eq $true
+                } -Exactly -Times 0 -Scope It
+
+                Should -Invoke -CommandName Remove-CAAuthorityInformationAccess -ParameterFilter {
+                    $AddToCertificateAia -eq $true
+                } -Exactly -Times 0 -Scope It
+
+                Should -Invoke -CommandName Remove-CAAuthorityInformationAccess -ParameterFilter {
+                    $AddToCertificateOcsp -eq $true
+                } -Exactly -Times 0 -Scope It
+
+                Should -Invoke -CommandName Restart-ServiceIfExists -Exactly -Times 0 -Scope It
+            }
+        }
+
+        Context 'When the OCSP needs to be added' {
+            It 'Should call the correct mocks' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockProperties = @{
+                        OcspUri = @('http://example.com/ocsp1', 'http://example.com/ocsp2')
+                    }
+
+                    $script:mockInstance.PropertiesNotInDesiredState = @(
+                        @{
+                            Property      = 'OcspUri'
+                            ExpectedValue = @('http://example.com/ocsp1', 'http://example.com/ocsp2')
+                            ActualValue   = @('http://example.com/ocsp1')
+                        }
+                    )
+
+                    $script:mockInstance.Modify($mockProperties)
+                }
+
+                Should -Invoke -CommandName Add-CAAuthorityInformationAccess -ParameterFilter {
+                    $AddToCertificateAia -eq $true
+                } -Exactly -Times 0 -Scope It
+
+                Should -Invoke -CommandName Add-CAAuthorityInformationAccess -ParameterFilter {
+                    $AddToCertificateOcsp -eq $true
+                } -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Remove-CAAuthorityInformationAccess -ParameterFilter {
+                    $AddToCertificateAia -eq $true
+                } -Exactly -Times 0 -Scope It
+
+                Should -Invoke -CommandName Remove-CAAuthorityInformationAccess -ParameterFilter {
+                    $AddToCertificateOcsp -eq $true
+                } -Exactly -Times 0 -Scope It
+
+                Should -Invoke -CommandName Restart-ServiceIfExists -Exactly -Times 0 -Scope It
+            }
+        }
+
+        Context 'When the AIA needs to be removed' {
+            It 'Should call the correct mocks' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockProperties = @{
+                        AiaUri = @('http://example.com/aia1', 'http://example.com/aia2')
+                    }
+
+                    $script:mockInstance.PropertiesNotInDesiredState = @(
+                        @{
+                            Property      = 'AiaUri'
+                            ExpectedValue = @('http://example.com/aia1')
+                            ActualValue   = @('http://example.com/aia1', 'http://example.com/aia2')
+                        }
+
+                    )
+
+                    $script:mockInstance.Modify($mockProperties)
+                }
+
+                Should -Invoke -CommandName Add-CAAuthorityInformationAccess -ParameterFilter {
+                    $AddToCertificateAia -eq $true
+                } -Exactly -Times 0 -Scope It
+
+                Should -Invoke -CommandName Add-CAAuthorityInformationAccess -ParameterFilter {
+                    $AddToCertificateOcsp -eq $true
+                } -Exactly -Times 0 -Scope It
+
+                Should -Invoke -CommandName Remove-CAAuthorityInformationAccess -ParameterFilter {
+                    $AddToCertificateAia -eq $true
+                } -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Remove-CAAuthorityInformationAccess -ParameterFilter {
+                    $AddToCertificateOcsp -eq $true
+                } -Exactly -Times 0 -Scope It
+
+                Should -Invoke -CommandName Restart-ServiceIfExists -Exactly -Times 0 -Scope It
+            }
+        }
+
+        Context 'When the OCSP needs to be removed' {
+            It 'Should call the correct mocks' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockProperties = @{
+                        OcspUri = @('http://example.com/ocsp1', 'http://example.com/ocsp2')
+                    }
+
+                    $script:mockInstance.PropertiesNotInDesiredState = @(
+                        @{
+                            Property      = 'OcspUri'
+                            ExpectedValue = @('http://example.com/ocsp1')
+                            ActualValue   = @('http://example.com/ocsp1', 'http://example.com/ocsp2')
+                        }
+                    )
+
+                    $script:mockInstance.Modify($mockProperties)
+                }
+
+                Should -Invoke -CommandName Add-CAAuthorityInformationAccess -ParameterFilter {
+                    $AddToCertificateAia -eq $true
+                } -Exactly -Times 0 -Scope It
+
+                Should -Invoke -CommandName Add-CAAuthorityInformationAccess -ParameterFilter {
+                    $AddToCertificateOcsp -eq $true
+                } -Exactly -Times 0 -Scope It
+
+                Should -Invoke -CommandName Remove-CAAuthorityInformationAccess -ParameterFilter {
+                    $AddToCertificateAia -eq $true
+                } -Exactly -Times 0 -Scope It
+
+                Should -Invoke -CommandName Remove-CAAuthorityInformationAccess -ParameterFilter {
+                    $AddToCertificateOcsp -eq $true
+                } -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Restart-ServiceIfExists -Exactly -Times 0 -Scope It
+            }
+        }
+
+        Context 'When the OCSP needs to be removed and AllowRestartService is set to $true' {
+            It 'Should call the correct mocks' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockProperties = @{
+                        OcspUri = @('http://example.com/ocsp1', 'http://example.com/ocsp2')
+                    }
+
+                    $script:mockInstance.PropertiesNotInDesiredState = @(
+                        @{
+                            Property      = 'OcspUri'
+                            ExpectedValue = @('http://example.com/ocsp1')
+                            ActualValue   = @('http://example.com/ocsp1', 'http://example.com/ocsp2')
+                        }
+                    )
+
+                    $script:mockInstance.AllowRestartService = $true
+
+                    $script:mockInstance.Modify($mockProperties)
+                }
+
+                Should -Invoke -CommandName Add-CAAuthorityInformationAccess -ParameterFilter {
+                    $AddToCertificateAia -eq $true
+                } -Exactly -Times 0 -Scope It
+
+                Should -Invoke -CommandName Add-CAAuthorityInformationAccess -ParameterFilter {
+                    $AddToCertificateOcsp -eq $true
+                } -Exactly -Times 0 -Scope It
+
+                Should -Invoke -CommandName Remove-CAAuthorityInformationAccess -ParameterFilter {
+                    $AddToCertificateAia -eq $true
+                } -Exactly -Times 0 -Scope It
+
+                Should -Invoke -CommandName Remove-CAAuthorityInformationAccess -ParameterFilter {
+                    $AddToCertificateOcsp -eq $true
+                } -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Restart-ServiceIfExists -Exactly -Times 1 -Scope It
+            }
+        }
+    }
+}
 
 Describe 'AdcsAuthorityInformationAccess\AssertProperties()' -Tag 'AssertProperties' {
     BeforeAll {
