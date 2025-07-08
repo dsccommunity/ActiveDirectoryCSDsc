@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - ActiveDirectoryCSDsc
   - Automatically publish documentation to GitHub Wiki - Fixes [Issue #122](https://github.com/dsccommunity/ActiveDirectoryCSDsc/issues/122).
+  - Revert Pester to non-prerelease.
+  - Use DscResource.Base pre-release.
 - Renamed `master` branch to `main` - Fixes [Issue #124](https://github.com/dsccommunity/ActiveDirectoryCSDsc/issues/124).
 - Updated `GitVersion.yml` to latest pattern - Fixes [Issue #126](https://github.com/dsccommunity/ActiveDirectoryCSDsc/issues/126).
 - Updated build to use `Sampler.GitHubTasks` - Fixes [Issue #129](https://github.com/dsccommunity/ActiveDirectoryCSDsc/issues/129).
@@ -17,13 +19,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Azure pipelines - Remove deprecated images, make the build work
 - Azure Pipelines - Reverted `PublishCodeCoverageResults` back to v1 to display line level coverage in ADO.
 - `Tests` - Added tests for catch blocks in `AdcsCertificationAuthority`, `AcdsOnlineResponder`, `AdcsWebEnrollment`.
-- `Tests` - Migrate all tests to Pester 5
+- `Tests` - Migrate all tests to Pester 5.
+- Include module file in code coverage.
+- Add RootModule to Module psd1.
 - AdcsAuthorityInformationAccess
   - Removed `AllowRestartService` parameter from compared settings, force `Get-CaAiaUriList`
     to return unmangled `System.String[]` with single values.
     Fixes [Issue #128](https://github.com/dsccommunity/ActiveDirectoryCSDsc/issues/128)
     Fixes [Issue #138](https://github.com/dsccommunity/ActiveDirectoryCSDsc/issues/138).
   - Convert to class-based resource.
+
+### Added
+
+- AdcsReason
+  - Used in class-based resources.
+- Testing
+  - WebAdministration Stub, to allow AdcsEnrollmentPolicyWebService to pass without the module being installed.
 
 ## [5.0.0] - 2020-06-20
 
