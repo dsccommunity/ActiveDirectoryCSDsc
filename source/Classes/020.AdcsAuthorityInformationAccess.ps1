@@ -21,7 +21,6 @@
 
     .PARAMETER AllowRestartService
         Allows the Certificate Authority service to be restarted if changes are made.
-        Defaults to false.
 
     .PARAMETER Reasons
         Returns the reason a property is not in desired state.
