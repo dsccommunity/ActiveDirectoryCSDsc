@@ -110,8 +110,6 @@ Pester:
   ExcludeFromCodeCoverage:
     - Modules/DscResource.Common
     - Modules/DscResource.Base
-    - prefix.ps1
-    - ActiveDirectoryCSDsc.psm1
 
 ####################################################
 #      Pester Configuration (DscResource.Test)     #
