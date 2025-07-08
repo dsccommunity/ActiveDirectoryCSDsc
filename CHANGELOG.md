@@ -28,6 +28,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     Fixes [Issue #128](https://github.com/dsccommunity/ActiveDirectoryCSDsc/issues/128)
     Fixes [Issue #138](https://github.com/dsccommunity/ActiveDirectoryCSDsc/issues/138).
   - Convert to class-based resource.
+- `Get-CaAiaUriList`
+  - Clean up tests.
+  - Change Write-Verbose to Write-Debug.
+  - `Get-CAAuthorityInformationAccess` force Verbose to false.
+  - Move to Private function.
+- `Restart-ServiceIfExists`
+  - Change Write-Verbose to Write-Debug.
 
 ### Added
 
