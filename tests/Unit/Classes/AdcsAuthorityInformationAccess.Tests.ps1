@@ -78,9 +78,9 @@ Describe 'AdcsAuthorityInformationAccess' {
     }
 }
 
-Describe 'WSManListener\Get()' -Tag 'Get' {
+Describe 'AdcsAuthorityInformationAccess\Get()' -Tag 'Get' {
     Context 'When the system is in the desired state' {
-        Context 'When getting AIA and OCSP URIs' {
+        Context 'When single AIA and OCSP URIs' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
@@ -127,6 +127,62 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
 
                     $currentState.AiaUri | Should -Be @('http://example.com/aia')
                     $currentState.OcspUri | Should -Be @('http://example.com/ocsp')
+
+                    $currentState.AllowRestartService | Should -BeNullOrEmpty
+
+                    $currentState.Ensure | Should -Be 'Present'
+                    $currentState.Reasons | Should -BeNullOrEmpty
+                }
+            }
+        }
+
+        Context 'When multiple AIA and OCSP URIs' {
+            BeforeAll {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $script:mockInstance = [AdcsAuthorityInformationAccess] @{
+                        IsSingleInstance = 'Yes'
+                        AiaUri           = @('http://example.com/aia1', 'http://example.com/aia2')
+                        OcspUri          = @('http://example.com/ocsp1', 'http://example.com/ocsp2')
+                        Ensure           = 'Present'
+                    }
+
+                    <#
+                        This mocks the method GetCurrentState().
+                        This mocks the method Assert().
+                        This mocks the method Normalize().
+
+                        Method Get() will call the base method Get() which will
+                        call back to the derived class methods.
+                    #>
+                    $script:mockInstance |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
+                            return @{
+                                IsSingleInstance = 'Yes'
+                                AiaUri           = [System.String[]] @('http://example.com/aia1', 'http://example.com/aia2')
+                                OcspUri          = [System.String[]] @('http://example.com/ocsp1', 'http://example.com/ocsp2')
+                            }
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Assert' -Value {
+                            return
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Normalize' -Value {
+                            return
+                        } -PassThru
+                }
+            }
+
+            It 'Should return the correct values' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $currentState = $script:mockInstance.Get()
+
+                    $currentState.IsSingleInstance | Should -Be 'Yes'
+
+                    $currentState.AiaUri | Should -Be @('http://example.com/aia1', 'http://example.com/aia2')
+                    $currentState.OcspUri | Should -Be @('http://example.com/ocsp1', 'http://example.com/ocsp2')
 
                     $currentState.AllowRestartService | Should -BeNullOrEmpty
 
@@ -194,7 +250,7 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
                     Set-StrictMode -Version 1.0
 
                     $script:mockInstance = [AdcsAuthorityInformationAccess] @{
-                        IsSingleInstance = 'HTTPS'
+                        IsSingleInstance = 'Yes'
                         AiaUri           = 'http://example.com/aia'
                         OcspUri          = 'http://example.com/ocsp'
                         Ensure           = 'Present'
@@ -247,14 +303,16 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
             }
         }
 
-        Context 'When the listener exists but should not' {
+        Context 'When property ''OcspUri'' has the wrong value' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $script:mockInstance = [WSManListener] @{
-                        Transport = 'HTTP'
-                        Ensure    = 'Absent'
+                    $script:mockInstance = [AdcsAuthorityInformationAccess] @{
+                        IsSingleInstance = 'Yes'
+                        AiaUri           = 'http://example.com/aia'
+                        OcspUri          = 'http://example.com/ocsp'
+                        Ensure           = 'Present'
                     }
 
                     <#
@@ -267,17 +325,10 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
                     #>
                     $script:mockInstance |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
-                            return [System.Collections.Hashtable] @{
-                                Transport             = [WSManTransport] 'HTTP'
-                                Port                  = [System.UInt16] 5985
-                                Address               = '*'
-                                Enabled               = 'true'
-                                URLPrefix             = 'wsman'
-                                Issuer                = $null
-                                MatchAlternate        = $null
-                                BaseDN                = $null
-                                CertificateThumbprint = $null
-                                Hostname              = $null
+                            return @{
+                                IsSingleInstance = 'Yes'
+                                AiaUri           = [System.String[]] 'http://example.com/aia'
+                                OcspUri          = [System.String[]] 'http://example.com/ocspincorrect'
                             }
                         } -PassThru |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'Assert' -Value {
@@ -295,198 +346,309 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
 
                     $currentState = $script:mockInstance.Get()
 
-                    $currentState.Transport | Should -Be 'HTTP'
-                    $currentState.Port | Should -Be 5985
+                    $currentState.IsSingleInstance | Should -Be 'Yes'
 
-                    $currentState.Address | Should -Be '*'
-                    $currentState.Enabled | Should -BeTrue
-                    $currentState.URLPrefix | Should -Be 'wsman'
+                    $currentState.AiaUri | Should -Be @('http://example.com/aia')
+                    $currentState.OcspUri | Should -Be @('http://example.com/ocspincorrect')
 
-                    $currentState.Issuer | Should -BeNullOrEmpty
-                    $currentState.SubjectFormat | Should -Be 0
-                    $currentState.MatchAlternate | Should -BeNullOrEmpty
-                    $currentState.BaseDN | Should -BeNullOrEmpty
-                    $currentState.CertificateThumbprint | Should -BeNullOrEmpty
-                    $currentState.Hostname | Should -BeNullOrEmpty
+                    $currentState.AllowRestartService | Should -BeNullOrEmpty
 
                     $currentState.Ensure | Should -Be 'Present'
 
                     $currentState.Reasons | Should -HaveCount 1
-                    $currentState.Reasons[0].Code | Should -Be 'WSManListener:WSManListener:Ensure'
-                    $currentState.Reasons[0].Phrase | Should -Be 'The property Ensure should be "Absent", but was "Present"'
+                    $currentState.Reasons[0].Code | Should -Be 'AdcsAuthorityInformationAccess:AdcsAuthorityInformationAccess:OcspUri'
+                    $currentState.Reasons[0].Phrase | Should -Be 'The property OcspUri should be "http://example.com/ocsp", but was "http://example.com/ocspincorrect"'
+                }
+            }
+        }
+
+        Context 'When property ''AiaUri'' has too many values' {
+            BeforeAll {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $script:mockInstance = [AdcsAuthorityInformationAccess] @{
+                        IsSingleInstance = 'Yes'
+                        AiaUri           = @('http://example.com/aia1')
+                        OcspUri          = @('http://example.com/ocsp1', 'http://example.com/ocsp2')
+                        Ensure           = 'Present'
+                    }
+
+                    <#
+                        This mocks the method GetCurrentState().
+                        This mocks the method Assert().
+                        This mocks the method Normalize().
+
+                        Method Get() will call the base method Get() which will
+                        call back to the derived class methods.
+                    #>
+                    $script:mockInstance |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
+                            return @{
+                                IsSingleInstance = 'Yes'
+                                AiaUri           = [System.String[]] @('http://example.com/aia1', 'http://example.com/aia2')
+                                OcspUri          = [System.String[]] @('http://example.com/ocsp1', 'http://example.com/ocsp2')
+                            }
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Assert' -Value {
+                            return
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Normalize' -Value {
+                            return
+                        } -PassThru
+                }
+            }
+
+            It 'Should return the correct values' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $currentState = $script:mockInstance.Get()
+
+                    $currentState.IsSingleInstance | Should -Be 'Yes'
+
+                    $currentState.AiaUri | Should -Be @('http://example.com/aia1', 'http://example.com/aia2')
+                    $currentState.OcspUri | Should -Be @('http://example.com/ocsp1', 'http://example.com/ocsp2')
+
+                    $currentState.AllowRestartService | Should -BeNullOrEmpty
+
+                    $currentState.Ensure | Should -Be 'Present'
+
+                    $currentState.Reasons | Should -HaveCount 1
+                    $currentState.Reasons[0].Code | Should -Be 'AdcsAuthorityInformationAccess:AdcsAuthorityInformationAccess:AiaUri'
+                    $currentState.Reasons[0].Phrase | Should -Be 'The property AiaUri should be "http://example.com/aia1", but was ["http://example.com/aia1","http://example.com/aia2"]'
+                }
+            }
+        }
+
+        Context 'When property ''OcspUri'' has too many values' {
+            BeforeAll {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $script:mockInstance = [AdcsAuthorityInformationAccess] @{
+                        IsSingleInstance = 'Yes'
+                        AiaUri           = @('http://example.com/aia1', 'http://example.com/aia2')
+                        OcspUri          = @('http://example.com/ocsp1')
+                        Ensure           = 'Present'
+                    }
+
+                    <#
+                        This mocks the method GetCurrentState().
+                        This mocks the method Assert().
+                        This mocks the method Normalize().
+
+                        Method Get() will call the base method Get() which will
+                        call back to the derived class methods.
+                    #>
+                    $script:mockInstance |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
+                            return @{
+                                IsSingleInstance = 'Yes'
+                                AiaUri           = [System.String[]] @('http://example.com/aia1', 'http://example.com/aia2')
+                                OcspUri          = [System.String[]] @('http://example.com/ocsp1', 'http://example.com/ocsp2')
+                            }
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Assert' -Value {
+                            return
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Normalize' -Value {
+                            return
+                        } -PassThru
+                }
+            }
+
+            It 'Should return the correct values' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $currentState = $script:mockInstance.Get()
+
+                    $currentState.IsSingleInstance | Should -Be 'Yes'
+
+                    $currentState.AiaUri | Should -Be @('http://example.com/aia1', 'http://example.com/aia2')
+                    $currentState.OcspUri | Should -Be @('http://example.com/ocsp1', 'http://example.com/ocsp2')
+
+                    $currentState.AllowRestartService | Should -BeNullOrEmpty
+
+                    $currentState.Ensure | Should -Be 'Present'
+
+                    $currentState.Reasons | Should -HaveCount 1
+                    $currentState.Reasons[0].Code | Should -Be 'AdcsAuthorityInformationAccess:AdcsAuthorityInformationAccess:OcspUri'
+                    $currentState.Reasons[0].Phrase | Should -Be 'The property OcspUri should be "http://example.com/ocsp1", but was ["http://example.com/ocsp1","http://example.com/ocsp2"]'
                 }
             }
         }
     }
 }
 
-# Describe 'WSManListener\Set()' -Tag 'Set' {
-#     BeforeAll {
-#         InModuleScope -ScriptBlock {
-#             Set-StrictMode -Version 1.0
+Describe 'AdcsAuthorityInformationAccess\Set()' -Tag 'Set' {
+    BeforeAll {
+        InModuleScope -ScriptBlock {
+            Set-StrictMode -Version 1.0
 
-#             $script:mockInstance = [WSManListener] @{
-#                 Transport = 'HTTP'
-#                 Port      = 5000
-#                 Ensure    = 'Present'
-#             } |
-#                 # Mock method Modify which is called by the case method Set().
-#                 Add-Member -Force -MemberType 'ScriptMethod' -Name 'Modify' -Value {
-#                     $script:methodModifyCallCount += 1
-#                 } -PassThru
-#         }
-#     }
+            $script:mockInstance = [AdcsAuthorityInformationAccess] @{
+                IsSingleInstance = 'Yes'
+                AiaUri           = @('http://example.com/aia1')
+                OcspUri          = @('http://example.com/ocsp1', 'http://example.com/ocsp2')
+                Ensure           = 'Present'
+            } |
+                # Mock method Modify which is called by the case method Set().
+                Add-Member -Force -MemberType 'ScriptMethod' -Name 'Modify' -Value {
+                    $script:methodModifyCallCount += 1
+                } -PassThru
+        }
+    }
 
-#     BeforeEach {
-#         InModuleScope -ScriptBlock {
-#             Set-StrictMode -Version 1.0
+    BeforeEach {
+        InModuleScope -ScriptBlock {
+            Set-StrictMode -Version 1.0
 
-#             $script:methodTestCallCount = 0
-#             $script:methodModifyCallCount = 0
-#         }
-#     }
+            $script:methodTestCallCount = 0
+            $script:methodModifyCallCount = 0
+        }
+    }
 
-#     Context 'When the system is in the desired state' {
-#         BeforeAll {
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
+    Context 'When the system is in the desired state' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-#                 $script:mockInstance |
-#                     # Mock method Test() which is called by the base method Set()
-#                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'Test' -Value {
-#                         $script:methodTestCallCount += 1
-#                         return $true
-#                     }
+                $script:mockInstance |
+                    # Mock method Test() which is called by the base method Set()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Test' -Value {
+                        $script:methodTestCallCount += 1
+                        return $true
+                    }
 
-#             }
-#         }
+            }
+        }
 
-#         It 'Should not call method Modify()' {
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
+        It 'Should not call method Modify()' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-#                 $script:mockInstance.Set()
+                $script:mockInstance.Set()
 
-#                 $script:methodTestCallCount | Should -Be 1
-#                 $script:methodModifyCallCount | Should -Be 0
-#             }
-#         }
-#     }
+                $script:methodTestCallCount | Should -Be 1
+                $script:methodModifyCallCount | Should -Be 0
+            }
+        }
+    }
 
-#     Context 'When the system is not in the desired state' {
-#         BeforeAll {
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
+    Context 'When the system is not in the desired state' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-#                 $script:mockInstance |
-#                     # Mock method Test() which is called by the base method Set()
-#                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'Test' -Value {
-#                         $script:methodTestCallCount += 1
-#                         return $false
-#                     }
+                $script:mockInstance |
+                    # Mock method Test() which is called by the base method Set()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Test' -Value {
+                        $script:methodTestCallCount += 1
+                        return $false
+                    }
 
-#                 $script:mockInstance.PropertiesNotInDesiredState = @(
-#                     @{
-#                         Property      = 'Port'
-#                         ExpectedValue = 5000
-#                         ActualValue   = 5985
-#                     }
-#                 )
-#             }
-#         }
+                $script:mockInstance.PropertiesNotInDesiredState = @(
+                    @{
+                        Property      = 'AiaUri'
+                        ExpectedValue = @('http://example.com/aia1')
+                        ActualValue   = @('http://example.com/aia1', 'http://example.com/aia2')
+                    }
+                )
+            }
+        }
 
-#         It 'Should call method Modify()' {
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
+        It 'Should call method Modify()' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-#                 $script:mockInstance.Set()
+                $script:mockInstance.Set()
 
-#                 $script:methodTestCallCount | Should -Be 1
-#                 $script:methodModifyCallCount | Should -Be 1
-#             }
-#         }
-#     }
-# }
+                $script:methodTestCallCount | Should -Be 1
+                $script:methodModifyCallCount | Should -Be 1
+            }
+        }
+    }
+}
 
-# Describe 'WSManListener\Test()' -Tag 'Test' {
-#     BeforeAll {
-#         InModuleScope -ScriptBlock {
-#             Set-StrictMode -Version 1.0
+Describe 'AdcsAuthorityInformationAccess\Test()' -Tag 'Test' {
+    BeforeAll {
+        InModuleScope -ScriptBlock {
+            Set-StrictMode -Version 1.0
 
-#             $script:mockInstance = [WSManListener] @{
-#                 Transport             = 'HTTPS'
-#                 Port                  = 5986
-#                 CertificateThumbprint = '74FA31ADEA7FDD5333CED10910BFA6F665A1F2FC'
-#                 Hostname              = [System.Net.Dns]::GetHostEntry((Get-ComputerName)).Hostname
-#                 Ensure                = 'Present'
-#             }
-#         }
-#     }
+            $script:mockInstance = [AdcsAuthorityInformationAccess] @{
+                IsSingleInstance = 'Yes'
+                AiaUri           = @('http://example.com/aia1')
+                OcspUri          = @('http://example.com/ocsp1', 'http://example.com/ocsp2')
+                Ensure           = 'Present'
+            }
+        }
+    }
 
-#     BeforeEach {
-#         InModuleScope -ScriptBlock {
-#             Set-StrictMode -Version 1.0
+    BeforeEach {
+        InModuleScope -ScriptBlock {
+            Set-StrictMode -Version 1.0
 
-#             $script:getMethodCallCount = 0
-#         }
-#     }
+            $script:getMethodCallCount = 0
+        }
+    }
 
-#     Context 'When the system is in the desired state' {
-#         BeforeAll {
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
+    Context 'When the system is in the desired state' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-#                 $script:mockInstance |
-#                     # Mock method Get() which is called by the base method Test()
-#                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'Get' -Value {
-#                         $script:getMethodCallCount += 1
-#                     }
-#             }
+                $script:mockInstance |
+                    # Mock method Get() which is called by the base method Test()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Get' -Value {
+                        $script:getMethodCallCount += 1
+                    }
+            }
 
-#             It 'Should return $true' {
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
+            It 'Should return $true' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
 
-#                     $script:mockInstance.Test() | Should -BeTrue
+                    $script:mockInstance.Test() | Should -BeTrue
 
-#                     $script:getMethodCallCount | Should -Be 1
-#                 }
-#             }
-#         }
-#     }
+                    $script:getMethodCallCount | Should -Be 1
+                }
+            }
+        }
+    }
 
-#     Context 'When the system is not in the desired state' {
-#         BeforeAll {
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
+    Context 'When the system is not in the desired state' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-#                 $script:mockInstance |
-#                     # Mock method Get() which is called by the base method Test()
-#                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'Get' -Value {
-#                         $script:getMethodCallCount += 1
-#                     }
+                $script:mockInstance |
+                    # Mock method Get() which is called by the base method Test()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Get' -Value {
+                        $script:getMethodCallCount += 1
+                    }
 
-#                 $script:mockInstance.PropertiesNotInDesiredState = @(
-#                     @{
-#                         Property      = 'Port'
-#                         ExpectedValue = 5986
-#                         ActualValue   = 443
-#                     }
-#                 )
-#             }
-#         }
+                $script:mockInstance.PropertiesNotInDesiredState = @(
+                    @{
+                        Property      = 'AiaUri'
+                        ExpectedValue = @('http://example.com/aia1')
+                        ActualValue   = @('http://example.com/aia1', 'http://example.com/aia2')
+                    }
+                )
+            }
+        }
 
-#         It 'Should return $false' {
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
+        It 'Should return $false' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-#                 $script:mockInstance.Test() | Should -BeFalse
+                $script:mockInstance.Test() | Should -BeFalse
 
-#                 $script:getMethodCallCount | Should -Be 1
-#             }
-#         }
-#     }
-# }
+                $script:getMethodCallCount | Should -Be 1
+            }
+        }
+    }
+}
 
 # Describe 'WSManListener\GetCurrentState()' -Tag 'HiddenMember' {
 #     Context 'When object is missing in the current state' {
@@ -734,268 +896,104 @@ Describe 'WSManListener\Get()' -Tag 'Get' {
 #     }
 # }
 
-# Describe 'WSManListener\NewInstance()' -Tag 'HiddenMember' {
-#     BeforeAll {
-#         Mock -CommandName New-WSManInstance
-#     }
+Describe 'AdcsAuthorityInformationAccess\AssertProperties()' -Tag 'AssertProperties' {
+    BeforeAll {
+        InModuleScope -ScriptBlock {
+            Set-StrictMode -Version 1.0
 
-#     Context 'When creating a HTTP Transport' {
-#         BeforeAll {
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
+            $script:mockInstance = [AdcsAuthorityInformationAccess] @{}
+        }
+    }
 
-#                 $script:mockInstance = [WSManListener] @{
-#                     Transport = 'HTTP'
-#                     Port      = 5985
-#                     Address   = '*'
-#                     Ensure    = 'Present'
-#                 }
-#             }
-#         }
+    Context 'When required module is missing' {
+        BeforeAll {
+            Mock -CommandName Assert-Module -MockWith { throw }
+        }
 
-#         It 'Should call the correct mock' {
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
+        It 'Should throw an error' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-#                 $script:mockInstance.NewInstance()
-#             }
+                $mockProperties = @{
+                    IsSingleInstance = 'Yes'
+                }
 
-#             Should -Invoke -CommandName New-WSManInstance -Exactly -Times 1 -Scope It
-#         }
-#     }
+                { $mockInstance.AssertProperties($mockProperties) } | Should -Throw
+            }
+        }
+    }
 
-#     Context 'When creating a HTTPS Transport' {
-#         BeforeAll {
-#             Mock -CommandName Get-DscProperty
-#         }
+    Context 'When required module is present' {
+        BeforeAll {
+            Mock -CommandName Assert-Module
+            Mock -CommandName Assert-BoundParameter
+        }
 
-#         BeforeEach {
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
+        It 'Should throw an error' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-#                 $script:mockInstance = [WSManListener] @{
-#                     Transport = 'HTTPS'
-#                     Port      = 5986
-#                     Address   = '*'
-#                     Ensure    = 'Present'
-#                 }
-#             }
-#         }
+                $mockProperties = @{
+                    IsSingleInstance = 'Yes'
+                }
 
-#         Context 'When the certificate thumbprint exists' {
-#             BeforeAll {
-#                 Mock -CommandName Find-Certificate -MockWith {
-#                     @{ Thumbprint = '74FA31ADEA7FDD5333CED10910BFA6F665A1F2FC' }
-#                 }
-#             }
+                { $mockInstance.AssertProperties($mockProperties) } | Should -Not -Throw
+            }
+        }
+    }
 
-#             Context 'When the hostname is provided' {
-#                 It 'Should call the correct mocks' {
-#                     InModuleScope -ScriptBlock {
-#                         Set-StrictMode -Version 1.0
+    Context 'When required parameters are missing' {
+        BeforeDiscovery {
+            $testCases = @(
+                @{
+                    IsSingleInstance = 'Yes'
+                }
+            )
+        }
 
-#                         $script:mockInstance.HostName = 'somehost'
+        BeforeAll {
+            Mock -CommandName Assert-Module
+        }
 
-#                         $script:mockInstance.NewInstance()
-#                     }
+        It 'Should throw the correct error' -ForEach $testCases {
+            InModuleScope -Parameters @{
+                mockProperties = $_
+            } -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-#                     Should -Invoke -CommandName Get-DscProperty -Exactly -Times 1 -Scope It
-#                     Should -Invoke -CommandName Find-Certificate -Exactly -Times 1 -Scope It
-#                     Should -Invoke -CommandName New-WSManInstance -ParameterFilter {
-#                         $ValueSet.HostName -eq 'somehost'
-#                     } -Exactly -Times 1 -Scope It
-#                 }
-#             }
+                { $mockInstance.AssertProperties($mockProperties) } | Should -Throw -ExpectedMessage ('*' + 'DRC0050' + '*')
+            }
+        }
+    }
 
-#             Context 'When the hostname is not provided' {
-#                 It 'Should call the correct mock' {
-#                     InModuleScope -ScriptBlock {
-#                         Set-StrictMode -Version 1.0
+    Context 'When passing required parameters' {
+        BeforeDiscovery {
+            $testCases = @(
+                @{
+                    AiaUri  = @('http://example.com/aia')
+                    OcspUri = @('http://example.com/ocsp')
+                }
+                @{
+                    AiaUri = @('http://example.com/aia')
+                }
+                @{
+                    OcspUri = @('http://example.com/ocsp')
+                }
+            )
+        }
 
-#                         $script:mockInstance.NewInstance()
-#                     }
+        BeforeAll {
+            Mock -CommandName Assert-Module
+        }
 
-#                     Should -Invoke -CommandName Get-DscProperty -Exactly -Times 1 -Scope It
-#                     Should -Invoke -CommandName Find-Certificate -Exactly -Times 1 -Scope It
-#                     Should -Invoke -CommandName New-WSManInstance -ParameterFilter {
-#                         $ValueSet.HostName -eq [System.Net.Dns]::GetHostEntry((Get-ComputerName)).Hostname
-#                     } -Exactly -Times 1 -Scope It
-#                 }
-#             }
-#         }
+        It 'Should not throw an error' -ForEach $testCases {
+            InModuleScope -Parameters @{
+                mockProperties = $_
+            } -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-#         Context 'When the certificate thumbprint does not exist' {
-#             BeforeAll {
-#                 Mock -CommandName Find-Certificate
-#             }
-
-#             It 'Should throw the correct exception' {
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
-
-#                     $mockErrorMessage = Get-InvalidArgumentRecord -Message (
-#                         $script:mockInstance.localizedData.ListenerCreateFailNoCertError -f $script:mockInstance.Transport, $script:mockInstance.Port
-#                     ) -Argument 'Issuer'
-
-#                     { $script:mockInstance.NewInstance() } | Should -Throw -ExpectedMessage $mockErrorMessage.Exception.Message
-#                 }
-
-#                 Should -Invoke -CommandName New-WSManInstance -Exactly -Times 0 -Scope It
-#                 Should -Invoke -CommandName Get-DscProperty -Exactly -Times 1 -Scope It
-#                 Should -Invoke -CommandName Find-Certificate -Exactly -Times 1 -Scope It
-#             }
-#         }
-#     }
-
-#     Context 'When the parameters ''Port'' and ''Address'' is not set' {
-#         BeforeAll {
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
-
-#                 $script:mockInstance = [WSManListener] @{
-#                     Transport = 'HTTP'
-#                     Ensure    = 'Present'
-#                 }
-#             }
-
-#             Mock -CommandName Get-DefaultPort -MockWith {
-#                 return [System.UInt16] 5985
-#             }
-#         }
-
-#         It 'Should create the listener correctly' {
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
-
-#                 $script:mockInstance.NewInstance()
-#             }
-
-#             Should -Invoke -CommandName New-WSManInstance -Exactly -Times 1 -Scope It
-#             Should -Invoke -CommandName Get-DefaultPort -Exactly -Times 1 -Scope It
-#         }
-#     }
-# }
-
-# Describe 'WSManListener\RemoveInstance()' -Tag 'HiddenMember' {
-#     BeforeAll {
-#         InModuleScope -ScriptBlock {
-#             Set-StrictMode -Version 1.0
-
-#             $script:mockInstance = [WSManListener] @{
-#                 Transport = 'HTTPS'
-#                 Port      = 5986
-#                 Address   = '*'
-#                 Ensure    = 'Present'
-#             }
-#         }
-
-#         Mock -CommandName Remove-WSManInstance
-#     }
-
-#     It 'Should call the correct mock' {
-#         InModuleScope -ScriptBlock {
-#             Set-StrictMode -Version 1.0
-
-#             $script:mockInstance.RemoveInstance()
-#         }
-
-#         Should -Invoke -CommandName Remove-WSManInstance -Exactly -Times 1 -Scope It
-#     }
-# }
-
-# Describe 'WSManListener\AssertProperties()' -Tag 'AssertProperties' {
-#     BeforeAll {
-#         InModuleScope -ScriptBlock {
-#             Set-StrictMode -Version 1.0
-
-#             $script:mockInstance = [WSManListener] @{}
-#         }
-#     }
-
-#     Context 'When passing mutually exclusive parameters' {
-#         BeforeDiscovery {
-#             $testCases = @(
-#                 @{
-#                     Issuer   = 'SomeIssuer'
-#                     HostName = 'TheHostname'
-#                 }
-#                 @{
-#                     Issuer                = 'SomeIssuer'
-#                     CertificateThumbprint = 'certificateThumbprint'
-#                 }
-#                 @{
-#                     BaseDN   = 'SomeBaseDN'
-#                     HostName = 'TheHostname'
-#                 }
-#                 @{
-#                     BaseDN                = 'SomeBaseDN'
-#                     CertificateThumbprint = 'certificateThumbprint'
-#                 }
-#                 @{
-#                     SubjectFormat = 1
-#                     HostName      = 'TheHostname'
-#                 }
-#                 @{
-#                     SubjectFormat         = 1
-#                     CertificateThumbprint = 'certificateThumbprint'
-#                 }
-#                 @{
-#                     MatchAlternate = 'MatchAlternate'
-#                     HostName       = 'TheHostname'
-#                 }
-#                 @{
-#                     MatchAlternate        = 'MatchAlternate'
-#                     CertificateThumbprint = 'certificateThumbprint'
-#                 }
-#             )
-#         }
-
-#         It 'Should throw the correct error' -ForEach $testCases {
-#             InModuleScope -Parameters @{
-#                 mockProperties = $_
-#             } -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
-
-#                 if ($mockProperties.SubjectFormat)
-#                 {
-#                     $mockProperties.SubjectFormat = [WSManSubjectFormat]$mockProperties.SubjectFormat
-#                 }
-
-#                 { $mockInstance.AssertProperties($mockProperties) } | Should -Throw -ExpectedMessage ('*' + 'DRC0010' + '*')
-#             }
-#         }
-#     }
-
-#     Context 'When passing mutually inclusive parameters' {
-#         BeforeDiscovery {
-#             $testCases = @(
-#                 @{
-#                     Issuer         = 'SomeIssuer'
-#                     BaseDN         = 'SomeBaseDN'
-#                     SubjectFormat  = 0
-#                     MatchAlternate = 'MatchAlternate'
-#                 }
-#                 @{
-
-#                     HostName              = 'TheHostname'
-#                     CertificateThumbprint = 'certificateThumbprint'
-#                 }
-#             )
-#         }
-
-#         It 'Should not throw an error' -ForEach $testCases {
-#             InModuleScope -Parameters @{
-#                 mockProperties = $_
-#             } -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
-
-#                 if ($mockProperties.SubjectFormat)
-#                 {
-#                     $mockProperties.SubjectFormat = [WSManSubjectFormat]$mockProperties.SubjectFormat
-#                 }
-
-#                 { $mockInstance.AssertProperties($mockProperties) } | Should -Not -Throw
-#             }
-#         }
-#     }
-# }
+                { $mockInstance.AssertProperties($mockProperties) } | Should -Not -Throw
+            }
+        }
+    }
+}
