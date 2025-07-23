@@ -22,17 +22,17 @@ function Restart-ServiceIfExists
         $Name
     )
 
-    Write-Verbose -Message ($script:localizedData.GetServiceInformation -f $Name)
-    $servicesService = Get-Service @PSBoundParameters -ErrorAction Continue -Verbose:$VerbosePreference
+    Write-Debug -Message ($script:localizedData.GetServiceInformation -f $Name)
+    $servicesService = Get-Service @PSBoundParameters -ErrorAction Continue
 
     if ($servicesService)
     {
-        Write-Verbose -Message ($script:localizedData.RestartService -f $Name)
-        $servicesService | Restart-Service -Force -ErrorAction Stop -Verbose:$VerbosePreference
+        Write-Debug -Message ($script:localizedData.RestartService -f $Name)
+        $servicesService | Restart-Service -Force -ErrorAction Stop
     }
     else
     {
-        Write-Verbose -Message ($script:localizedData.UnknownService -f $Name)
+        Write-Debug -Message ($script:localizedData.UnknownService -f $Name)
     }
 }
 

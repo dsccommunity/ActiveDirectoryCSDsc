@@ -43,6 +43,7 @@ BeforeAll {
 
     Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
     Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '.\Stubs\AdcsDeploymentStub.psm1')
+    Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '.\Stubs\WebAdministrationStub.psm1')
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscResourceName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscResourceName
@@ -131,6 +132,7 @@ AfterAll {
     Get-Module -Name $script:dscResourceName -All | Remove-Module -Force
 
     Remove-Module -Name AdcsDeploymentStub -Force
+    Remove-Module -Name WebAdministrationStub -Force
 
     # Remove module common test helper.
     Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
@@ -455,6 +457,7 @@ Describe 'DSC_AdcsEnrollmentPolicyWebService\Test-AdcsEnrollmentPolicyWebService
             }
         )
     }
+
     BeforeAll {
         $script:mockAdcsEnrollmentPolicyWebServiceInstallStateAllInstalled = { $testAdcsEnrollmentPolicyWebServiceInstallStateTestCases }
 
