@@ -301,15 +301,16 @@ Describe 'AdcsOnlineResponder\Get()' -Tag 'Get' {
     }
 }
 
-Describe 'AdcsOnlineResponder\Set()' -Tag 'Set' -Skip:$true {
+Describe 'AdcsOnlineResponder\Set()' -Tag 'Set'{
     BeforeAll {
         InModuleScope -ScriptBlock {
             Set-StrictMode -Version 1.0
 
+            $script:mockCredential = New-Object System.Management.Automation.PSCredential ('Administrator', (New-Object -Type SecureString))
+
             $script:mockInstance = [AdcsOnlineResponder] @{
                 IsSingleInstance = 'Yes'
-                AiaUri           = @('http://example.com/aia1')
-                OcspUri          = @('http://example.com/ocsp1', 'http://example.com/ocsp2')
+                Credential       = $script:mockCredential
             } |
                 # Mock method Modify which is called by the case method Set().
                 Add-Member -Force -MemberType 'ScriptMethod' -Name 'Modify' -Value {
@@ -368,9 +369,9 @@ Describe 'AdcsOnlineResponder\Set()' -Tag 'Set' -Skip:$true {
 
                 $script:mockInstance.PropertiesNotInDesiredState = @(
                     @{
-                        Property      = 'AiaUri'
-                        ExpectedValue = @('http://example.com/aia1')
-                        ActualValue   = @('http://example.com/aia1', 'http://example.com/aia2')
+                        Property      = 'Ensure'
+                        ExpectedValue = 'Present'
+                        ActualValue   = 'Absent'
                     }
                 )
             }
@@ -389,15 +390,16 @@ Describe 'AdcsOnlineResponder\Set()' -Tag 'Set' -Skip:$true {
     }
 }
 
-Describe 'AdcsOnlineResponder\Test()' -Tag 'Test' -Skip:$true {
+Describe 'AdcsOnlineResponder\Test()' -Tag 'Test' {
     BeforeAll {
         InModuleScope -ScriptBlock {
             Set-StrictMode -Version 1.0
 
+            $script:mockCredential = New-Object System.Management.Automation.PSCredential ('Administrator', (New-Object -Type SecureString))
+
             $script:mockInstance = [AdcsOnlineResponder] @{
                 IsSingleInstance = 'Yes'
-                AiaUri           = @('http://example.com/aia1')
-                OcspUri          = @('http://example.com/ocsp1', 'http://example.com/ocsp2')
+                Credential       = $script:mockCredential
             }
         }
     }
@@ -421,17 +423,18 @@ Describe 'AdcsOnlineResponder\Test()' -Tag 'Test' -Skip:$true {
                         $script:getMethodCallCount += 1
                     }
             }
+        }
 
-            It 'Should return $true' {
-                InModuleScope -ScriptBlock {
-                    Set-StrictMode -Version 1.0
+        It 'Should return $true' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-                    $script:mockInstance.Test() | Should -BeTrue
+                $script:mockInstance.Test() | Should -BeTrue
 
-                    $script:getMethodCallCount | Should -Be 1
-                }
+                $script:getMethodCallCount | Should -Be 1
             }
         }
+
     }
 
     Context 'When the system is not in the desired state' {
@@ -447,9 +450,9 @@ Describe 'AdcsOnlineResponder\Test()' -Tag 'Test' -Skip:$true {
 
                 $script:mockInstance.PropertiesNotInDesiredState = @(
                     @{
-                        Property      = 'AiaUri'
-                        ExpectedValue = @('http://example.com/aia1')
-                        ActualValue   = @('http://example.com/aia1', 'http://example.com/aia2')
+                        Property      = 'Ensure'
+                        ExpectedValue = 'Present'
+                        ActualValue   = 'Absent'
                     }
                 )
             }
