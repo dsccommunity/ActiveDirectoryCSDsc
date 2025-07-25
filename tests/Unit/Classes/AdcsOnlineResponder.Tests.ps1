@@ -301,7 +301,7 @@ Describe 'AdcsOnlineResponder\Get()' -Tag 'Get' {
     }
 }
 
-Describe 'AdcsOnlineResponder\Set()' -Tag 'Set'{
+Describe 'AdcsOnlineResponder\Set()' -Tag 'Set' {
     BeforeAll {
         InModuleScope -ScriptBlock {
             Set-StrictMode -Version 1.0
@@ -885,7 +885,7 @@ Describe 'AdcsOnlineResponder\AssertProperties()' -Tag 'AssertProperties' {
             Mock -CommandName Assert-Module
         }
 
-        It 'Should throw an error' {
+        It 'Should not throw an error' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
