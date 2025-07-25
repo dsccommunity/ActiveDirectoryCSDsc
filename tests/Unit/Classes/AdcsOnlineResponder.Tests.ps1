@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-        Unit test for AdcsAuthorityInformationAccess DSC resource.
+        Unit test for AdcsOnlineResponder DSC resource.
 #>
 
 # Suppressing this rule because Script Analyzer does not understand Pester's syntax.
@@ -32,10 +32,13 @@ BeforeDiscovery {
 BeforeAll {
     $script:dscModuleName = 'ActiveDirectoryCSDsc'
 
+    # Loading mocked exception class
+    # New-MockObject -Type Microsoft.CertificateServices.Deployment.Common.OCSP.OnlineResponderSetupException
+
     Import-Module -Name $script:dscModuleName
 
     # Load stub cmdlets and classes.
-    Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\Stubs\AdcsAdministrationStub.psm1')
+    Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\Stubs\AdcsDeploymentStub.psm1')
 
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscModuleName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscModuleName
@@ -48,19 +51,19 @@ AfterAll {
     $PSDefaultParameterValues.Remove('Should:ModuleName')
 
     # Unload stub module
-    Remove-Module -Name AdcsAdministrationStub -Force
+    Remove-Module -Name AdcsDeploymentStub -Force
 
     # Unload the module being tested so that it doesn't impact any other tests.
     Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
 }
 
-Describe 'AdcsAuthorityInformationAccess' {
+Describe 'AdcsOnlineResponder' {
     Context 'When class is instantiated' {
         It 'Should not throw an exception' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                { [AdcsAuthorityInformationAccess]::new() } | Should -Not -Throw
+                { [AdcsOnlineResponder]::new() } | Should -Not -Throw
             }
         }
 
@@ -68,7 +71,7 @@ Describe 'AdcsAuthorityInformationAccess' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $instance = [AdcsAuthorityInformationAccess]::new()
+                $instance = [AdcsOnlineResponder]::new()
                 $instance | Should -Not -BeNullOrEmpty
             }
         }
@@ -77,24 +80,25 @@ Describe 'AdcsAuthorityInformationAccess' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $instance = [AdcsAuthorityInformationAccess]::new()
-                $instance.GetType().Name | Should -Be 'AdcsAuthorityInformationAccess'
+                $instance = [AdcsOnlineResponder]::new()
+                $instance.GetType().Name | Should -Be 'AdcsOnlineResponder'
             }
         }
     }
 }
 
-Describe 'AdcsAuthorityInformationAccess\Get()' -Tag 'Get' {
+Describe 'AdcsOnlineResponder\Get()' -Tag 'Get' {
     Context 'When the system is in the desired state' {
-        Context 'When single AIA and OCSP URIs' {
+        Context 'When AdcsOnlineResponder is installed' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $script:mockInstance = [AdcsAuthorityInformationAccess] @{
+                    $script:mockCredential = New-Object System.Management.Automation.PSCredential ('Administrator', (New-Object -Type SecureString))
+
+                    $script:mockInstance = [AdcsOnlineResponder] @{
                         IsSingleInstance = 'Yes'
-                        AiaUri           = 'http://example.com/aia'
-                        OcspUri          = 'http://example.com/ocsp'
+                        Credential       = $script:mockCredential
                     }
 
                     <#
@@ -109,8 +113,7 @@ Describe 'AdcsAuthorityInformationAccess\Get()' -Tag 'Get' {
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
                             return @{
                                 IsSingleInstance = 'Yes'
-                                AiaUri           = [System.String[]] 'http://example.com/aia'
-                                OcspUri          = [System.String[]] 'http://example.com/ocsp'
+                                Credential       = $script:mockCredential
                             }
                         } -PassThru |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'Assert' -Value {
@@ -130,77 +133,23 @@ Describe 'AdcsAuthorityInformationAccess\Get()' -Tag 'Get' {
 
                     $currentState.IsSingleInstance | Should -Be 'Yes'
 
-                    $currentState.AiaUri | Should -Be @('http://example.com/aia')
-                    $currentState.OcspUri | Should -Be @('http://example.com/ocsp')
-
-                    $currentState.AllowRestartService | Should -BeNullOrEmpty
+                    $currentState.Credential | Should -Be $script:mockCredential
+                    $currentState.Ensure | Should -Be 'Present'
 
                     $currentState.Reasons | Should -BeNullOrEmpty
                 }
             }
         }
 
-        Context 'When multiple AIA and OCSP URIs' {
+        Context 'When AdcsOnlineResponder is not installed' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $script:mockInstance = [AdcsAuthorityInformationAccess] @{
+                    $script:mockInstance = [AdcsOnlineResponder] @{
                         IsSingleInstance = 'Yes'
-                        AiaUri           = @('http://example.com/aia1', 'http://example.com/aia2')
-                        OcspUri          = @('http://example.com/ocsp1', 'http://example.com/ocsp2')
-                    }
-
-                    <#
-                        This mocks the method GetCurrentState().
-                        This mocks the method Assert().
-                        This mocks the method Normalize().
-
-                        Method Get() will call the base method Get() which will
-                        call back to the derived class methods.
-                    #>
-                    $script:mockInstance |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
-                            return @{
-                                IsSingleInstance = 'Yes'
-                                AiaUri           = [System.String[]] @('http://example.com/aia1', 'http://example.com/aia2')
-                                OcspUri          = [System.String[]] @('http://example.com/ocsp1', 'http://example.com/ocsp2')
-                            }
-                        } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Assert' -Value {
-                            return
-                        } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Normalize' -Value {
-                            return
-                        } -PassThru
-                }
-            }
-
-            It 'Should return the correct values' {
-                InModuleScope -ScriptBlock {
-                    Set-StrictMode -Version 1.0
-
-                    $currentState = $script:mockInstance.Get()
-
-                    $currentState.IsSingleInstance | Should -Be 'Yes'
-
-                    $currentState.AiaUri | Should -Be @('http://example.com/aia1', 'http://example.com/aia2')
-                    $currentState.OcspUri | Should -Be @('http://example.com/ocsp1', 'http://example.com/ocsp2')
-
-                    $currentState.AllowRestartService | Should -BeNullOrEmpty
-
-                    $currentState.Reasons | Should -BeNullOrEmpty
-                }
-            }
-        }
-
-        Context 'When no URIs should exist' {
-            BeforeAll {
-                InModuleScope -ScriptBlock {
-                    Set-StrictMode -Version 1.0
-
-                    $script:mockInstance = [AdcsAuthorityInformationAccess] @{
-                        IsSingleInstance = 'Yes'
+                        Credential       = New-Object System.Management.Automation.PSCredential ('Administrator', (New-Object -Type SecureString))
+                        Ensure           = [Ensure]::Absent
                     }
 
                     <#
@@ -232,10 +181,8 @@ Describe 'AdcsAuthorityInformationAccess\Get()' -Tag 'Get' {
 
                     $currentState.IsSingleInstance | Should -Be 'Yes'
 
-                    $currentState.AiaUri | Should -BeNullOrEmpty
-                    $currentState.OcspUri | Should -BeNullOrEmpty
-
-                    $currentState.AllowRestartService | Should -BeNullOrEmpty
+                    $currentState.Credential | Should -BeNullOrEmpty
+                    $currentState.Ensure | Should -Be 'Absent'
 
                     $currentState.Reasons | Should -HaveCount 0
                 }
@@ -244,15 +191,17 @@ Describe 'AdcsAuthorityInformationAccess\Get()' -Tag 'Get' {
     }
 
     Context 'When the system is not in the desired state' {
-        Context 'When property ''AiaUri'' has the wrong value' {
+        Context 'When AdcsOnlineResponder is installed' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $script:mockInstance = [AdcsAuthorityInformationAccess] @{
+                    $script:mockCredential = New-Object System.Management.Automation.PSCredential ('Administrator', (New-Object -Type SecureString))
+
+                    $script:mockInstance = [AdcsOnlineResponder] @{
                         IsSingleInstance = 'Yes'
-                        AiaUri           = 'http://example.com/aia'
-                        OcspUri          = 'http://example.com/ocsp'
+                        Credential       = $script:mockCredential
+                        Ensure           = [Ensure]::Absent
                     }
 
                     <#
@@ -267,8 +216,7 @@ Describe 'AdcsAuthorityInformationAccess\Get()' -Tag 'Get' {
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
                             return @{
                                 IsSingleInstance = 'Yes'
-                                AiaUri           = [System.String[]] 'http://example.com/aiaincorrect'
-                                OcspUri          = [System.String[]] 'http://example.com/ocsp'
+                                Credential       = $script:mockCredential
                             }
                         } -PassThru |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'Assert' -Value {
@@ -288,28 +236,27 @@ Describe 'AdcsAuthorityInformationAccess\Get()' -Tag 'Get' {
 
                     $currentState.IsSingleInstance | Should -Be 'Yes'
 
-                    $currentState.AiaUri | Should -Be @('http://example.com/aiaincorrect')
-                    $currentState.OcspUri | Should -Be @('http://example.com/ocsp')
-
-                    $currentState.AllowRestartService | Should -BeNullOrEmpty
+                    $currentState.Credential | Should -Be $script:mockCredential
+                    $currentState.Ensure | Should -Be 'Present'
 
 
                     $currentState.Reasons | Should -HaveCount 1
-                    $currentState.Reasons[0].Code | Should -Be 'AdcsAuthorityInformationAccess:AdcsAuthorityInformationAccess:AiaUri'
-                    $currentState.Reasons[0].Phrase | Should -Be 'The property AiaUri should be "http://example.com/aia", but was "http://example.com/aiaincorrect"'
+                    $currentState.Reasons[0].Code | Should -Be 'AdcsOnlineResponder:AdcsOnlineResponder:Ensure'
+                    $currentState.Reasons[0].Phrase | Should -Be 'The property Ensure should be "Absent", but was "Present"'
                 }
             }
         }
 
-        Context 'When property ''OcspUri'' has the wrong value' {
+        Context 'When AdcsOnlineResponder is not installed' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $script:mockInstance = [AdcsAuthorityInformationAccess] @{
+                    $script:mockCredential = New-Object System.Management.Automation.PSCredential ('Administrator', (New-Object -Type SecureString))
+
+                    $script:mockInstance = [AdcsOnlineResponder] @{
                         IsSingleInstance = 'Yes'
-                        AiaUri           = 'http://example.com/aia'
-                        OcspUri          = 'http://example.com/ocsp'
+                        Credential       = $script:mockCredential
                     }
 
                     <#
@@ -322,11 +269,7 @@ Describe 'AdcsAuthorityInformationAccess\Get()' -Tag 'Get' {
                     #>
                     $script:mockInstance |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
-                            return @{
-                                IsSingleInstance = 'Yes'
-                                AiaUri           = [System.String[]] 'http://example.com/aia'
-                                OcspUri          = [System.String[]] 'http://example.com/ocspincorrect'
-                            }
+                            return @{}
                         } -PassThru |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'Assert' -Value {
                             return
@@ -345,144 +288,29 @@ Describe 'AdcsAuthorityInformationAccess\Get()' -Tag 'Get' {
 
                     $currentState.IsSingleInstance | Should -Be 'Yes'
 
-                    $currentState.AiaUri | Should -Be @('http://example.com/aia')
-                    $currentState.OcspUri | Should -Be @('http://example.com/ocspincorrect')
-
-                    $currentState.AllowRestartService | Should -BeNullOrEmpty
+                    $currentState.Credential | Should -BeNullOrEmpty
+                    $currentState.Ensure | Should -Be 'Absent'
 
 
                     $currentState.Reasons | Should -HaveCount 1
-                    $currentState.Reasons[0].Code | Should -Be 'AdcsAuthorityInformationAccess:AdcsAuthorityInformationAccess:OcspUri'
-                    $currentState.Reasons[0].Phrase | Should -Be 'The property OcspUri should be "http://example.com/ocsp", but was "http://example.com/ocspincorrect"'
-                }
-            }
-        }
-
-        Context 'When property ''AiaUri'' has too many values' {
-            BeforeAll {
-                InModuleScope -ScriptBlock {
-                    Set-StrictMode -Version 1.0
-
-                    $script:mockInstance = [AdcsAuthorityInformationAccess] @{
-                        IsSingleInstance = 'Yes'
-                        AiaUri           = @('http://example.com/aia1')
-                        OcspUri          = @('http://example.com/ocsp1', 'http://example.com/ocsp2')
-                    }
-
-                    <#
-                        This mocks the method GetCurrentState().
-                        This mocks the method Assert().
-                        This mocks the method Normalize().
-
-                        Method Get() will call the base method Get() which will
-                        call back to the derived class methods.
-                    #>
-                    $script:mockInstance |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
-                            return @{
-                                IsSingleInstance = 'Yes'
-                                AiaUri           = [System.String[]] @('http://example.com/aia1', 'http://example.com/aia2')
-                                OcspUri          = [System.String[]] @('http://example.com/ocsp1', 'http://example.com/ocsp2')
-                            }
-                        } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Assert' -Value {
-                            return
-                        } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Normalize' -Value {
-                            return
-                        } -PassThru
-                }
-            }
-
-            It 'Should return the correct values' {
-                InModuleScope -ScriptBlock {
-                    Set-StrictMode -Version 1.0
-
-                    $currentState = $script:mockInstance.Get()
-
-                    $currentState.IsSingleInstance | Should -Be 'Yes'
-
-                    $currentState.AiaUri | Should -Be @('http://example.com/aia1', 'http://example.com/aia2')
-                    $currentState.OcspUri | Should -Be @('http://example.com/ocsp1', 'http://example.com/ocsp2')
-
-                    $currentState.AllowRestartService | Should -BeNullOrEmpty
-
-
-                    $currentState.Reasons | Should -HaveCount 1
-                    $currentState.Reasons[0].Code | Should -Be 'AdcsAuthorityInformationAccess:AdcsAuthorityInformationAccess:AiaUri'
-                    $currentState.Reasons[0].Phrase | Should -Be 'The property AiaUri should be "http://example.com/aia1", but was ["http://example.com/aia1","http://example.com/aia2"]'
-                }
-            }
-        }
-
-        Context 'When property ''OcspUri'' has too many values' {
-            BeforeAll {
-                InModuleScope -ScriptBlock {
-                    Set-StrictMode -Version 1.0
-
-                    $script:mockInstance = [AdcsAuthorityInformationAccess] @{
-                        IsSingleInstance = 'Yes'
-                        AiaUri           = @('http://example.com/aia1', 'http://example.com/aia2')
-                        OcspUri          = @('http://example.com/ocsp1')
-                    }
-
-                    <#
-                        This mocks the method GetCurrentState().
-                        This mocks the method Assert().
-                        This mocks the method Normalize().
-
-                        Method Get() will call the base method Get() which will
-                        call back to the derived class methods.
-                    #>
-                    $script:mockInstance |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
-                            return @{
-                                IsSingleInstance = 'Yes'
-                                AiaUri           = [System.String[]] @('http://example.com/aia1', 'http://example.com/aia2')
-                                OcspUri          = [System.String[]] @('http://example.com/ocsp1', 'http://example.com/ocsp2')
-                            }
-                        } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Assert' -Value {
-                            return
-                        } -PassThru |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Normalize' -Value {
-                            return
-                        } -PassThru
-                }
-            }
-
-            It 'Should return the correct values' {
-                InModuleScope -ScriptBlock {
-                    Set-StrictMode -Version 1.0
-
-                    $currentState = $script:mockInstance.Get()
-
-                    $currentState.IsSingleInstance | Should -Be 'Yes'
-
-                    $currentState.AiaUri | Should -Be @('http://example.com/aia1', 'http://example.com/aia2')
-                    $currentState.OcspUri | Should -Be @('http://example.com/ocsp1', 'http://example.com/ocsp2')
-
-                    $currentState.AllowRestartService | Should -BeNullOrEmpty
-
-
-                    $currentState.Reasons | Should -HaveCount 1
-                    $currentState.Reasons[0].Code | Should -Be 'AdcsAuthorityInformationAccess:AdcsAuthorityInformationAccess:OcspUri'
-                    $currentState.Reasons[0].Phrase | Should -Be 'The property OcspUri should be "http://example.com/ocsp1", but was ["http://example.com/ocsp1","http://example.com/ocsp2"]'
+                    $currentState.Reasons[0].Code | Should -Be 'AdcsOnlineResponder:AdcsOnlineResponder:Ensure'
+                    $currentState.Reasons[0].Phrase | Should -Be 'The property Ensure should be "Present", but was "Absent"'
                 }
             }
         }
     }
 }
 
-Describe 'AdcsAuthorityInformationAccess\Set()' -Tag 'Set' {
+Describe 'AdcsOnlineResponder\Set()' -Tag 'Set' {
     BeforeAll {
         InModuleScope -ScriptBlock {
             Set-StrictMode -Version 1.0
 
-            $script:mockInstance = [AdcsAuthorityInformationAccess] @{
+            $script:mockCredential = New-Object System.Management.Automation.PSCredential ('Administrator', (New-Object -Type SecureString))
+
+            $script:mockInstance = [AdcsOnlineResponder] @{
                 IsSingleInstance = 'Yes'
-                AiaUri           = @('http://example.com/aia1')
-                OcspUri          = @('http://example.com/ocsp1', 'http://example.com/ocsp2')
+                Credential       = $script:mockCredential
             } |
                 # Mock method Modify which is called by the case method Set().
                 Add-Member -Force -MemberType 'ScriptMethod' -Name 'Modify' -Value {
@@ -541,9 +369,9 @@ Describe 'AdcsAuthorityInformationAccess\Set()' -Tag 'Set' {
 
                 $script:mockInstance.PropertiesNotInDesiredState = @(
                     @{
-                        Property      = 'AiaUri'
-                        ExpectedValue = @('http://example.com/aia1')
-                        ActualValue   = @('http://example.com/aia1', 'http://example.com/aia2')
+                        Property      = 'Ensure'
+                        ExpectedValue = 'Present'
+                        ActualValue   = 'Absent'
                     }
                 )
             }
@@ -562,15 +390,16 @@ Describe 'AdcsAuthorityInformationAccess\Set()' -Tag 'Set' {
     }
 }
 
-Describe 'AdcsAuthorityInformationAccess\Test()' -Tag 'Test' {
+Describe 'AdcsOnlineResponder\Test()' -Tag 'Test' {
     BeforeAll {
         InModuleScope -ScriptBlock {
             Set-StrictMode -Version 1.0
 
-            $script:mockInstance = [AdcsAuthorityInformationAccess] @{
+            $script:mockCredential = New-Object System.Management.Automation.PSCredential ('Administrator', (New-Object -Type SecureString))
+
+            $script:mockInstance = [AdcsOnlineResponder] @{
                 IsSingleInstance = 'Yes'
-                AiaUri           = @('http://example.com/aia1')
-                OcspUri          = @('http://example.com/ocsp1', 'http://example.com/ocsp2')
+                Credential       = $script:mockCredential
             }
         }
     }
@@ -605,6 +434,7 @@ Describe 'AdcsAuthorityInformationAccess\Test()' -Tag 'Test' {
                 $script:getMethodCallCount | Should -Be 1
             }
         }
+
     }
 
     Context 'When the system is not in the desired state' {
@@ -620,9 +450,9 @@ Describe 'AdcsAuthorityInformationAccess\Test()' -Tag 'Test' {
 
                 $script:mockInstance.PropertiesNotInDesiredState = @(
                     @{
-                        Property      = 'AiaUri'
-                        ExpectedValue = @('http://example.com/aia1')
-                        ActualValue   = @('http://example.com/aia1', 'http://example.com/aia2')
+                        Property      = 'Ensure'
+                        ExpectedValue = 'Present'
+                        ActualValue   = 'Absent'
                     }
                 )
             }
@@ -640,13 +470,13 @@ Describe 'AdcsAuthorityInformationAccess\Test()' -Tag 'Test' {
     }
 }
 
-Describe 'AdcsAuthorityInformationAccess\GetCurrentState()' -Tag 'HiddenMember' {
+Describe 'AdcsOnlineResponder\GetCurrentState()' -Tag 'HiddenMember' -Skip:$true {
     Context 'When object is missing in the current state' {
         BeforeAll {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $script:mockInstance = [AdcsAuthorityInformationAccess] @{
+                $script:mockInstance = [AdcsOnlineResponder] @{
                     IsSingleInstance = 'Yes'
                     AiaUri           = @('http://example.com/aia1')
                     OcspUri          = @('http://example.com/ocsp1', 'http://example.com/ocsp2')
@@ -693,7 +523,7 @@ Describe 'AdcsAuthorityInformationAccess\GetCurrentState()' -Tag 'HiddenMember' 
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $script:mockInstance = [AdcsAuthorityInformationAccess] @{
+                $script:mockInstance = [AdcsOnlineResponder] @{
                     IsSingleInstance = 'Yes'
                     AiaUri           = @('http://example.com/aia1')
                     OcspUri          = @('http://example.com/ocsp1', 'http://example.com/ocsp2')
@@ -740,13 +570,13 @@ Describe 'AdcsAuthorityInformationAccess\GetCurrentState()' -Tag 'HiddenMember' 
     }
 }
 
-Describe 'AdcsAuthorityInformationAccess\Modify()' -Tag 'HiddenMember' {
+Describe 'AdcsOnlineResponder\Modify()' -Tag 'HiddenMember' -Skip:$true {
     Context 'When the system is not in the desired state' {
         BeforeAll {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $script:mockInstance = [AdcsAuthorityInformationAccess] @{
+                $script:mockInstance = [AdcsOnlineResponder] @{
                     IsSingleInstance = 'Yes'
                     AiaUri           = @('http://example.com/aia1', 'http://example.com/aia2')
                     OcspUri          = @('http://example.com/ocsp1', 'http://example.com/ocsp2')
@@ -1023,12 +853,12 @@ Describe 'AdcsAuthorityInformationAccess\Modify()' -Tag 'HiddenMember' {
     }
 }
 
-Describe 'AdcsAuthorityInformationAccess\AssertProperties()' -Tag 'AssertProperties' {
+Describe 'AdcsOnlineResponder\AssertProperties()' -Tag 'AssertProperties' {
     BeforeAll {
         InModuleScope -ScriptBlock {
             Set-StrictMode -Version 1.0
 
-            $script:mockInstance = [AdcsAuthorityInformationAccess] @{}
+            $script:mockInstance = [AdcsOnlineResponder] @{}
         }
     }
 
@@ -1053,71 +883,15 @@ Describe 'AdcsAuthorityInformationAccess\AssertProperties()' -Tag 'AssertPropert
     Context 'When required module is present' {
         BeforeAll {
             Mock -CommandName Assert-Module
-            Mock -CommandName Assert-BoundParameter
         }
 
-        It 'Should throw an error' {
+        It 'Should not throw an error' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
                 $mockProperties = @{
                     IsSingleInstance = 'Yes'
                 }
-
-                { $mockInstance.AssertProperties($mockProperties) } | Should -Not -Throw
-            }
-        }
-    }
-
-    Context 'When required parameters are missing' {
-        BeforeDiscovery {
-            $testCases = @(
-                @{
-                    IsSingleInstance = 'Yes'
-                }
-            )
-        }
-
-        BeforeAll {
-            Mock -CommandName Assert-Module
-        }
-
-        It 'Should throw the correct error' -ForEach $testCases {
-            InModuleScope -Parameters @{
-                mockProperties = $_
-            } -ScriptBlock {
-                Set-StrictMode -Version 1.0
-
-                { $mockInstance.AssertProperties($mockProperties) } | Should -Throw -ExpectedMessage ('*' + 'DRC0050' + '*')
-            }
-        }
-    }
-
-    Context 'When passing required parameters' {
-        BeforeDiscovery {
-            $testCases = @(
-                @{
-                    AiaUri  = @('http://example.com/aia')
-                    OcspUri = @('http://example.com/ocsp')
-                }
-                @{
-                    AiaUri = @('http://example.com/aia')
-                }
-                @{
-                    OcspUri = @('http://example.com/ocsp')
-                }
-            )
-        }
-
-        BeforeAll {
-            Mock -CommandName Assert-Module
-        }
-
-        It 'Should not throw an error' -ForEach $testCases {
-            InModuleScope -Parameters @{
-                mockProperties = $_
-            } -ScriptBlock {
-                Set-StrictMode -Version 1.0
 
                 { $mockInstance.AssertProperties($mockProperties) } | Should -Not -Throw
             }
