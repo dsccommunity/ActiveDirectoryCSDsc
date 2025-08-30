@@ -80,11 +80,10 @@ class AdcsOnlineResponder : ResourceBase
         }
         catch
         {
-            if ($_.Exception.ToString() -match 'OnlineResponderSetupException$')
+            if ($_.Exception.GetType().FullName -eq 'Microsoft.CertificateServices.Deployment.Common.OCSP.OnlineResponderSetupException')
             {
                 return @{
                     IsSingleInstance = $this.IsSingleInstance
-                    Credential       = $this.Credential
                 }
             }
 
@@ -104,20 +103,27 @@ class AdcsOnlineResponder : ResourceBase
     #>
     hidden [void] Modify([System.Collections.Hashtable] $properties)
     {
-        $errorMessage = ''
-
         if ($properties.ContainsKey('Ensure') -and $properties.Ensure -eq [Ensure]::Absent)
         {
-            $errorMessage = (Uninstall-AdcsOnlineResponder -Force).ErrorString
+            try
+            {
+                Uninstall-AdcsOnlineResponder -Force
+            }
+            catch
+            {
+                New-InvalidOperationException -Message $_.Exception.Message -ErrorRecord $_
+            }
         }
         else
         {
-            $errorMessage = (Install-AdcsOnlineResponder -Credential $this.Credential -Force).ErrorString
-        }
-
-        if (-not [System.String]::IsNullOrEmpty($errorMessage))
-        {
-            New-InvalidOperationException -Message $errorMessage
+            try
+            {
+                Install-AdcsOnlineResponder -Credential $this.Credential -Force
+            }
+            catch
+            {
+                New-InvalidOperationException -Message $_.Exception.Message -ErrorRecord $_
+            }
         }
     }
 
