@@ -80,15 +80,16 @@ class AdcsOnlineResponder : ResourceBase
         }
         catch
         {
-            return @{
-                IsSingleInstance = 'Yes'
-                Credential = $this.Credential
+            if ($_.Exception.ToString() -match 'OnlineResponderSetupException$')
+            {
+                return @{
+                    IsSingleInstance = $this.IsSingleInstance
+                    Credential       = $this.Credential
+                }
             }
+
+            return New-InvalidOperationException -Message $this.localizedData.ErrorGetCurrentState -ErrorRecord $_
         }
-        # catch
-        # {
-        #     New-InvalidOperationException -Message $this.localizedData.ErrorGetCurrentState -ErrorRecord $_
-        # }
     }
 
     [void] Set()
