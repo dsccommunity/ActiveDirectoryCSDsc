@@ -514,7 +514,7 @@ Describe 'AdcsOnlineResponder\GetCurrentState()' -Tag 'HiddenMember' {
             }
 
             Mock -CommandName Install-AdcsOnlineResponder -MockWith {
-                throw 'Microsoft.CertificateServices.Deployment.Common.OCSP.OnlineResponderSetupException'
+                throw [Microsoft.CertificateServices.Deployment.Common.OCSP.OnlineResponderSetupException]::new()
             }
         }
 
@@ -876,7 +876,7 @@ Describe 'AdcsOnlineResponder\AssertProperties()' -Tag 'AssertProperties' {
                     IsSingleInstance = 'Yes'
                 }
 
-                { $mockInstance.AssertProperties($mockProperties) } | Should -Throw
+                { $script:mockInstance.AssertProperties($mockProperties) } | Should -Throw
             }
         }
     }
@@ -894,7 +894,7 @@ Describe 'AdcsOnlineResponder\AssertProperties()' -Tag 'AssertProperties' {
                     IsSingleInstance = 'Yes'
                 }
 
-                { $mockInstance.AssertProperties($mockProperties) } | Should -Not -Throw
+                { $script:mockInstance.AssertProperties($mockProperties) } | Should -Not -Throw
             }
         }
     }
