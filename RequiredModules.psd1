@@ -38,7 +38,12 @@
             AllowPrerelease = $true
         }
     }
-    'DscResource.Common'           = 'latest'
+    'DscResource.Common'           = @{
+        Version    = 'latest'
+        Parameters = @{
+            AllowPrerelease = $true
+        }
+    }
 
     # Analyzer rules
     'DscResource.AnalyzerRules'    = 'latest'
