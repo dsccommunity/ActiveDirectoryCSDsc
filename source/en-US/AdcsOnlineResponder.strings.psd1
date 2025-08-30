@@ -9,5 +9,5 @@ ConvertFrom-StringData @'
     # None
 
     ## Strings directly used by the derived class AdcsOnlineResponder.
-    # ErrorGetCurrentState = GetCurrentState() failed with an unexpected error. (ADCSOR0001)
+    ErrorGetCurrentState = GetCurrentState() failed with an unexpected error. (ADCSOR0001)
 '@
