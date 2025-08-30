@@ -7,6 +7,15 @@
 [CmdletBinding()]
 param ()
 
+Add-Type -TypeDefinition @'
+namespace Microsoft.CertificateServices.Deployment.Common.OCSP {
+    public class OnlineResponderSetupException : System.Exception {
+        public OnlineResponderSetupException() {}
+        public OnlineResponderSetupException(string message) : base(message) {}
+    }
+}
+'@
+
 function Install-AdcsCertificationAuthority
 {
     <#
