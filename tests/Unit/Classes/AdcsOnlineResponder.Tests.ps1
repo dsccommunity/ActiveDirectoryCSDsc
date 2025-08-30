@@ -470,26 +470,19 @@ Describe 'AdcsOnlineResponder\Test()' -Tag 'Test' {
     }
 }
 
-Describe 'AdcsOnlineResponder\GetCurrentState()' -Tag 'HiddenMember' -Skip:$true {
-    Context 'When object is missing in the current state' {
+Describe 'AdcsOnlineResponder\GetCurrentState()' -Tag 'HiddenMember' {
+    Context 'When the OnlineResponder is not installed' {
         BeforeAll {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
                 $script:mockInstance = [AdcsOnlineResponder] @{
                     IsSingleInstance = 'Yes'
-                    AiaUri           = @('http://example.com/aia1')
-                    OcspUri          = @('http://example.com/ocsp1', 'http://example.com/ocsp2')
+                    Ensure           = [Ensure]::Present
                 }
             }
 
-            Mock -CommandName Get-CaAiaUriList -ParameterFilter {
-                $ExtensionType -eq 'AddToCertificateAia'
-            }
-
-            Mock -CommandName Get-CaAiaUriList -ParameterFilter {
-                $ExtensionType -eq 'AddToCertificateOcsp'
-            }
+            Mock -CommandName Install-AdcsOnlineResponder
         }
 
         It 'Should return the correct values' {
@@ -503,43 +496,25 @@ Describe 'AdcsOnlineResponder\GetCurrentState()' -Tag 'HiddenMember' -Skip:$true
                 )
 
                 $currentState.IsSingleInstance | Should -BeNullOrEmpty
-                $currentState.AiaUri | Should -BeNullOrEmpty
-                $currentState.OcspUri | Should -BeNullOrEmpty
-                $currentState.AllowRestartService | Should -BeNullOrEmpty
             }
 
-            Should -Invoke -CommandName Get-CaAiaUriList -ParameterFilter {
-                $ExtensionType -eq 'AddToCertificateAia'
-            } -Exactly -Times 1 -Scope It
-
-            Should -Invoke -CommandName Get-CaAiaUriList -ParameterFilter {
-                $ExtensionType -eq 'AddToCertificateOcsp'
-            } -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Install-AdcsOnlineResponder -Exactly -Times 1 -Scope It
         }
     }
 
-    Context 'When the object is present in the current state' {
+    Context 'When the OnlineResponder is already installed' {
         BeforeAll {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
                 $script:mockInstance = [AdcsOnlineResponder] @{
                     IsSingleInstance = 'Yes'
-                    AiaUri           = @('http://example.com/aia1')
-                    OcspUri          = @('http://example.com/ocsp1', 'http://example.com/ocsp2')
+                    Ensure           = [Ensure]::Present
                 }
             }
 
-            Mock -CommandName Get-CaAiaUriList -ParameterFilter {
-                $ExtensionType -eq 'AddToCertificateAia'
-            } -MockWith {
-                return @('http://example.com/aia1', 'http://example.com/aia2')
-            }
-
-            Mock -CommandName Get-CaAiaUriList -ParameterFilter {
-                $ExtensionType -eq 'AddToCertificateOcsp'
-            } -MockWith {
-                return @('http://example.com/ocsp1', 'http://example.com/ocsp2')
+            Mock -CommandName Install-AdcsOnlineResponder -MockWith {
+                throw 'Microsoft.CertificateServices.Deployment.Common.OCSP.OnlineResponderSetupException'
             }
         }
 
@@ -554,18 +529,44 @@ Describe 'AdcsOnlineResponder\GetCurrentState()' -Tag 'HiddenMember' -Skip:$true
                 )
 
                 $currentState.IsSingleInstance | Should -Be 'Yes'
-                $currentState.AiaUri | Should -Be @('http://example.com/aia1', 'http://example.com/aia2')
-                $currentState.OcspUri | Should -Be @('http://example.com/ocsp1', 'http://example.com/ocsp2')
-                $currentState.AllowRestartService | Should -BeNullOrEmpty
             }
 
-            Should -Invoke -CommandName Get-CaAiaUriList -ParameterFilter {
-                $ExtensionType -eq 'AddToCertificateAia'
-            } -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Install-AdcsOnlineResponder -Exactly -Times 1 -Scope It
+        }
+    }
 
-            Should -Invoke -CommandName Get-CaAiaUriList -ParameterFilter {
-                $ExtensionType -eq 'AddToCertificateOcsp'
-            } -Exactly -Times 1 -Scope It
+    Context 'When the OnlineResponder throws an unexpected exception' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $script:mockInstance = [AdcsOnlineResponder] @{
+                    IsSingleInstance = 'Yes'
+                    Ensure           = [Ensure]::Present
+                }
+            }
+
+            Mock -CommandName Install-AdcsOnlineResponder -MockWith {
+                throw 'Another exception'
+            }
+        }
+
+        It 'Should return the correct values' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $errorRecord = Get-InvalidOperationRecord -Message $script:mockInstance.localizedData.ErrorGetCurrentState
+
+                {
+                    $script:mockInstance.GetCurrentState(
+                        @{
+                            IsSingleInstance = 'Yes'
+                        }
+                    )
+                } | Should -Throw -ExpectedMessage ($errorRecord.Exception.Message + '*')
+            }
+
+            Should -Invoke -CommandName Install-AdcsOnlineResponder -Exactly -Times 1 -Scope It
         }
     }
 }
