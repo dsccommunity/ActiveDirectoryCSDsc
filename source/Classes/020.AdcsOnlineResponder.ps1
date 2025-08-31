@@ -23,18 +23,9 @@
 
     .PARAMETER Reasons
         Returns the reason a property is not in desired state.
-
-    .NOTES
-        Used Functions:
-            Name                          | Module
-            ----------------------------- |-------------------
-            Install-AdcsOnlineResponder   | ADCSDeployment
-            Uninstall-AdcsOnlineResponder | ADCSDeployment
-            Assert-Module                 | DscResource.Common
-            New-InvalidOperationException | DscResource.Common
 #>
 
-[DscResource()]
+[DscResource(RunAsCredential = 'NotSupported')]
 class AdcsOnlineResponder : ResourceBase
 {
     [DscProperty(Key)]
@@ -74,7 +65,7 @@ class AdcsOnlineResponder : ResourceBase
     {
         try
         {
-            $null = Install-AdcsOnlineResponder -Credential $this.Credential -WhatIf
+            $null = ADCSDeployment\Install-AdcsOnlineResponder -Credential $this.Credential -WhatIf
 
             return @{}
         }
@@ -87,7 +78,7 @@ class AdcsOnlineResponder : ResourceBase
                 }
             }
 
-            return New-InvalidOperationException -Message $this.localizedData.ErrorGetCurrentState -ErrorRecord $_
+            return DscResource.Common\New-InvalidOperationException -Message $this.localizedData.ErrorGetCurrentState -ErrorRecord $_
         }
     }
 
@@ -107,22 +98,22 @@ class AdcsOnlineResponder : ResourceBase
         {
             try
             {
-                Uninstall-AdcsOnlineResponder -Force
+                $null = ADCSDeployment\Uninstall-AdcsOnlineResponder -Force
             }
             catch
             {
-                New-InvalidOperationException -Message $_.Exception.Message -ErrorRecord $_
+                DscResource.Common\New-InvalidOperationException -Message $_.Exception.Message -ErrorRecord $_
             }
         }
         else
         {
             try
             {
-                Install-AdcsOnlineResponder -Credential $this.Credential -Force
+                $null = ADCSDeployment\Install-AdcsOnlineResponder -Credential $this.Credential -Force
             }
             catch
             {
-                New-InvalidOperationException -Message $_.Exception.Message -ErrorRecord $_
+                DscResource.Common\New-InvalidOperationException -Message $_.Exception.Message -ErrorRecord $_
             }
         }
     }
@@ -139,6 +130,6 @@ class AdcsOnlineResponder : ResourceBase
     #>
     hidden [void] AssertProperties([System.Collections.Hashtable] $properties)
     {
-        Assert-Module -ModuleName 'ADCSDeployment'
+        DscResource.Common\Assert-Module -ModuleName 'ADCSDeployment'
     }
 }
