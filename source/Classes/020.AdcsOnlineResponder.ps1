@@ -65,7 +65,7 @@ class AdcsOnlineResponder : ResourceBase
     {
         try
         {
-            $null = ADCSDeployment\Install-AdcsOnlineResponder -Credential $this.Credential -WhatIf
+            $null = Install-AdcsOnlineResponder -Credential $this.Credential -WhatIf
 
             return @{}
         }
@@ -78,7 +78,7 @@ class AdcsOnlineResponder : ResourceBase
                 }
             }
 
-            return DscResource.Common\New-InvalidOperationException -Message $this.localizedData.ErrorGetCurrentState -ErrorRecord $_
+            return New-InvalidOperationException -Message $this.localizedData.ErrorGetCurrentState -ErrorRecord $_
         }
     }
 
@@ -98,22 +98,22 @@ class AdcsOnlineResponder : ResourceBase
         {
             try
             {
-                $null = ADCSDeployment\Uninstall-AdcsOnlineResponder -Force
+                $null = Uninstall-AdcsOnlineResponder -Force
             }
             catch
             {
-                DscResource.Common\New-InvalidOperationException -Message $_.Exception.Message -ErrorRecord $_
+                New-InvalidOperationException -Message $_.Exception.Message -ErrorRecord $_
             }
         }
         else
         {
             try
             {
-                $null = ADCSDeployment\Install-AdcsOnlineResponder -Credential $this.Credential -Force
+                $null = Install-AdcsOnlineResponder -Credential $this.Credential -Force
             }
             catch
             {
-                DscResource.Common\New-InvalidOperationException -Message $_.Exception.Message -ErrorRecord $_
+                New-InvalidOperationException -Message $_.Exception.Message -ErrorRecord $_
             }
         }
     }
@@ -130,6 +130,6 @@ class AdcsOnlineResponder : ResourceBase
     #>
     hidden [void] AssertProperties([System.Collections.Hashtable] $properties)
     {
-        DscResource.Common\Assert-Module -ModuleName 'ADCSDeployment'
+        Assert-Module -ModuleName 'ADCSDeployment'
     }
 }
