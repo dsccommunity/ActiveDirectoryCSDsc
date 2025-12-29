@@ -41,14 +41,14 @@ BuildWorkflow:
 ####################################################
 #          ModuleBuilder Configuration             #
 ####################################################
+BuiltModuleSubdirectory: builtModule
 CopyPaths:
   - en-US
   - DSCResources
   - Modules
-Prefix: prefix.ps1
 Encoding: UTF8
+Prefix: prefix.ps1
 VersionedOutputDirectory: true
-BuiltModuleSubdirectory: builtModule
 
 ModuleBuildTasks:
   Sampler:
