@@ -6,7 +6,7 @@
     .DESCRIPTION
         This resource can be used to install an ADCS Online Responder after the feature
         has been installed on the server.
-        Using this DSC Resource to configure an ADCS Certificate Authority assumes that
+        Using this DSC Resource to configure an ADCS Online Responder assumes that
         the ```ADCS-Online-Responder``` feature has already been installed.
 
     .PARAMETER IsSingleInstance
@@ -34,7 +34,6 @@ class AdcsOnlineResponder : ResourceBase
 
     [DscProperty(Mandatory)]
     [System.Management.Automation.PSCredential]
-    [System.Management.Automation.Credential()]
     $Credential
 
     [DscProperty()]
@@ -65,6 +64,7 @@ class AdcsOnlineResponder : ResourceBase
     {
         try
         {
+            # Run the install with a WhatIf to check if the resource is installed.
             $null = Install-AdcsOnlineResponder -Credential $this.Credential -WhatIf
 
             return @{}
@@ -78,7 +78,7 @@ class AdcsOnlineResponder : ResourceBase
                 }
             }
 
-            return New-InvalidOperationException -Message $this.localizedData.ErrorGetCurrentState -ErrorRecord $_
+            New-InvalidOperationException -Message $this.localizedData.ErrorGetCurrentState -ErrorRecord $_
         }
     }
 
@@ -102,7 +102,7 @@ class AdcsOnlineResponder : ResourceBase
             }
             catch
             {
-                New-InvalidOperationException -Message $_.Exception.Message -ErrorRecord $_
+                New-InvalidOperationException -Message $this.localizedData.ErrorModifyUninstall -ErrorRecord $_
             }
         }
         else
@@ -113,7 +113,7 @@ class AdcsOnlineResponder : ResourceBase
             }
             catch
             {
-                New-InvalidOperationException -Message $_.Exception.Message -ErrorRecord $_
+                New-InvalidOperationException -Message $this.localizedData.ErrorModifyInstall -ErrorRecord $_
             }
         }
     }
