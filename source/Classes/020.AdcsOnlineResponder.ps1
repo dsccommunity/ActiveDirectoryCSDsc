@@ -60,14 +60,12 @@ class AdcsOnlineResponder : ResourceBase
     }
 
     # Base method Get() calls this method to get the current state as a Hashtable.
-    [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)
+    hidden [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)
     {
         try
         {
             # Run the install with a WhatIf to check if the resource is installed.
             $null = Install-AdcsOnlineResponder -Credential $this.Credential -WhatIf
-
-            return @{}
         }
         catch
         {
@@ -80,6 +78,9 @@ class AdcsOnlineResponder : ResourceBase
 
             New-InvalidOperationException -Message $this.localizedData.ErrorGetCurrentState -ErrorRecord $_
         }
+
+        # If we reach here, the Online Responder is not installed.
+        return @{}
     }
 
     [void] Set()
