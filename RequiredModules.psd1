@@ -32,12 +32,7 @@
     xDscResourceDesigner           = 'latest'
 
     # Build dependencies needed for using the module
-    'DscResource.Base'             = @{
-        Version    = 'latest'
-        Parameters = @{
-            AllowPrerelease = $true
-        }
-    }
+    'DscResource.Base'             = 'latest'
     'DscResource.Common'           = 'latest'
 
     # Analyzer rules

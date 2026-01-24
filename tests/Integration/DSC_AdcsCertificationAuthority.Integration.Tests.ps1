@@ -245,6 +245,10 @@ Describe 'DSC_AdcsAuthorityInformationAccess_Integration' -Skip:$skipIntegration
             }
         }
 
+        AfterEach {
+            Wait-ForIdleLcm
+        }
+
         It 'Should compile and apply the MOF without throwing' {
             {
                 & 'DSC_AdcsAuthorityInformationAccess_Config' `
@@ -288,6 +292,10 @@ Describe 'DSC_AdcsAuthorityInformationAccess_Integration' -Skip:$skipIntegration
                     }
                 )
             }
+        }
+
+        AfterEach {
+            Wait-ForIdleLcm
         }
 
         It 'Should compile and apply the MOF without throwing' {

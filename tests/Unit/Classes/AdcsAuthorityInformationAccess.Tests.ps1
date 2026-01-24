@@ -594,15 +594,15 @@ Describe 'AdcsAuthorityInformationAccess\Test()' -Tag 'Test' {
                         $script:getMethodCallCount += 1
                     }
             }
+        }
 
-            It 'Should return $true' {
-                InModuleScope -ScriptBlock {
-                    Set-StrictMode -Version 1.0
+        It 'Should return $true' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-                    $script:mockInstance.Test() | Should -BeTrue
+                $script:mockInstance.Test() | Should -BeTrue
 
-                    $script:getMethodCallCount | Should -Be 1
-                }
+                $script:getMethodCallCount | Should -Be 1
             }
         }
     }

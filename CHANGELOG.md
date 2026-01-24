@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- ActiveDirectoryCSDsc
+- `ActiveDirectoryCSDsc`
   - Automatically publish documentation to GitHub Wiki - Fixes [Issue #122](https://github.com/dsccommunity/ActiveDirectoryCSDsc/issues/122).
   - Revert Pester to non-prerelease.
   - Use DscResource.Base pre-release.
@@ -22,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Tests` - Migrate all tests to Pester 5.
 - Include module file in code coverage.
 - Add RootModule to Module psd1.
-- AdcsAuthorityInformationAccess
+- `AdcsAuthorityInformationAccess`
   - Removed `AllowRestartService` parameter from compared settings, force `Get-CaAiaUriList`
     to return unmangled `System.String[]` with single values.
     Fixes [Issue #128](https://github.com/dsccommunity/ActiveDirectoryCSDsc/issues/128)
@@ -35,6 +35,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Move to Private function.
 - `Restart-ServiceIfExists`
   - Change Write-Verbose to Write-Debug.
+- `AdcsOnlineResponder`
+  - Convert to class-based resource [#155](https://github.com/dsccommunity/ActiveDirectoryCSDsc/issues/155).
 
 ### Added
 
